@@ -13,6 +13,7 @@ import com.iceblyte.aicodemother.model.dto.user.UserAddRequest;
 import com.iceblyte.aicodemother.model.dto.user.UserLoginRequest;
 import com.iceblyte.aicodemother.model.dto.user.UserQueryRequest;
 import com.iceblyte.aicodemother.model.dto.user.UserRegisterRequest;
+import com.iceblyte.aicodemother.model.dto.user.UserUpdateMyRequest;
 import com.iceblyte.aicodemother.model.dto.user.UserUpdateRequest;
 import com.iceblyte.aicodemother.model.vo.LoginUserVO;
 import com.iceblyte.aicodemother.model.vo.UserVO;
@@ -147,6 +148,11 @@ public class UserController {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        User user = userService.getById(deleteRequest.getId());
+        ThrowUtils.throwIf(user == null, ErrorCode.NOT_FOUND_ERROR);
+        user.setUserAccount(String.format("%s_deleted_%d", user.getUserAccount(), user.getId()));
+        boolean updateResult = userService.updateById(user);
+        ThrowUtils.throwIf(!updateResult, ErrorCode.OPERATION_ERROR, "释放账号失败");
         boolean b = userService.removeById(deleteRequest.getId());
         return ResultUtils.success(b);
     }
@@ -163,6 +169,18 @@ public class UserController {
         User user = new User();
         BeanUtil.copyProperties(userUpdateRequest, user);
         boolean result = userService.updateById(user);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(true);
+    }
+
+    /**
+     * 更新当前登录用户
+     */
+    @PostMapping("/update/my")
+    public BaseResponse<Boolean> updateMyUser(@RequestBody UserUpdateMyRequest userUpdateMyRequest,
+                                              HttpServletRequest request) {
+        ThrowUtils.throwIf(userUpdateMyRequest == null, ErrorCode.PARAMS_ERROR);
+        boolean result = userService.updateMyUser(userUpdateMyRequest, request);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }

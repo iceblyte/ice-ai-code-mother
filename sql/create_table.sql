@@ -26,3 +26,6 @@ create table if not exists user
     UNIQUE KEY uk_userAccount (userAccount),
     INDEX idx_userName (userName)
 ) comment '用户' collate = utf8mb4_unicode_ci;
+
+-- 如果历史环境已存在逻辑删除账号无法重新注册的问题，
+-- 需要先将已删除数据的 userAccount 改写为唯一值后，再执行后续删除/注册流程。

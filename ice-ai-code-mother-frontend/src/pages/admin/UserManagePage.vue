@@ -1,6 +1,5 @@
 <template>
   <div id="userManagePage">
-    <!-- 搜索表单 -->
     <a-form layout="inline" :model="searchParams" @finish="doSearch">
       <a-form-item label="账号">
         <a-input v-model:value="searchParams.userAccount" placeholder="输入账号" />
@@ -13,9 +12,9 @@
       </a-form-item>
     </a-form>
     <a-divider />
-    <!-- 表格 -->
 
     <a-table
+      row-key="id"
       :columns="columns"
       :data-source="data"
       :pagination="pagination"
@@ -23,32 +22,61 @@
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'userAvatar'">
-          <a-image :src="record.userAvatar" :width="120" />
+          <a-image v-if="record.userAvatar" :src="record.userAvatar" :width="80" />
+          <span v-else>-</span>
         </template>
         <template v-else-if="column.dataIndex === 'userRole'">
-          <div v-if="record.userRole === 'admin'">
-            <a-tag color="green">管理员</a-tag>
-          </div>
-          <div v-else>
-            <a-tag color="blue">普通用户</a-tag>
-          </div>
+          <a-tag :color="record.userRole === 'admin' ? 'green' : 'blue'">
+            {{ record.userRole === 'admin' ? '管理员' : '普通用户' }}
+          </a-tag>
         </template>
         <template v-else-if="column.dataIndex === 'createTime'">
           {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
         <template v-else-if="column.key === 'action'">
-          <a-button danger @click="doDelete(record.id)">删除</a-button>
+          <a-space>
+            <a-button type="primary" @click="openEditModal(record)">编辑</a-button>
+            <a-button danger @click="doDelete(record.id)">删除</a-button>
+          </a-space>
         </template>
       </template>
     </a-table>
+
+    <a-modal
+      v-model:open="editModalOpen"
+      title="编辑用户"
+      ok-text="保存"
+      cancel-text="取消"
+      @ok="handleEditSubmit"
+    >
+      <a-form layout="vertical" :model="editForm">
+        <a-form-item label="用户名">
+          <a-input v-model:value="editForm.userName" placeholder="请输入用户名" />
+        </a-form-item>
+        <a-form-item label="头像地址">
+          <a-input v-model:value="editForm.userAvatar" placeholder="请输入头像地址" />
+        </a-form-item>
+        <a-form-item label="个人简介">
+          <a-textarea
+            v-model:value="editForm.userProfile"
+            placeholder="请输入简介"
+            :auto-size="{ minRows: 3, maxRows: 5 }"
+          />
+        </a-form-item>
+        <a-form-item label="用户角色">
+          <a-select v-model:value="editForm.userRole" :options="userRoleOptions" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
+
 <script lang="ts" setup>
-import { SmileOutlined } from '@ant-design/icons-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
-import { deleteUser, listUserVoByPage } from '@/api/userController.ts'
+import { deleteUser, listUserVoByPage, updateUser } from '@/api/userController'
 import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
+
 const columns = [
   {
     title: 'id',
@@ -84,17 +112,33 @@ const columns = [
   },
 ]
 
-// 数据
+const userRoleOptions = [
+  {
+    label: '普通用户',
+    value: 'user',
+  },
+  {
+    label: '管理员',
+    value: 'admin',
+  },
+]
+
 const data = ref<API.UserVO[]>([])
 const total = ref(0)
+const editModalOpen = ref(false)
+const editForm = reactive<API.UserUpdateRequest>({
+  id: undefined,
+  userName: '',
+  userAvatar: '',
+  userProfile: '',
+  userRole: 'user',
+})
 
-// 搜索条件
 const searchParams = reactive<API.UserQueryRequest>({
   pageNum: 1,
   pageSize: 10,
 })
 
-// 获取数据
 const fetchData = async () => {
   const res = await listUserVoByPage({
     ...searchParams,
@@ -107,54 +151,69 @@ const fetchData = async () => {
   }
 }
 
-// 分页参数
 const pagination = computed(() => {
   return {
     current: searchParams.pageNum ?? 1,
     pageSize: searchParams.pageSize ?? 10,
     total: total.value,
     showSizeChanger: true,
-    showTotal: (total: number) => `共 ${total} 条`,
+    showTotal: (value: number) => `共 ${value} 条`,
   }
 })
 
-// 表格变化处理
-const doTableChange = (page: any) => {
+const doTableChange = (page: { current: number; pageSize: number }) => {
   searchParams.pageNum = page.current
   searchParams.pageSize = page.pageSize
   fetchData()
 }
 
-// 获取数据
 const doSearch = () => {
-  // 重置页码
   searchParams.pageNum = 1
   fetchData()
 }
 
-// 删除数据
-const doDelete = async (id: string) => {
+const doDelete = async (id?: number) => {
   if (!id) {
     return
   }
   const res = await deleteUser({ id })
   if (res.data.code === 0) {
     message.success('删除成功')
-    // 刷新数据
-    fetchData()
+    await fetchData()
   } else {
-    message.error('删除失败')
+    message.error('删除失败，' + res.data.message)
   }
 }
 
-// 页面加载时请求一次
+const openEditModal = (record: API.UserVO) => {
+  editForm.id = record.id
+  editForm.userName = record.userName
+  editForm.userAvatar = record.userAvatar
+  editForm.userProfile = record.userProfile
+  editForm.userRole = record.userRole
+  editModalOpen.value = true
+}
+
+const handleEditSubmit = async () => {
+  const res = await updateUser({
+    ...editForm,
+  })
+  if (res.data.code === 0) {
+    message.success('更新成功')
+    editModalOpen.value = false
+    await fetchData()
+  } else {
+    message.error('更新失败，' + res.data.message)
+  }
+}
+
 onMounted(() => {
   fetchData()
 })
 </script>
 
-<style>
+<style scoped>
 #userManagePage {
-  width: 1200px;
+  width: min(1200px, 100%);
 }
 </style>

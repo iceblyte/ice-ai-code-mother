@@ -1,6 +1,7 @@
 package com.iceblyte.aicodemother.service;
 
 import com.iceblyte.aicodemother.model.dto.user.UserQueryRequest;
+import com.iceblyte.aicodemother.model.dto.user.UserUpdateMyRequest;
 import com.iceblyte.aicodemother.model.vo.LoginUserVO;
 import com.iceblyte.aicodemother.model.vo.UserVO;
 import com.mybatisflex.core.query.QueryWrapper;
@@ -66,6 +67,15 @@ public interface UserService extends IService<User> {
      * @return
      */
     boolean userLogout(HttpServletRequest request);
+
+    /**
+     * 当前登录用户更新个人信息
+     *
+     * @param userUpdateMyRequest 更新请求
+     * @param request 请求
+     * @return 是否成功
+     */
+    boolean updateMyUser(UserUpdateMyRequest userUpdateMyRequest, HttpServletRequest request);
 
     /**
      * 获取脱敏的用户信息

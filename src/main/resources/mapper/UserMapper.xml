@@ -4,4 +4,28 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iceblyte.aicodemother.mapper.UserMapper">
 
+    <select id="selectDeletedByUserAccount" resultType="com.iceblyte.aicodemother.model.entity.User">
+        select id,
+               userAccount,
+               userPassword,
+               userName,
+               userAvatar,
+               userProfile,
+               userRole,
+               editTime,
+               createTime,
+               updateTime,
+               isDelete
+        from user
+        where userAccount = #{userAccount}
+          and isDelete = 1
+        limit 1
+    </select>
+
+    <update id="updateUserAccountById">
+        update user
+        set userAccount = #{userAccount}
+        where id = #{id}
+    </update>
+
 </mapper>

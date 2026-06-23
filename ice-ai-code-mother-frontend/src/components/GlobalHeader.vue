@@ -1,16 +1,14 @@
 <template>
   <a-layout-header class="header">
     <a-row :wrap="false">
-      <!-- 左侧：Logo和标题 -->
       <a-col flex="200px">
         <RouterLink to="/">
           <div class="header-left">
             <img class="logo" src="@/assets/logo.png" alt="Logo" />
-            <h1 class="site-title">鱼皮应用生成</h1>
+            <h1 class="site-title">AI 应用生成</h1>
           </div>
         </RouterLink>
       </a-col>
-      <!-- 中间：导航菜单 -->
       <a-col flex="auto">
         <a-menu
           v-model:selectedKeys="selectedKeys"
@@ -19,7 +17,6 @@
           @click="handleMenuClick"
         />
       </a-col>
-      <!-- 右侧：用户操作区域 -->
       <a-col>
         <div class="user-login-status">
           <div v-if="loginUserStore.loginUser.id">
@@ -30,6 +27,10 @@
               </a-space>
               <template #overlay>
                 <a-menu>
+                  <a-menu-item @click="router.push('/user/profile')">
+                    <UserOutlined/>
+                    个人中心
+                  </a-menu-item>
                   <a-menu-item @click="doLogout">
                     <LogoutOutlined />
                     退出登录
@@ -48,31 +49,31 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, h, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { type MenuProps, message } from 'ant-design-vue'
-
-import { LogoutOutlined } from '@ant-design/icons-vue'
-
-// JS 中引入 Store
-import { useLoginUserStore } from '@/stores/loginUser.ts'
-import { userLogout } from '@/api/userController.ts'
-const loginUserStore = useLoginUserStore()
+import { LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
+import { useLoginUserStore } from '@/stores/loginUser'
+import { userLogout } from '@/api/userController'
+import checkAccess from '@/access/checkAccess'
+import ACCESS_ENUM from '@/access/accessEnum'
+import appRouter from '@/router'
 
 const router = useRouter()
-// 当前选中菜单
-const selectedKeys = ref<string[]>(['/'])
-// 监听路由变化，更新当前选中菜单
-router.afterEach((to, from, next) => {
-  selectedKeys.value = [to.path]
-})
+const route = useRoute()
+const loginUserStore = useLoginUserStore()
+const selectedKeys = ref<string[]>([route.path])
 
-// 菜单配置项
-const originItems = [
+const originItems: MenuProps['items'] = [
   {
     key: '/',
     label: '主页',
     title: '主页',
+  },
+  {
+    key: '/user/profile',
+    label: '个人中心',
+    title: '个人中心',
   },
   {
     key: '/admin/userManage',
@@ -86,39 +87,53 @@ const originItems = [
   },
 ]
 
-// 过滤菜单项
-const filterMenus = (menus = [] as MenuProps['items']) => {
-  return menus?.filter((menu) => {
+watch(
+  () => route.path,
+  (newPath) => {
+    selectedKeys.value = [newPath]
+  },
+  {
+    immediate: true,
+  },
+)
+
+const routeMap = computed(() => {
+  const entries = appRouter.getRoutes().map((item) => [item.path, item] as const)
+  return Object.fromEntries(entries)
+})
+
+const menuItems = computed<MenuProps['items']>(() => {
+  return originItems?.filter((menu) => {
     const menuKey = menu?.key as string
-    if (menuKey?.startsWith('/admin')) {
-      const loginUser = loginUserStore.loginUser
-      if (!loginUser || loginUser.userRole !== 'admin') {
-        return false
-      }
+    if (!menuKey || !menuKey.startsWith('/')) {
+      return true
     }
-    return true
+    const routeItem = routeMap.value[menuKey]
+    if (!routeItem) {
+      return true
+    }
+    if (routeItem.meta?.hideInMenu) {
+      return false
+    }
+    const needAccess = (routeItem.meta?.access as string) ?? ACCESS_ENUM.NOT_LOGIN
+    return checkAccess(loginUserStore.loginUser, needAccess)
   })
-}
+})
 
-// 展示在菜单的路由数组
-const menuItems = computed<MenuProps['items']>(() => filterMenus(originItems))
-
-// 处理菜单点击
 const handleMenuClick: MenuProps['onClick'] = (e) => {
   const key = e.key as string
   selectedKeys.value = [key]
-  // 跳转到对应页面
   if (key.startsWith('/')) {
     router.push(key)
   }
 }
 
-// 用户注销
 const doLogout = async () => {
   const res = await userLogout()
   if (res.data.code === 0) {
     loginUserStore.setLoginUser({
       userName: '未登录',
+      userRole: ACCESS_ENUM.NOT_LOGIN,
     })
     message.success('退出登录成功')
     await router.push('/user/login')
@@ -149,6 +164,10 @@ const doLogout = async () => {
   margin: 0;
   font-size: 18px;
   color: #1890ff;
+}
+
+.user-login-status {
+  min-width: 120px;
 }
 
 .ant-menu-horizontal {

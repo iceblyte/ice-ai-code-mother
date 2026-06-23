@@ -2,10 +2,13 @@ package com.iceblyte.aicodemother.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import com.iceblyte.aicodemother.constant.UserConstant;
 import com.iceblyte.aicodemother.exception.BusinessException;
 import com.iceblyte.aicodemother.exception.ErrorCode;
 import com.iceblyte.aicodemother.model.dto.user.UserQueryRequest;
+import com.iceblyte.aicodemother.model.dto.user.UserUpdateMyRequest;
 import com.iceblyte.aicodemother.model.enums.UserRoleEnum;
 import com.iceblyte.aicodemother.model.vo.LoginUserVO;
 import com.iceblyte.aicodemother.model.vo.UserVO;
@@ -48,11 +51,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>  implements U
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次输入的密码不一致");
         }
         // 2. 检查是否重复
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("userAccount", userAccount);
+        QueryWrapper queryWrapper = QueryWrapper.create().eq("userAccount", userAccount);
         long count = this.mapper.selectCountByQuery(queryWrapper);
         if (count > 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
+        }
+        // 兼容历史逻辑删除数据仍占用唯一键的情况
+        User deletedUser = this.mapper.selectDeletedByUserAccount(userAccount);
+        if (deletedUser != null) {
+            renameDeletedUserAccount(deletedUser);
         }
         // 3. 加密
         String encryptPassword = getEncryptPassword(userPassword);
@@ -145,6 +152,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>  implements U
     }
 
     @Override
+    public boolean updateMyUser(UserUpdateMyRequest userUpdateMyRequest, HttpServletRequest request) {
+        if (userUpdateMyRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = this.getLoginUser(request);
+        User updateUser = new User();
+        updateUser.setId(loginUser.getId());
+        updateUser.setUserName(userUpdateMyRequest.getUserName());
+        updateUser.setUserAvatar(userUpdateMyRequest.getUserAvatar());
+        updateUser.setUserProfile(userUpdateMyRequest.getUserProfile());
+        return this.updateById(updateUser);
+    }
+
+    @Override
     public UserVO getUserVO(User user) {
         if (user == null) {
             return null;
@@ -181,5 +202,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>  implements U
                 .like("userName", userName)
                 .like("userProfile", userProfile)
                 .orderBy(sortField, "ascend".equals(sortOrder));
+    }
+
+    private void renameDeletedUserAccount(User user) {
+        String deletedUserAccount = String.format("%s_deleted_%s", user.getUserAccount(), IdUtil.getSnowflakeNextIdStr());
+        int updateRows = this.mapper.updateUserAccountById(user.getId(), deletedUserAccount);
+        if (updateRows <= 0) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "释放已删除账号失败");
+        }
     }
 }

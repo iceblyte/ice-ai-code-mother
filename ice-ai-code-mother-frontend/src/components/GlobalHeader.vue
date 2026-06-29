@@ -1,6 +1,7 @@
 <template>
   <a-layout-header class="header">
     <a-row :wrap="false">
+      <!-- 左侧：Logo和标题 -->
       <a-col flex="200px">
         <RouterLink to="/">
           <div class="header-left">
@@ -9,6 +10,7 @@
           </div>
         </RouterLink>
       </a-col>
+      <!-- 中间：导航菜单 -->
       <a-col flex="auto">
         <a-menu
           v-model:selectedKeys="selectedKeys"
@@ -17,6 +19,7 @@
           @click="handleMenuClick"
         />
       </a-col>
+      <!-- 右侧：用户操作区域 -->
       <a-col>
         <div class="user-login-status">
           <div v-if="loginUserStore.loginUser.id">
@@ -52,21 +55,22 @@
 import { computed, h, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { type MenuProps, message } from 'ant-design-vue'
-import { LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
+import { LogoutOutlined, UserOutlined, HomeOutlined } from '@ant-design/icons-vue'
 import { useLoginUserStore } from '@/stores/loginUser'
 import { userLogout } from '@/api/userController'
 import checkAccess from '@/access/checkAccess'
 import ACCESS_ENUM from '@/access/accessEnum'
 import appRouter from '@/router'
 
-const router = useRouter()
 const route = useRoute()
 const loginUserStore = useLoginUserStore()
+const router = useRouter()
 const selectedKeys = ref<string[]>([route.path])
 
 const originItems: MenuProps['items'] = [
   {
     key: '/',
+    icon: () => h(HomeOutlined),
     label: '主页',
     title: '主页',
   },
@@ -79,6 +83,11 @@ const originItems: MenuProps['items'] = [
     key: '/admin/userManage',
     label: '用户管理',
     title: '用户管理',
+  },
+  {
+    key: '/admin/appManage',
+    label: '应用管理',
+    title: '应用管理',
   },
   {
     key: 'others',
@@ -120,14 +129,17 @@ const menuItems = computed<MenuProps['items']>(() => {
   })
 })
 
+// 处理菜单点击
 const handleMenuClick: MenuProps['onClick'] = (e) => {
   const key = e.key as string
   selectedKeys.value = [key]
+  // 跳转到对应页面
   if (key.startsWith('/')) {
     router.push(key)
   }
 }
 
+// 退出登录
 const doLogout = async () => {
   const res = await userLogout()
   if (res.data.code === 0) {

@@ -1,5 +1,6 @@
 <template>
   <div id="userManagePage">
+    <!-- 搜索表单 -->
     <a-form layout="inline" :model="searchParams" @finish="doSearch">
       <a-form-item label="账号">
         <a-input v-model:value="searchParams.userAccount" placeholder="输入账号" />
@@ -12,9 +13,8 @@
       </a-form-item>
     </a-form>
     <a-divider />
-
+    <!-- 表格 -->
     <a-table
-      row-key="id"
       :columns="columns"
       :data-source="data"
       :pagination="pagination"
@@ -22,13 +22,15 @@
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'userAvatar'">
-          <a-image v-if="record.userAvatar" :src="record.userAvatar" :width="80" />
-          <span v-else>-</span>
+          <a-image :src="record.userAvatar" :width="120" />
         </template>
         <template v-else-if="column.dataIndex === 'userRole'">
-          <a-tag :color="record.userRole === 'admin' ? 'green' : 'blue'">
-            {{ record.userRole === 'admin' ? '管理员' : '普通用户' }}
-          </a-tag>
+          <div v-if="record.userRole === 'admin'">
+            <a-tag color="green">管理员</a-tag>
+          </div>
+          <div v-else>
+            <a-tag color="blue">普通用户</a-tag>
+          </div>
         </template>
         <template v-else-if="column.dataIndex === 'createTime'">
           {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}
@@ -70,7 +72,6 @@
     </a-modal>
   </div>
 </template>
-
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import { deleteUser, listUserVoByPage, updateUser } from '@/api/userController'
@@ -134,11 +135,13 @@ const editForm = reactive<API.UserUpdateRequest>({
   userRole: 'user',
 })
 
+// 搜索条件
 const searchParams = reactive<API.UserQueryRequest>({
   pageNum: 1,
   pageSize: 10,
 })
 
+// 获取数据
 const fetchData = async () => {
   const res = await listUserVoByPage({
     ...searchParams,
@@ -151,27 +154,32 @@ const fetchData = async () => {
   }
 }
 
+// 分页参数
 const pagination = computed(() => {
   return {
     current: searchParams.pageNum ?? 1,
     pageSize: searchParams.pageSize ?? 10,
     total: total.value,
     showSizeChanger: true,
-    showTotal: (value: number) => `共 ${value} 条`,
+    showTotal: (total: number) => `共 ${total} 条`,
   }
 })
 
+// 表格分页变化时的操作
 const doTableChange = (page: { current: number; pageSize: number }) => {
   searchParams.pageNum = page.current
   searchParams.pageSize = page.pageSize
   fetchData()
 }
 
+// 搜索数据
 const doSearch = () => {
+  // 重置页码
   searchParams.pageNum = 1
   fetchData()
 }
 
+// 删除数据
 const doDelete = async (id?: number) => {
   if (!id) {
     return
@@ -179,12 +187,14 @@ const doDelete = async (id?: number) => {
   const res = await deleteUser({ id })
   if (res.data.code === 0) {
     message.success('删除成功')
+    // 刷新数据
     await fetchData()
   } else {
     message.error('删除失败，' + res.data.message)
   }
 }
 
+// 打开编辑弹窗
 const openEditModal = (record: API.UserVO) => {
   editForm.id = record.id
   editForm.userName = record.userName
@@ -194,6 +204,7 @@ const openEditModal = (record: API.UserVO) => {
   editModalOpen.value = true
 }
 
+// 提交编辑
 const handleEditSubmit = async () => {
   const res = await updateUser({
     ...editForm,
@@ -207,6 +218,7 @@ const handleEditSubmit = async () => {
   }
 }
 
+// 页面加载时请求一次
 onMounted(() => {
   fetchData()
 })
@@ -214,6 +226,8 @@ onMounted(() => {
 
 <style scoped>
 #userManagePage {
-  width: min(1200px, 100%);
+  padding: 24px;
+  background: white;
+  margin-top: 16px;
 }
 </style>

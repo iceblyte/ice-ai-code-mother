@@ -22,6 +22,12 @@
             </template>
             修改
           </a-button>
+          <a-button @click="showVersionCompare = true">
+            <template #icon>
+              <BranchesOutlined />
+            </template>
+            版本对比
+          </a-button>
           <a-popconfirm
             title="确定要删除这个应用吗？"
             @confirm="handleDelete"
@@ -39,12 +45,15 @@
       </div>
     </div>
   </a-modal>
+
+  <AppVersionCompareModal v-model:open="showVersionCompare" :app-id="app?.id" />
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+import { computed, ref } from 'vue'
+import { EditOutlined, DeleteOutlined, BranchesOutlined } from '@ant-design/icons-vue'
 import UserInfo from './UserInfo.vue'
+import AppVersionCompareModal from './AppVersionCompareModal.vue'
 import { formatTime } from '@/utils/time'
 
 interface Props {
@@ -64,6 +73,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<Emits>()
+const showVersionCompare = ref(false)
 
 const visible = computed({
   get: () => props.open,

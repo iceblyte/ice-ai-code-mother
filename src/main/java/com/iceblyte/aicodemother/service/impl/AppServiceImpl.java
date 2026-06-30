@@ -6,13 +6,17 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.iceblyte.aicodemother.constant.AppConstant;
+import com.iceblyte.aicodemother.constant.UserConstant;
 import com.iceblyte.aicodemother.core.AiCodeGeneratorFacade;
 import com.iceblyte.aicodemother.exception.BusinessException;
 import com.iceblyte.aicodemother.exception.ErrorCode;
 import com.iceblyte.aicodemother.exception.ThrowUtils;
 import com.iceblyte.aicodemother.model.dto.app.AppQueryRequest;
+import com.iceblyte.aicodemother.model.dto.app.AppVersionCompareRequest;
 import com.iceblyte.aicodemother.model.entity.User;
 import com.iceblyte.aicodemother.model.enums.CodeGenTypeEnum;
+import com.iceblyte.aicodemother.model.vo.AppVersionCompareVO;
+import com.iceblyte.aicodemother.model.vo.AppVersionVO;
 import com.iceblyte.aicodemother.model.vo.AppVO;
 import com.iceblyte.aicodemother.model.vo.UserVO;
 import com.iceblyte.aicodemother.service.UserService;
@@ -26,8 +30,15 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +51,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppService{
+
+    private static final String CURRENT_VERSION_KEY = "current";
 
     @Resource
     private UserService userService;
@@ -115,6 +128,65 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
     }
 
     @Override
+    public List<AppVersionVO> listAppVersions(Long appId, User loginUser) {
+        App app = getAndCheckVersionPermission(appId, loginUser);
+        List<AppVersionVO> versionList = new ArrayList<>();
+        File currentDir = getCurrentCodeDir(app);
+        if (currentDir.exists() && currentDir.isDirectory()) {
+            AppVersionVO currentVersion = new AppVersionVO();
+            currentVersion.setVersionKey(CURRENT_VERSION_KEY);
+            currentVersion.setVersionName("当前版本");
+            currentVersion.setCreateTime(toLocalDateTime(currentDir.lastModified()));
+            currentVersion.setCurrent(true);
+            versionList.add(currentVersion);
+        }
+        File historyRootDir = getHistoryRootDir(app);
+        File[] historyDirs = historyRootDir.listFiles(File::isDirectory);
+        if (historyDirs != null) {
+            for (File historyDir : historyDirs) {
+                AppVersionVO version = new AppVersionVO();
+                version.setVersionKey(historyDir.getName());
+                version.setVersionName("历史版本 " + historyDir.getName());
+                version.setCreateTime(parseVersionTime(historyDir.getName(), historyDir.lastModified()));
+                version.setCurrent(false);
+                versionList.add(version);
+            }
+        }
+        versionList.sort(Comparator.comparing(AppVersionVO::getCreateTime).reversed());
+        return versionList;
+    }
+
+    @Override
+    public AppVersionCompareVO compareAppVersion(AppVersionCompareRequest request, User loginUser) {
+        ThrowUtils.throwIf(request == null, ErrorCode.PARAMS_ERROR);
+        Long appId = request.getAppId();
+        ThrowUtils.throwIf(appId == null || appId <= 0, ErrorCode.PARAMS_ERROR, "应用 ID 不能为空");
+        App app = getAndCheckVersionPermission(appId, loginUser);
+        File oldVersionDir = resolveVersionDir(app, request.getOldVersionKey());
+        File newVersionDir = resolveVersionDir(app, request.getNewVersionKey());
+        ThrowUtils.throwIf(!oldVersionDir.exists() || !oldVersionDir.isDirectory(), ErrorCode.NOT_FOUND_ERROR, "旧版本不存在");
+        ThrowUtils.throwIf(!newVersionDir.exists() || !newVersionDir.isDirectory(), ErrorCode.NOT_FOUND_ERROR, "新版本不存在");
+
+        List<String> fileList = collectComparableFiles(oldVersionDir, newVersionDir);
+        ThrowUtils.throwIf(fileList.isEmpty(), ErrorCode.NOT_FOUND_ERROR, "暂无可对比的代码文件");
+        String filePath = StrUtil.blankToDefault(request.getFilePath(), fileList.get(0));
+        ThrowUtils.throwIf(!fileList.contains(filePath), ErrorCode.PARAMS_ERROR, "文件路径无效");
+
+        String oldContent = readVersionFile(oldVersionDir, filePath);
+        String newContent = readVersionFile(newVersionDir, filePath);
+        int[] diffCounts = countLineDiff(oldContent, newContent);
+
+        AppVersionCompareVO compareVO = new AppVersionCompareVO();
+        compareVO.setFileList(fileList);
+        compareVO.setFilePath(filePath);
+        compareVO.setOldContent(oldContent);
+        compareVO.setNewContent(newContent);
+        compareVO.setRemovals(diffCounts[0]);
+        compareVO.setAdditions(diffCounts[1]);
+        return compareVO;
+    }
+
+    @Override
     public AppVO getAppVO(App app) {
         if (app == null) {
             return null;
@@ -129,6 +201,111 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
             appVO.setUser(userVO);
         }
         return appVO;
+    }
+
+    private App getAndCheckVersionPermission(Long appId, User loginUser) {
+        ThrowUtils.throwIf(loginUser == null, ErrorCode.NOT_LOGIN_ERROR, "用户未登录");
+        ThrowUtils.throwIf(appId == null || appId <= 0, ErrorCode.PARAMS_ERROR, "应用 ID 不能为空");
+        App app = this.getById(appId);
+        ThrowUtils.throwIf(app == null, ErrorCode.NOT_FOUND_ERROR, "应用不存在");
+        boolean isOwner = app.getUserId().equals(loginUser.getId());
+        boolean isAdmin = UserConstant.ADMIN_ROLE.equals(loginUser.getUserRole());
+        if (!isOwner && !isAdmin) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "无权限查看版本对比");
+        }
+        return app;
+    }
+
+    private File getCurrentCodeDir(App app) {
+        String dirName = app.getCodeGenType() + "_" + app.getId();
+        return new File(AppConstant.CODE_OUTPUT_ROOT_DIR + File.separator + dirName);
+    }
+
+    private File getHistoryRootDir(App app) {
+        String dirName = app.getCodeGenType() + "_" + app.getId();
+        return new File(AppConstant.CODE_VERSION_ROOT_DIR + File.separator + dirName);
+    }
+
+    private File resolveVersionDir(App app, String versionKey) {
+        if (CURRENT_VERSION_KEY.equals(versionKey)) {
+            return getCurrentCodeDir(app);
+        }
+        ThrowUtils.throwIf(StrUtil.isBlank(versionKey), ErrorCode.PARAMS_ERROR, "版本标识不能为空");
+        ThrowUtils.throwIf(!versionKey.matches("\\d{17}"), ErrorCode.PARAMS_ERROR, "版本标识无效");
+        return new File(getHistoryRootDir(app), versionKey);
+    }
+
+    private List<String> collectComparableFiles(File oldVersionDir, File newVersionDir) {
+        Set<String> fileSet = new LinkedHashSet<>();
+        collectTextFiles(oldVersionDir.toPath(), oldVersionDir.toPath(), fileSet);
+        collectTextFiles(newVersionDir.toPath(), newVersionDir.toPath(), fileSet);
+        return fileSet.stream().sorted().collect(Collectors.toList());
+    }
+
+    private void collectTextFiles(Path rootPath, Path currentPath, Set<String> fileSet) {
+        if (!Files.exists(currentPath)) {
+            return;
+        }
+        try (var stream = Files.list(currentPath)) {
+            stream.forEach(path -> {
+                if (Files.isDirectory(path)) {
+                    collectTextFiles(rootPath, path, fileSet);
+                    return;
+                }
+                String filename = path.getFileName().toString().toLowerCase();
+                if (filename.endsWith(".html") || filename.endsWith(".css") || filename.endsWith(".js")
+                        || filename.endsWith(".ts") || filename.endsWith(".json") || filename.endsWith(".md")
+                        || filename.endsWith(".txt")) {
+                    fileSet.add(rootPath.relativize(path).toString().replace(File.separatorChar, '/'));
+                }
+            });
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "读取版本文件失败");
+        }
+    }
+
+    private String readVersionFile(File versionDir, String relativeFilePath) {
+        try {
+            Path rootPath = versionDir.toPath().toAbsolutePath().normalize();
+            Path filePath = rootPath.resolve(relativeFilePath).normalize();
+            if (!filePath.startsWith(rootPath) || !Files.exists(filePath) || Files.isDirectory(filePath)) {
+                return "";
+            }
+            return Files.readString(filePath, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "读取版本文件内容失败");
+        }
+    }
+
+    private int[] countLineDiff(String oldContent, String newContent) {
+        String[] oldLines = oldContent.split("\\R", -1);
+        String[] newLines = newContent.split("\\R", -1);
+        int oldLength = oldLines.length;
+        int newLength = newLines.length;
+        int[][] dp = new int[oldLength + 1][newLength + 1];
+        for (int i = oldLength - 1; i >= 0; i--) {
+            for (int j = newLength - 1; j >= 0; j--) {
+                if (oldLines[i].equals(newLines[j])) {
+                    dp[i][j] = dp[i + 1][j + 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i + 1][j], dp[i][j + 1]);
+                }
+            }
+        }
+        int sameLines = dp[0][0];
+        return new int[]{oldLength - sameLines, newLength - sameLines};
+    }
+
+    private LocalDateTime toLocalDateTime(long timestamp) {
+        return LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
+    }
+
+    private LocalDateTime parseVersionTime(String versionKey, long fallbackTimestamp) {
+        try {
+            return LocalDateTime.parse(versionKey, DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+        } catch (Exception e) {
+            return toLocalDateTime(fallbackTimestamp);
+        }
     }
 
     @Override

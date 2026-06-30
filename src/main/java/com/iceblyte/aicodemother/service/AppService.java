@@ -1,7 +1,10 @@
 package com.iceblyte.aicodemother.service;
 
 import com.iceblyte.aicodemother.model.dto.app.AppQueryRequest;
+import com.iceblyte.aicodemother.model.dto.app.AppVersionCompareRequest;
 import com.iceblyte.aicodemother.model.entity.User;
+import com.iceblyte.aicodemother.model.vo.AppVersionCompareVO;
+import com.iceblyte.aicodemother.model.vo.AppVersionVO;
 import com.iceblyte.aicodemother.model.vo.AppVO;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
@@ -35,6 +38,24 @@ public interface AppService extends IService<App> {
      * @return 应用部署地址
      */
     String deployApp(Long appId, User loginUser);
+
+    /**
+     * 获取应用代码版本列表
+     *
+     * @param appId     应用 id
+     * @param loginUser 登录用户
+     * @return 版本列表
+     */
+    List<AppVersionVO> listAppVersions(Long appId, User loginUser);
+
+    /**
+     * 对比应用代码版本
+     *
+     * @param request   对比请求
+     * @param loginUser 登录用户
+     * @return 对比结果
+     */
+    AppVersionCompareVO compareAppVersion(AppVersionCompareRequest request, User loginUser);
 
     /**
      * 获取应用封装类

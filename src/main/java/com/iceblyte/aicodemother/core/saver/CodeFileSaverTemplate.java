@@ -10,6 +10,8 @@ import com.iceblyte.aicodemother.model.enums.CodeGenTypeEnum;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 抽象代码文件保存器 - 模板方法模式
@@ -33,9 +35,13 @@ public abstract class CodeFileSaverTemplate<T> {
         validateInput(result);
         // 2. 构建基于 appId 的目录
         String baseDirPath = buildUniqueDir(appId);
-        // 3. 保存文件（具体实现由子类提供）
+        // 3. 归档旧版本，避免覆盖后无法对比历史代码
+        archiveOldVersion(baseDirPath);
+        // 4. 清理当前目录，确保删除的文件不会残留
+        FileUtil.clean(baseDirPath);
+        // 5. 保存文件（具体实现由子类提供）
         saveFiles(result, baseDirPath);
-        // 4. 返回目录文件对象
+        // 6. 返回目录文件对象
         return new File(baseDirPath);
     }
 
@@ -65,6 +71,23 @@ public abstract class CodeFileSaverTemplate<T> {
         String dirPath = FILE_SAVE_ROOT_DIR + File.separator + uniqueDirName;
         FileUtil.mkdir(dirPath);
         return dirPath;
+    }
+
+    /**
+     * 归档当前代码目录，后续可用于版本对比
+     *
+     * @param baseDirPath 当前代码目录
+     */
+    private void archiveOldVersion(String baseDirPath) {
+        File baseDir = new File(baseDirPath);
+        File[] files = baseDir.listFiles();
+        if (!baseDir.exists() || files == null || files.length == 0) {
+            return;
+        }
+        String appDirName = baseDir.getName();
+        String versionKey = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+        String versionDirPath = AppConstant.CODE_VERSION_ROOT_DIR + File.separator + appDirName + File.separator + versionKey;
+        FileUtil.copyContent(baseDir, new File(versionDirPath), true);
     }
 
     /**

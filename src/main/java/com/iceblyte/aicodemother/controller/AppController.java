@@ -17,8 +17,11 @@ import com.iceblyte.aicodemother.model.dto.app.AppAdminUpdateRequest;
 import com.iceblyte.aicodemother.model.dto.app.AppDeployRequest;
 import com.iceblyte.aicodemother.model.dto.app.AppQueryRequest;
 import com.iceblyte.aicodemother.model.dto.app.AppUpdateRequest;
+import com.iceblyte.aicodemother.model.dto.app.AppVersionCompareRequest;
 import com.iceblyte.aicodemother.model.entity.User;
 import com.iceblyte.aicodemother.model.enums.CodeGenTypeEnum;
+import com.iceblyte.aicodemother.model.vo.AppVersionCompareVO;
+import com.iceblyte.aicodemother.model.vo.AppVersionVO;
 import com.iceblyte.aicodemother.model.vo.AppVO;
 import com.iceblyte.aicodemother.service.UserService;
 import com.mybatisflex.core.paginate.Page;
@@ -112,6 +115,35 @@ public class AppController {
         // 调用服务部署应用
         String deployUrl = appService.deployApp(appId, loginUser);
         return ResultUtils.success(deployUrl);
+    }
+
+    /**
+     * 获取应用代码版本列表
+     *
+     * @param appId   应用 id
+     * @param request 请求
+     * @return 版本列表
+     */
+    @GetMapping("/version/list")
+    public BaseResponse<List<AppVersionVO>> listAppVersions(@RequestParam Long appId, HttpServletRequest request) {
+        ThrowUtils.throwIf(appId == null || appId <= 0, ErrorCode.PARAMS_ERROR, "应用 ID 不能为空");
+        User loginUser = userService.getLoginUser(request);
+        return ResultUtils.success(appService.listAppVersions(appId, loginUser));
+    }
+
+    /**
+     * 对比应用代码版本
+     *
+     * @param appVersionCompareRequest 对比请求
+     * @param request                  请求
+     * @return 对比结果
+     */
+    @PostMapping("/version/compare")
+    public BaseResponse<AppVersionCompareVO> compareAppVersion(@RequestBody AppVersionCompareRequest appVersionCompareRequest,
+                                                               HttpServletRequest request) {
+        ThrowUtils.throwIf(appVersionCompareRequest == null, ErrorCode.PARAMS_ERROR);
+        User loginUser = userService.getLoginUser(request);
+        return ResultUtils.success(appService.compareAppVersion(appVersionCompareRequest, loginUser));
     }
 
     /**

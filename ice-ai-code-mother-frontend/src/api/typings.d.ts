@@ -34,6 +34,29 @@ declare namespace API {
     appName?: string
   }
 
+  type AppVersionCompareRequest = {
+    appId?: number
+    oldVersionKey?: string
+    newVersionKey?: string
+    filePath?: string
+  }
+
+  type AppVersionCompareVO = {
+    fileList?: string[]
+    filePath?: string
+    oldContent?: string
+    newContent?: string
+    additions?: number
+    removals?: number
+  }
+
+  type AppVersionVO = {
+    versionKey?: string
+    versionName?: string
+    createTime?: string
+    current?: boolean
+  }
+
   type AppVO = {
     id?: number
     appName?: string
@@ -52,6 +75,18 @@ declare namespace API {
   type BaseResponseAppVO = {
     code?: number
     data?: AppVO
+    message?: string
+  }
+
+  type BaseResponseAppVersionCompareVO = {
+    code?: number
+    data?: AppVersionCompareVO
+    message?: string
+  }
+
+  type BaseResponseListAppVersionVO = {
+    code?: number
+    data?: AppVersionVO[]
     message?: string
   }
 
@@ -118,6 +153,10 @@ declare namespace API {
 
   type getAppVOByIdParams = {
     id: number
+  }
+
+  type listAppVersionsParams = {
+    appId: number
   }
 
   type getUserByIdParams = {

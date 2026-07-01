@@ -86,35 +86,6 @@ export async function chatToGenCode(
   })
 }
 
-/** 此处后端没有提供注释 GET /app/version/list */
-export async function listAppVersions(
-  params: API.listAppVersionsParams,
-  options?: { [key: string]: any }
-) {
-  return request<API.BaseResponseListAppVersionVO>('/app/version/list', {
-    method: 'GET',
-    params: {
-      ...params,
-    },
-    ...(options || {}),
-  })
-}
-
-/** 此处后端没有提供注释 POST /app/version/compare */
-export async function compareAppVersion(
-  body: API.AppVersionCompareRequest,
-  options?: { [key: string]: any }
-) {
-  return request<API.BaseResponseAppVersionCompareVO>('/app/version/compare', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  })
-}
-
 /** 此处后端没有提供注释 POST /app/delete */
 export async function deleteApp(body: API.DeleteRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponseBoolean>('/app/delete', {
@@ -192,6 +163,36 @@ export async function updateApp(body: API.AppUpdateRequest, options?: { [key: st
       'Content-Type': 'application/json',
     },
     data: body,
+    ...(options || {}),
+  })
+}
+
+/** 此处后端没有提供注释 POST /app/version/compare */
+export async function compareAppVersion(
+  body: API.AppVersionCompareRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponseAppVersionCompareVO>('/app/version/compare', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  })
+}
+
+/** 此处后端没有提供注释 GET /app/version/list */
+export async function listAppVersions(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.listAppVersionsParams,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponseListAppVersionVO>('/app/version/list', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
     ...(options || {}),
   })
 }

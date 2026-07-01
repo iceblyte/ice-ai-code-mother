@@ -72,27 +72,27 @@ declare namespace API {
     user?: UserVO
   }
 
-  type BaseResponseAppVO = {
-    code?: number
-    data?: AppVO
-    message?: string
-  }
-
   type BaseResponseAppVersionCompareVO = {
     code?: number
     data?: AppVersionCompareVO
     message?: string
   }
 
-  type BaseResponseListAppVersionVO = {
+  type BaseResponseAppVO = {
     code?: number
-    data?: AppVersionVO[]
+    data?: AppVO
     message?: string
   }
 
   type BaseResponseBoolean = {
     code?: number
     data?: boolean
+    message?: string
+  }
+
+  type BaseResponseListAppVersionVO = {
+    code?: number
+    data?: AppVersionVO[]
     message?: string
   }
 
@@ -111,6 +111,12 @@ declare namespace API {
   type BaseResponsePageAppVO = {
     code?: number
     data?: PageAppVO
+    message?: string
+  }
+
+  type BaseResponsePageChatHistory = {
+    code?: number
+    data?: PageChatHistory
     message?: string
   }
 
@@ -138,6 +144,30 @@ declare namespace API {
     message?: string
   }
 
+  type ChatHistory = {
+    id?: number
+    message?: string
+    messageType?: string
+    appId?: number
+    userId?: number
+    createTime?: string
+    updateTime?: string
+    isDelete?: number
+  }
+
+  type ChatHistoryQueryRequest = {
+    pageNum?: number
+    pageSize?: number
+    sortField?: string
+    sortOrder?: string
+    id?: number
+    message?: string
+    messageType?: string
+    appId?: number
+    userId?: number
+    lastCreateTime?: string
+  }
+
   type chatToGenCodeParams = {
     appId: number
     message: string
@@ -155,16 +185,22 @@ declare namespace API {
     id: number
   }
 
-  type listAppVersionsParams = {
-    appId: number
-  }
-
   type getUserByIdParams = {
     id: number
   }
 
   type getUserVOByIdParams = {
     id: number
+  }
+
+  type listAppChatHistoryParams = {
+    appId: number
+    pageSize?: number
+    lastCreateTime?: string
+  }
+
+  type listAppVersionsParams = {
+    appId: number
   }
 
   type LoginUserVO = {
@@ -180,6 +216,15 @@ declare namespace API {
 
   type PageAppVO = {
     records?: AppVO[]
+    pageNumber?: number
+    pageSize?: number
+    totalPage?: number
+    totalRow?: number
+    optimizeCountQuery?: boolean
+  }
+
+  type PageChatHistory = {
+    records?: ChatHistory[]
     pageNumber?: number
     pageSize?: number
     totalPage?: number
@@ -247,18 +292,18 @@ declare namespace API {
     checkPassword?: string
   }
 
+  type UserUpdateMyRequest = {
+    userName?: string
+    userAvatar?: string
+    userProfile?: string
+  }
+
   type UserUpdateRequest = {
     id?: number
     userName?: string
     userAvatar?: string
     userProfile?: string
     userRole?: string
-  }
-
-  type UserUpdateMyRequest = {
-    userName?: string
-    userAvatar?: string
-    userProfile?: string
   }
 
   type UserVO = {

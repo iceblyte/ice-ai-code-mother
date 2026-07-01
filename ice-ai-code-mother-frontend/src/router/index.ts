@@ -9,6 +9,7 @@ import AppEditPage from '@/pages/app/AppEditPage.vue'
 import UserProfilePage from '@/pages/user/UserProfilePage.vue'
 import NoAuthPage from '@/pages/NoAuthPage.vue'
 import ACCESS_ENUM from '@/access/accessEnum'
+import ChatManagePage from '@/pages/admin/ChatManagePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -54,6 +55,14 @@ const router = createRouter({
       path: '/admin/appManage',
       name: '应用管理',
       component: AppManagePage,
+      meta: {
+        access: ACCESS_ENUM.ADMIN,
+      },
+    },
+    {
+      path: '/admin/chatManage',
+      name: '对话管理',
+      component: ChatManagePage,
       meta: {
         access: ACCESS_ENUM.ADMIN,
       },

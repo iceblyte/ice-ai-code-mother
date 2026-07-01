@@ -75,6 +75,18 @@
             <artifactId>langchain4j-reactor</artifactId>
             <version>1.2.0-beta8</version>
         </dependency>
+        <!-- langchain4j-Redis 支持 -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-community-redis-spring-boot-starter</artifactId>
+            <version>1.2.0-beta8</version>
+        </dependency>
+
+        <!-- Caffeine 本地缓存支持 -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
 
         <!--hutool 工具库-->
         <dependency>

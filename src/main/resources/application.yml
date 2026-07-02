@@ -3,10 +3,19 @@ spring:
     name: ice-ai-code-mother-backend
   profiles:
     active: local
+  # session 配置
+  session:
+    store-type: redis
+    # session 30 天过期
+    timeout: 2592000
 server:
   port: 8123
   servlet:
     context-path: /api
+    # cookie 30 天过期
+    session:
+      cookie:
+        max-age: 2592000
 
 # springdoc-openapi
 springdoc:

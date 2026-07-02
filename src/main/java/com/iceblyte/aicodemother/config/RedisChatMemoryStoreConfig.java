@@ -18,6 +18,8 @@ public class RedisChatMemoryStoreConfig {
 
     private int port;
 
+    private String username;
+
     private String password;
 
     private long ttl;
@@ -27,7 +29,7 @@ public class RedisChatMemoryStoreConfig {
         return RedisChatMemoryStore.builder()
                 .host(host)
                 .port(port)
-                .user("default")
+                .user(username)
                 .password(password)
                 .ttl(ttl)
                 .build();

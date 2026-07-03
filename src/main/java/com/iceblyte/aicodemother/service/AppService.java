@@ -1,5 +1,6 @@
 package com.iceblyte.aicodemother.service;
 
+import com.iceblyte.aicodemother.model.dto.app.AppAddRequest;
 import com.iceblyte.aicodemother.model.dto.app.AppQueryRequest;
 import com.iceblyte.aicodemother.model.dto.app.AppVersionCompareRequest;
 import com.iceblyte.aicodemother.model.entity.User;
@@ -29,6 +30,15 @@ public interface AppService extends IService<App> {
      * @return 代码
      */
     Flux<String> chatToGenCode(Long appId, String message, User loginUser);
+
+    /**
+     * 创建应用
+     *
+     * @param appAddRequest 应用添加请求
+     * @param loginUser     登录用户
+     * @return 应用ID
+     */
+    Long createApp(AppAddRequest appAddRequest, User loginUser);
 
     /**
      * 部署应用

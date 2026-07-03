@@ -11,6 +11,13 @@
           <span class="info-label">创建时间：</span>
           <span>{{ formatTime(app?.createTime) }}</span>
         </div>
+        <div class="info-item">
+          <span class="info-label">生成类型：</span>
+          <a-tag v-if="app?.codeGenType" color="blue">
+            {{ formatCodeGenType(app.codeGenType) }}
+          </a-tag>
+          <span v-else>未知类型</span>
+        </div>
       </div>
 
       <!-- 操作栏（仅本人或管理员可见） -->
@@ -55,6 +62,7 @@ import { EditOutlined, DeleteOutlined, BranchesOutlined } from '@ant-design/icon
 import UserInfo from './UserInfo.vue'
 import AppVersionCompareModal from './AppVersionCompareModal.vue'
 import { formatTime } from '@/utils/time'
+import { formatCodeGenType } from '@/utils/codeGenTypes.ts'
 
 interface Props {
   open: boolean

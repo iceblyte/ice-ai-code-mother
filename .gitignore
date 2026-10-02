@@ -36,3 +36,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### AI & Local Tools ###
+.lithe
+.workbuddy

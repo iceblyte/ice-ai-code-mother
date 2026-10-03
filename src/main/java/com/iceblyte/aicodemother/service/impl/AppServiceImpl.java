@@ -10,6 +10,7 @@ import com.iceblyte.aicodemother.ai.AiCodeGenTypeRoutingServiceFactory;
 import com.iceblyte.aicodemother.constant.AppConstant;
 import com.iceblyte.aicodemother.constant.UserConstant;
 import com.iceblyte.aicodemother.core.AiCodeGeneratorFacade;
+import com.iceblyte.aicodemother.core.builder.BuildProgressManager;
 import com.iceblyte.aicodemother.core.builder.VueProjectBuilder;
 import com.iceblyte.aicodemother.core.handler.StreamHandlerExecutor;
 import com.iceblyte.aicodemother.exception.BusinessException;
@@ -79,6 +80,9 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
 
     @Resource
     private VueProjectBuilder vueProjectBuilder;
+
+    @Resource
+    private BuildProgressManager buildProgressManager;
 
     @Resource
     private ScreenshotService screenshotService;
@@ -164,6 +168,8 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
         // 7. Vue 项目特殊处理：执行构建
         CodeGenTypeEnum codeGenTypeEnum = CodeGenTypeEnum.getEnumByValue(codeGenType);
         if (codeGenTypeEnum == CodeGenTypeEnum.VUE_PROJECT) {
+            // 先取消进行中的异步构建，避免部署重建与后台构建并发读写同一项目目录
+            buildProgressManager.cancelBuild(appId);
             // Vue 项目需要构建
             boolean buildSuccess = vueProjectBuilder.buildProject(sourceDirPath);
             ThrowUtils.throwIf(!buildSuccess, ErrorCode.SYSTEM_ERROR, "Vue 项目构建失败，请检查代码和依赖");

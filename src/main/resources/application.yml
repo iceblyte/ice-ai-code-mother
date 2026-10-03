@@ -3,6 +3,10 @@ spring:
     name: ice-ai-code-mother-backend
   profiles:
     active: local
+  # 异步请求超时（SSE 流式接口：AI 生成流、Vue 构建进度流）
+  mvc:
+    async:
+      request-timeout: 600000
   # session 配置
   session:
     store-type: redis

@@ -20,14 +20,19 @@
           ghost
           @click="downloadCode"
           :loading="downloading"
-          :disabled="!isOwner && !isAdmin"
+          :disabled="(!isOwner && !isAdmin) || isBuilding"
         >
           <template #icon>
             <DownloadOutlined />
           </template>
           下载代码
         </a-button>
-        <a-button type="primary" @click="deployApp" :loading="deploying">
+        <a-button
+          type="primary"
+          @click="deployApp"
+          :loading="deploying"
+          :disabled="isBuilding"
+        >
           <template #icon>
             <CloudUploadOutlined />
           </template>
@@ -172,13 +177,27 @@
           </div>
         </div>
         <div class="preview-content">
-          <div v-if="!previewUrl && !isGenerating" class="preview-placeholder">
-            <div class="placeholder-icon">🌐</div>
-            <p>网站文件生成完成后将在这里展示</p>
-          </div>
-          <div v-else-if="isGenerating" class="preview-loading">
+          <div v-if="isGenerating" class="preview-loading">
             <a-spin size="large" />
             <p>正在生成网站...</p>
+          </div>
+          <div v-else-if="isBuilding" class="preview-building">
+            <a-spin size="large" />
+            <p class="build-status-text">{{ buildPhaseText || '正在构建项目...' }}</p>
+            <div v-if="buildLogs.length" class="build-log-panel">
+              <div v-for="(log, index) in buildLogs.slice(-8)" :key="index" class="build-log-line">
+                {{ log }}
+              </div>
+            </div>
+          </div>
+          <div v-else-if="buildError" class="preview-error">
+            <div class="error-icon">⚠️</div>
+            <p class="error-text">构建失败：{{ buildError }}</p>
+            <p class="error-hint">可在对话中继续修改后重新生成</p>
+          </div>
+          <div v-else-if="!previewUrl" class="preview-placeholder">
+            <div class="placeholder-icon">🌐</div>
+            <p>网站文件生成完成后将在这里展示</p>
           </div>
           <iframe
             v-else
@@ -255,9 +274,31 @@ interface Message {
   createTime?: string
 }
 
+// 构建进度 SSE 消息（与后端 BuildProgressMessage 协议对应）
+interface BuildProgressPayload {
+  type: 'progress' | 'log' | 'done'
+  appId?: number
+  phase?: string
+  status?: 'running' | 'success' | 'failed' | 'cancelled' | 'idle'
+  message?: string
+  line?: string
+  timestamp?: number
+}
+
 const messages = ref<Message[]>([])
 const userInput = ref('')
 const isGenerating = ref(false)
+
+// 构建进度相关
+const isBuilding = ref(false)
+const buildPhaseText = ref('')
+const buildLogs = ref<string[]>([])
+const buildError = ref('')
+const BUILD_LOG_MAX = 200
+
+// SSE 连接（组件卸载时需手动关闭）
+let generationEventSource: EventSource | null = null
+let buildEventSource: EventSource | null = null
 const messagesContainer = ref<HTMLElement>()
 
 // 对话历史相关
@@ -294,6 +335,11 @@ const isOwner = computed(() => {
 
 const isAdmin = computed(() => {
   return loginUserStore.loginUser.userRole === 'admin'
+})
+
+// 是否为 Vue 项目模式（需要异步构建 + 进度监听）
+const isVueProject = computed(() => {
+  return appInfo.value?.codeGenType === CodeGenTypeEnum.VUE_PROJECT
 })
 
 // 应用详情相关
@@ -477,8 +523,12 @@ const sendMessage = async () => {
 
 // 生成代码 - 使用 EventSource 处理流式响应
 const generateCode = async (userMessage: string, aiMessageIndex: number) => {
-  let eventSource: EventSource | null = null
   let streamCompleted = false
+
+  // 新一轮生成会让后端重新构建，先关闭旧的构建进度监听并重置构建状态
+  closeBuildWatch()
+  isBuilding.value = false
+  buildError.value = ''
 
   try {
     // 获取 axios 配置的 baseURL
@@ -493,14 +543,14 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
     const url = `${baseURL}/app/chat/gen/code?${params}`
 
     // 创建 EventSource 连接
-    eventSource = new EventSource(url, {
+    generationEventSource = new EventSource(url, {
       withCredentials: true,
     })
 
     let fullContent = ''
 
     // 处理接收到的消息
-    eventSource.onmessage = function (event) {
+    generationEventSource.onmessage = function (event) {
       if (streamCompleted) return
 
       try {
@@ -522,33 +572,28 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
     }
 
     // 处理done事件
-    eventSource.addEventListener('done', function () {
+    generationEventSource.addEventListener('done', function () {
       if (streamCompleted) return
 
       streamCompleted = true
       isGenerating.value = false
-      eventSource?.close()
+      generationEventSource?.close()
+      generationEventSource = null
 
-      // 延迟更新预览，确保后端已完成处理
-      setTimeout(async () => {
-        await fetchAppInfo()
-        updatePreview()
-      }, 1000)
+      onGenerationFinished()
     })
 
     // 处理错误
-    eventSource.onerror = function () {
+    generationEventSource.onerror = function () {
       if (streamCompleted || !isGenerating.value) return
       // 检查是否是正常的连接关闭
-      if (eventSource?.readyState === EventSource.CONNECTING) {
+      if (generationEventSource?.readyState === EventSource.CONNECTING) {
         streamCompleted = true
         isGenerating.value = false
-        eventSource?.close()
+        generationEventSource?.close()
+        generationEventSource = null
 
-        setTimeout(async () => {
-          await fetchAppInfo()
-          updatePreview()
-        }, 1000)
+        onGenerationFinished()
       } else {
         handleError(new Error('SSE连接错误'), aiMessageIndex)
       }
@@ -556,6 +601,95 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
   } catch (error) {
     console.error('创建 EventSource 失败：', error)
     handleError(error, aiMessageIndex)
+  }
+}
+
+// 生成结束后的处理：Vue 项目转异步构建进度监听，其余类型直接刷新预览
+const onGenerationFinished = () => {
+  if (isVueProject.value) {
+    // 后端已开始异步构建，订阅构建进度流
+    buildLogs.value = []
+    buildError.value = ''
+    watchBuildProgress()
+  } else {
+    // 延迟更新预览，确保后端已完成处理
+    setTimeout(async () => {
+      await fetchAppInfo()
+      updatePreview()
+    }, 1000)
+  }
+}
+
+// 关闭构建进度监听
+const closeBuildWatch = () => {
+  buildEventSource?.close()
+  buildEventSource = null
+}
+
+// 订阅构建进度（SSE）：收到 done 终态事件后由服务端结束流
+const watchBuildProgress = () => {
+  if (!appId.value) return
+  closeBuildWatch()
+
+  const baseURL = request.defaults.baseURL || API_BASE_URL
+  const url = `${baseURL}/build/progress?appId=${appId.value}`
+
+  buildEventSource = new EventSource(url, {
+    withCredentials: true,
+  })
+
+  // progress / log 消息走默认事件
+  buildEventSource.onmessage = function (event) {
+    try {
+      const payload: BuildProgressPayload = JSON.parse(event.data)
+      if (payload.type === 'progress') {
+        isBuilding.value = true
+        buildError.value = ''
+        if (payload.message) {
+          buildPhaseText.value = payload.message
+        }
+      } else if (payload.type === 'log' && payload.line) {
+        buildLogs.value.push(payload.line)
+        // 限制日志条数，避免内存无限增长
+        if (buildLogs.value.length > BUILD_LOG_MAX) {
+          buildLogs.value.splice(0, buildLogs.value.length - BUILD_LOG_MAX)
+        }
+      }
+    } catch (error) {
+      console.error('解析构建进度消息失败:', error)
+    }
+  }
+
+  // 终态事件
+  buildEventSource.addEventListener('done', (event) => {
+    closeBuildWatch()
+    isBuilding.value = false
+
+    let status = ''
+    let text = ''
+    try {
+      const payload: BuildProgressPayload = JSON.parse((event as MessageEvent).data)
+      status = payload.status || ''
+      text = payload.message || ''
+    } catch (error) {
+      console.error('解析构建终态消息失败:', error)
+    }
+
+    if (status === 'success') {
+      buildError.value = ''
+      message.success('项目构建完成')
+      // 构建产物已更新，强制刷新预览避免 iframe 缓存
+      updatePreview(true)
+    } else if (status === 'failed') {
+      buildError.value = text || '构建失败，请查看日志后重试'
+      message.error('构建失败')
+    }
+    // cancelled / idle：静默结束，不做额外处理
+  })
+
+  buildEventSource.onerror = function () {
+    // 连接异常：关闭监听。构建仍由后端继续执行，刷新页面可重新订阅进度
+    closeBuildWatch()
   }
 }
 
@@ -568,11 +702,14 @@ const handleError = (error: unknown, aiMessageIndex: number) => {
   isGenerating.value = false
 }
 
-// 更新预览
-const updatePreview = () => {
+// 更新预览（forceRefresh 时附加时间戳，强制 iframe 绕过缓存加载最新构建产物）
+const updatePreview = (forceRefresh = false) => {
   if (appId.value) {
     const codeGenType = appInfo.value?.codeGenType || CodeGenTypeEnum.HTML
-    const newPreviewUrl = getStaticPreviewUrl(codeGenType, appId.value)
+    let newPreviewUrl = getStaticPreviewUrl(codeGenType, appId.value)
+    if (forceRefresh) {
+      newPreviewUrl += (newPreviewUrl.includes('?') ? '&' : '?') + `t=${Date.now()}`
+    }
     previewUrl.value = newPreviewUrl
     previewReady.value = true
   }
@@ -731,8 +868,13 @@ const getInputPlaceholder = () => {
 }
 
 // 页面加载时获取应用信息
-onMounted(() => {
-  fetchAppInfo()
+onMounted(async () => {
+  await fetchAppInfo()
+
+  // Vue 项目：订阅构建进度（覆盖刷新页面时构建仍在进行 / 刚完成的情况）
+  if (isVueProject.value) {
+    watchBuildProgress()
+  }
 
   // 监听 iframe 消息
   window.addEventListener('message', (event) => {
@@ -742,7 +884,10 @@ onMounted(() => {
 
 // 清理资源
 onUnmounted(() => {
-  // EventSource 会在组件卸载时自动清理
+  // 手动关闭 SSE 连接（EventSource 不会随组件卸载自动关闭）
+  generationEventSource?.close()
+  generationEventSource = null
+  closeBuildWatch()
 })
 </script>
 
@@ -948,6 +1093,70 @@ onUnmounted(() => {
 
 .preview-loading p {
   margin-top: 16px;
+}
+
+/* 构建进行中 */
+.preview-building {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+  padding: 16px;
+}
+
+.build-status-text {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.build-log-panel {
+  margin-top: 12px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 180px;
+  overflow-y: auto;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.build-log-line {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* 构建失败 */
+.preview-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+  padding: 16px;
+}
+
+.error-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.error-text {
+  color: #e6423e;
+  font-size: 14px;
+}
+
+.error-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #999;
 }
 
 .preview-iframe {

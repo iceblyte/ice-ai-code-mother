@@ -9,7 +9,7 @@ import com.iceblyte.aicodemother.ai.model.message.AiResponseMessage;
 import com.iceblyte.aicodemother.ai.model.message.ToolExecutedMessage;
 import com.iceblyte.aicodemother.ai.model.message.ToolRequestMessage;
 import com.iceblyte.aicodemother.constant.AppConstant;
-import com.iceblyte.aicodemother.core.builder.VueProjectBuilder;
+import com.iceblyte.aicodemother.core.builder.BuildProgressManager;
 import com.iceblyte.aicodemother.core.parser.CodeParserExecutor;
 import com.iceblyte.aicodemother.core.saver.CodeFileSaverExecutor;
 import com.iceblyte.aicodemother.exception.BusinessException;
@@ -36,7 +36,7 @@ public class AiCodeGeneratorFacade {
     private AiCodeGeneratorServiceFactory aiCodeGeneratorServiceFactory;
 
     @Resource
-    private VueProjectBuilder vueProjectBuilder;
+    private BuildProgressManager buildProgressManager;
 
     /**
      * 统一入口：根据类型生成并保存代码（使用 appId）
@@ -90,6 +90,8 @@ public class AiCodeGeneratorFacade {
                 yield processCodeStream(codeStream, CodeGenTypeEnum.MULTI_FILE, appId);
             }
             case VUE_PROJECT -> {
+                // 新一轮生成会重写项目文件，先取消进行中的构建，避免并发读写同一目录
+                buildProgressManager.cancelBuild(appId);
                 TokenStream codeStream = aiCodeGeneratorService.generateVueProjectCodeStream(appId, userMessage);
                 yield processTokenStream(codeStream, appId);
             }
@@ -149,9 +151,10 @@ public class AiCodeGeneratorFacade {
                         sink.next(JSONUtil.toJsonStr(toolExecutedMessage));
                     })
                     .onCompleteResponse((ChatResponse response) -> {
-                        // 执行 Vue 项目构建（同步执行，确保预览时项目已就绪）
+                        // 异步构建 Vue 项目：不阻塞 AI 回调线程，SSE 连接随即结束；
+                        // 构建进度由前端通过 /build/progress 接口单独订阅
                         String projectPath = AppConstant.CODE_OUTPUT_ROOT_DIR + File.separator + "vue_project_" + appId;
-                        vueProjectBuilder.buildProject(projectPath);
+                        buildProgressManager.startBuild(appId, projectPath);
                         sink.complete();
                     })
                     .onError((Throwable error) -> {

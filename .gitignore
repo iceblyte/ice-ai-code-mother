@@ -40,3 +40,5 @@ build/
 ### AI & Local Tools ###
 .lithe
 .workbuddy
+.playwright-mcp
+docs

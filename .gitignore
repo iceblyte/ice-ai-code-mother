@@ -42,3 +42,4 @@ build/
 .workbuddy
 .playwright-mcp
 docs
+/sql/migrate_chat_history_message_to_mediumtext.sql

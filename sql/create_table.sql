@@ -55,7 +55,9 @@ create table app
 create table chat_history
 (
     id          bigint auto_increment comment 'id' primary key,
-    message     text                               not null comment '消息',
+    -- 使用 MEDIUMTEXT（16MB）而非 TEXT（64KB）：AI 生成整站代码的回复长度可达数百 KB，
+    -- TEXT 会导致 "Data too long for column 'message'" 写入失败（存量库见迁移脚本）
+    message     mediumtext                         not null comment '消息',
     messageType varchar(32)                        not null comment 'user/ai',
     appId       bigint                             not null comment '应用id',
     userId      bigint                             not null comment '创建用户id',

@@ -12,9 +12,18 @@ import 'highlight.js/styles/github.css'
 
 interface Props {
   content: string
+  /**
+   * 流式渲染中：跳过 highlight.js 语法高亮。
+   * 流式期间内容每个 chunk 都在增长，若每次都对累计全文做 hljs 高亮，
+   * 单个巨型代码块（如整站 HTML，可达数百 KB）会把主线程卡死。
+   * 流式期间仅做转义，streaming 置回 false 时本组件 computed 会重跑、一次性完成高亮。
+   */
+  streaming?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  streaming: false,
+})
 
 // 配置 markdown-it 实例
 const md: MarkdownIt = new MarkdownIt({
@@ -22,6 +31,10 @@ const md: MarkdownIt = new MarkdownIt({
   linkify: true,
   typographer: true,
   highlight: function (str: string, lang: string): string {
+    // 流式渲染期间跳过 hljs 高亮（这是流式卡顿的主要来源），仅做 HTML 转义
+    if (props.streaming) {
+      return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>'
+    }
     if (lang && hljs.getLanguage(lang)) {
       try {
         return (
@@ -38,7 +51,7 @@ const md: MarkdownIt = new MarkdownIt({
   },
 })
 
-// 计算渲染后的 Markdown
+// 计算渲染后的 Markdown（props.streaming 也是响应式依赖：翻转时会重跑、补上最终高亮）
 const renderedMarkdown = computed(() => {
   return md.render(props.content)
 })

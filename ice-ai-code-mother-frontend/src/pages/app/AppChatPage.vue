@@ -65,7 +65,11 @@
                 <a-avatar :src="aiAvatar" />
               </div>
               <div class="message-content">
-                <MarkdownRenderer v-if="message.content" :content="message.content" />
+                <MarkdownRenderer
+                  v-if="message.content"
+                  :content="message.content"
+                  :streaming="index === streamingMessageIndex"
+                />
                 <div v-if="message.loading" class="loading-indicator">
                   <a-spin size="small" />
                   <span>AI 正在思考...</span>
@@ -288,6 +292,14 @@ interface BuildProgressPayload {
 const messages = ref<Message[]>([])
 const userInput = ref('')
 const isGenerating = ref(false)
+// 正在流式输出的 AI 气泡下标：该气泡的 MarkdownRenderer 跳过语法高亮（流式性能优化），
+// 流结束/失败时置回 -1，组件会一次性补上最终高亮
+const streamingMessageIndex = ref(-1)
+
+// 流式内容渲染节流间隔（毫秒）：chunk 只累加，渲染按此间隔批量刷新。
+// 巨型回复（如整站 HTML，可达数百 KB）若每个 chunk 都全量 markdown 重渲染，
+// 会以 O(n²) 的主线程开销把页面卡死（本次修复的 Bug 根因）。
+const STREAM_RENDER_THROTTLE_MS = 150
 
 // 构建进度相关
 const isBuilding = ref(false)
@@ -553,7 +565,22 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
       withCredentials: true,
     })
 
+    // 本轮流式输出指向该 AI 气泡：MarkdownRenderer 流式期间跳过语法高亮
+    streamingMessageIndex.value = aiMessageIndex
+
     let fullContent = ''
+    let lastFlushAt = 0
+
+    // 流式内容节流刷新：chunk 只累加到 fullContent，按间隔批量渲染 + 滚动。
+    // 直接每个 chunk 全量渲染会让巨型回复拖死主线程（页面卡死 bug 的根因）。
+    const flushStreamingContent = (force = false) => {
+      const now = Date.now()
+      if (!force && now - lastFlushAt < STREAM_RENDER_THROTTLE_MS) return
+      lastFlushAt = now
+      messages.value[aiMessageIndex].content = fullContent
+      messages.value[aiMessageIndex].loading = false
+      scrollToBottom()
+    }
 
     // 处理接收到的消息
     generationEventSource.onmessage = function (event) {
@@ -564,12 +591,10 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
         const parsed = JSON.parse(event.data)
         const content = parsed.d
 
-        // 拼接内容
+        // 拼接内容（渲染按 STREAM_RENDER_THROTTLE_MS 节流批量刷新）
         if (content !== undefined && content !== null) {
           fullContent += content
-          messages.value[aiMessageIndex].content = fullContent
-          messages.value[aiMessageIndex].loading = false
-          scrollToBottom()
+          flushStreamingContent()
         }
       } catch (error) {
         console.error('解析消息失败:', error)
@@ -582,6 +607,9 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
       if (streamCompleted) return
 
       streamCompleted = true
+      // 收尾：把节流缓冲的尾部内容一次性刷进气泡，并退出流式模式（补做最终语法高亮）
+      flushStreamingContent(true)
+      streamingMessageIndex.value = -1
       isGenerating.value = false
       generationEventSource?.close()
       generationEventSource = null
@@ -604,6 +632,7 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
         message.error(errorMessage)
 
         streamCompleted = true
+        streamingMessageIndex.value = -1
         isGenerating.value = false
         generationEventSource?.close()
       } catch (parseError) {
@@ -618,6 +647,8 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
       // 检查是否是正常的连接关闭
       if (generationEventSource?.readyState === EventSource.CONNECTING) {
         streamCompleted = true
+        flushStreamingContent(true)
+        streamingMessageIndex.value = -1
         isGenerating.value = false
         generationEventSource?.close()
         generationEventSource = null
@@ -646,6 +677,18 @@ const resumeGenerationIfRunning = () => {
 
   let aiMessageIndex = -1
   let fullContent = ''
+  let lastFlushAt = 0
+
+  // 与 generateCode 相同的流式渲染节流（快照帧可能很大，实时增量 chunk 密集）
+  const flushStreamingContent = (force = false) => {
+    if (aiMessageIndex === -1) return
+    const now = Date.now()
+    if (!force && now - lastFlushAt < STREAM_RENDER_THROTTLE_MS) return
+    lastFlushAt = now
+    messages.value[aiMessageIndex].content = fullContent
+    messages.value[aiMessageIndex].loading = false
+    scrollToBottom()
+  }
 
   // 无生成任务：静默关闭
   resumeEventSource.addEventListener('idle', () => {
@@ -676,11 +719,11 @@ const resumeGenerationIfRunning = () => {
           loading: true,
         })
         isGenerating.value = true
+        // 本轮流式输出指向该 AI 气泡：MarkdownRenderer 流式期间跳过语法高亮
+        streamingMessageIndex.value = aiMessageIndex
       }
       fullContent += content
-      messages.value[aiMessageIndex].content = fullContent
-      messages.value[aiMessageIndex].loading = false
-      scrollToBottom()
+      flushStreamingContent()
     } catch (error) {
       console.error('解析续接消息失败:', error)
     }
@@ -690,6 +733,9 @@ const resumeGenerationIfRunning = () => {
   resumeEventSource.addEventListener('done', () => {
     resumeEventSource?.close()
     resumeEventSource = null
+    // 收尾：把节流缓冲的尾部内容一次性刷进气泡，并退出流式模式（补做最终语法高亮）
+    flushStreamingContent(true)
+    streamingMessageIndex.value = -1
     isGenerating.value = false
     onGenerationFinished()
   })
@@ -709,6 +755,7 @@ const resumeGenerationIfRunning = () => {
     }
     resumeEventSource?.close()
     resumeEventSource = null
+    streamingMessageIndex.value = -1
     isGenerating.value = false
   })
 
@@ -716,6 +763,11 @@ const resumeGenerationIfRunning = () => {
   resumeEventSource.onerror = () => {
     resumeEventSource?.close()
     resumeEventSource = null
+    if (aiMessageIndex !== -1) {
+      // 已有流式气泡时退出流式模式，补做最终语法高亮（内容保持已收到的部分）
+      flushStreamingContent(true)
+      streamingMessageIndex.value = -1
+    }
   }
 }
 
@@ -727,11 +779,11 @@ const onGenerationFinished = () => {
     buildError.value = ''
     watchBuildProgress()
   } else {
-    // 延迟更新预览，确保后端已完成处理
-    setTimeout(async () => {
-      await fetchAppInfo()
-      updatePreview()
-    }, 1000)
+    // AI 回复已通过流式输出在本地气泡中完整展示（无需重拉历史），
+    // 应用信息（codeGenType 等）页面加载时已就绪（无需重新拉取），
+    // 生成进度订阅是「离开页面后回来」场景专用的，正常收尾不该再订阅一次。
+    // 仅需延迟刷新预览加载站点最新产物（带时间戳绕过 iframe 缓存）。
+    setTimeout(() => updatePreview(true), 1000)
   }
 }
 
@@ -815,6 +867,7 @@ const handleError = (error: unknown, aiMessageIndex: number) => {
   messages.value[aiMessageIndex].loading = false
   message.error('生成失败，请重试')
   isGenerating.value = false
+  streamingMessageIndex.value = -1
 }
 
 // 更新预览（forceRefresh 时附加时间戳，强制 iframe 绕过缓存加载最新构建产物）

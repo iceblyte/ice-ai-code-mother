@@ -34,7 +34,7 @@ langchain4j:
       max-tokens: 8192
       # strict-json-schema: true
       # response-format: json_object
-      max-retries: 0
+      max-retries: 3
       log-requests: true
       log-responses: true
 

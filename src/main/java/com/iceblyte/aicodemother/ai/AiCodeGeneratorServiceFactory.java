@@ -3,6 +3,7 @@ package com.iceblyte.aicodemother.ai;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.iceblyte.aicodemother.ai.guardrail.PromptSafetyInputGuardrail;
+import com.iceblyte.aicodemother.ai.guardrail.RetryOutputGuardrail;
 import com.iceblyte.aicodemother.ai.tools.ToolManager;
 import com.iceblyte.aicodemother.exception.BusinessException;
 import com.iceblyte.aicodemother.exception.ErrorCode;
@@ -114,7 +115,9 @@ public class AiCodeGeneratorServiceFactory {
                         .hallucinatedToolNameStrategy(toolExecutionRequest -> ToolExecutionResultMessage.from(
                                 toolExecutionRequest, "Error: there is no tool called " + toolExecutionRequest.name()
                         ))
+                        .maxSequentialToolsInvocations(20)  // 最多连续调用 20 次工具
                         .inputGuardrails(new PromptSafetyInputGuardrail())  // 添加输入护轨
+//                        .outputGuardrails(new RetryOutputGuardrail())  // 添加输出护轨，为了流式输出，这里不使用
                         .build();
             }
             // HTML 和多文件生成使用默认模型
@@ -126,6 +129,7 @@ public class AiCodeGeneratorServiceFactory {
                         .streamingChatModel(openAiStreamingChatModel)
                         .chatMemory(chatMemory)
                         .inputGuardrails(new PromptSafetyInputGuardrail())  // 添加输入护轨
+//                        .outputGuardrails(new RetryOutputGuardrail())  // 添加输出护轨，为了流式输出，这里不使用
                         .build();
             }
             default -> throw new BusinessException(ErrorCode.SYSTEM_ERROR,

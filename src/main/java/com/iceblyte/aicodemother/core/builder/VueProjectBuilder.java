@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
 
 /**
  * 构建 Vue 项目
@@ -40,6 +41,24 @@ public class VueProjectBuilder {
      * npm run build 超时时间（秒）
      */
     private static final int BUILD_TIMEOUT_SECONDS = 180;
+
+    /**
+     * npm 可执行文件（默认按操作系统选择，可通过包级构造器注入，供测试替换为假脚本）
+     */
+    private final String npmExecutable;
+
+    public VueProjectBuilder() {
+        this(null);
+    }
+
+    /**
+     * 测试用构造器：注入自定义 npm 可执行文件路径（传 null 使用系统默认）
+     */
+    VueProjectBuilder(String npmExecutable) {
+        this.npmExecutable = (npmExecutable != null && !npmExecutable.isBlank())
+                ? npmExecutable
+                : (isWindows() ? "npm.cmd" : "npm");
+    }
 
     /**
      * 构建 Vue 项目（不关心进度）
@@ -79,7 +98,8 @@ public class VueProjectBuilder {
             return false;
         }
         listener.onPhase(BuildPhaseEnum.INSTALL, BuildStatusEnum.RUNNING, "正在安装依赖（npm install）...");
-        if (!executeNpmCommand(projectDir, "install", BuildPhaseEnum.INSTALL, listener, INSTALL_TIMEOUT_SECONDS)) {
+        if (!executeNpmCommand(projectDir, "install", BuildPhaseEnum.INSTALL, listener, INSTALL_TIMEOUT_SECONDS,
+                () -> isDirectoryNotEmpty(new File(projectDir, "node_modules")), "依赖目录 node_modules")) {
             log.error("npm install 执行失败");
             return false;
         }
@@ -89,7 +109,8 @@ public class VueProjectBuilder {
             return false;
         }
         listener.onPhase(BuildPhaseEnum.BUILD, BuildStatusEnum.RUNNING, "正在构建项目（npm run build）...");
-        if (!executeNpmCommand(projectDir, "run build", BuildPhaseEnum.BUILD, listener, BUILD_TIMEOUT_SECONDS)) {
+        if (!executeNpmCommand(projectDir, "run build", BuildPhaseEnum.BUILD, listener, BUILD_TIMEOUT_SECONDS,
+                () -> new File(projectDir, "dist/index.html").exists(), "构建产物 dist/index.html")) {
             log.error("npm run build 执行失败");
             return false;
         }
@@ -108,19 +129,22 @@ public class VueProjectBuilder {
     /**
      * 执行一条 npm 命令：实时转发输出日志，超时由看门狗线程强制终止进程
      *
-     * @param projectDir    工作目录
-     * @param commandArgs   npm 子命令（如 "install"、"run build"）
-     * @param phase         所属构建阶段（用于失败时上报阶段）
-     * @param listener      进度监听器
-     * @param timeoutSeconds 超时时间（秒）
+     * @param projectDir         工作目录
+     * @param commandArgs        npm 子命令（如 "install"、"run build"）
+     * @param phase              所属构建阶段（用于失败时上报阶段）
+     * @param listener           进度监听器
+     * @param timeoutSeconds     超时时间（秒）
+     * @param artifactVerifier   产物验证器（退出码非零时的容错判定；为 null 则不容错）
+     * @param artifactDescription 产物描述（日志用，如 "依赖目录 node_modules"）
      * @return 是否执行成功
      */
     private boolean executeNpmCommand(File projectDir, String commandArgs, BuildPhaseEnum phase,
-                                       BuildProgressListener listener, int timeoutSeconds) {
+                                       BuildProgressListener listener, int timeoutSeconds,
+                                       BooleanSupplier artifactVerifier, String artifactDescription) {
         Process process = null;
         try {
             List<String> command = new ArrayList<>();
-            command.add(isWindows() ? "npm.cmd" : "npm");
+            command.add(npmExecutable);
             for (String arg : commandArgs.split("\\s+")) {
                 command.add(arg);
             }
@@ -173,6 +197,14 @@ public class VueProjectBuilder {
                 log.info("命令执行成功: npm {}", commandArgs);
                 return true;
             }
+            // 产物验证容错：Node/npm 在部分 Windows 环境会在工作完成后、进程退出阶段崩溃
+            // （如 0xC0000409 / 退出码 -1073740791），此时产物已就绪，仅看退出码会把实际成功的命令误判为失败
+            if (artifactVerifier != null && artifactVerifier.getAsBoolean()) {
+                log.warn("命令退出码异常（{}）但{}已就绪，视为成功: npm {}", exitCode, artifactDescription, commandArgs);
+                listener.onLog(String.format("[提示] npm %s 退出码异常（%d），但%s已就绪，继续后续步骤",
+                        commandArgs, exitCode, artifactDescription));
+                return true;
+            }
             log.error("命令执行失败，退出码: {}（npm {}）", exitCode, commandArgs);
             listener.onPhase(phase, BuildStatusEnum.FAILED,
                     String.format("命令执行失败（退出码 %d）: npm %s", exitCode, commandArgs));
@@ -192,6 +224,17 @@ public class VueProjectBuilder {
                 process.destroyForcibly();
             }
         }
+    }
+
+    /**
+     * 判断目录存在且非空（产物验证用）
+     */
+    private static boolean isDirectoryNotEmpty(File dir) {
+        if (!dir.isDirectory()) {
+            return false;
+        }
+        String[] children = dir.list();
+        return children != null && children.length > 0;
     }
 
     /**

@@ -43,3 +43,4 @@ build/
 .playwright-mcp
 docs
 /sql/migrate_chat_history_message_to_mediumtext.sql
+/sql/migrate_app_init_prompt_to_mediumtext.sql

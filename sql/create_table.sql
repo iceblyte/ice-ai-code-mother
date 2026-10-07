@@ -36,7 +36,9 @@ create table app
     id           bigint auto_increment comment 'id' primary key,
     appName      varchar(256)                       null comment '应用名称',
     cover        varchar(512)                       null comment '应用封面',
-    initPrompt   text                               null comment '应用初始化的 prompt',
+    -- 使用 MEDIUMTEXT（16MB）而非 TEXT（64KB）：initPrompt 承载用户应用初始化提示词，
+    -- TEXT 有 64KB 写入失败风险（存量库见迁移脚本）
+    initPrompt   mediumtext                         null comment '应用初始化的 prompt',
     codeGenType  varchar(64)                        null comment '代码生成类型（枚举）',
     deployKey    varchar(64)                        null comment '部署标识',
     deployedTime datetime                           null comment '部署时间',
@@ -58,7 +60,7 @@ create table chat_history
     -- 使用 MEDIUMTEXT（16MB）而非 TEXT（64KB）：AI 生成整站代码的回复长度可达数百 KB，
     -- TEXT 会导致 "Data too long for column 'message'" 写入失败（存量库见迁移脚本）
     message     mediumtext                         not null comment '消息',
-    messageType varchar(32)                        not null comment 'user/ai',
+    messageType varchar(32)                        not null comment 'user/ai/error',
     appId       bigint                             not null comment '应用id',
     userId      bigint                             not null comment '创建用户id',
     createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',

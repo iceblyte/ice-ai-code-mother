@@ -32,6 +32,14 @@ public interface AppService extends IService<App> {
     Flux<String> chatToGenCode(Long appId, String message, User loginUser);
 
     /**
+     * 校验用户是否有权访问该应用（仅创建者或管理员），无权则抛业务异常
+     *
+     * @param appId     应用id
+     * @param loginUser 登录用户
+     */
+    void checkAppOwner(Long appId, User loginUser);
+
+    /**
      * 创建应用
      *
      * @param appAddRequest 应用添加请求

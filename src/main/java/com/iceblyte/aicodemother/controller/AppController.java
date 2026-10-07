@@ -7,8 +7,10 @@ import com.iceblyte.aicodemother.annotation.AuthCheck;
 import com.iceblyte.aicodemother.common.BaseResponse;
 import com.iceblyte.aicodemother.common.DeleteRequest;
 import com.iceblyte.aicodemother.common.ResultUtils;
+import com.iceblyte.aicodemother.common.SseErrorEventUtils;
 import com.iceblyte.aicodemother.constant.AppConstant;
 import com.iceblyte.aicodemother.constant.UserConstant;
+import com.iceblyte.aicodemother.core.generation.GenerationProgressManager;
 import com.iceblyte.aicodemother.exception.BusinessException;
 import com.iceblyte.aicodemother.exception.ErrorCode;
 import com.iceblyte.aicodemother.exception.ThrowUtils;
@@ -32,6 +34,7 @@ import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
@@ -58,6 +61,7 @@ import java.util.Map;
  *
  * @author <a href="https://github.com/iceblyte">程序员iceblyte</a>
  */
+@Slf4j
 @RestController
 @RequestMapping("/app")
 public class AppController {
@@ -70,6 +74,9 @@ public class AppController {
 
     @Resource
     private ProjectDownloadService projectDownloadService;
+
+    @Resource
+    private GenerationProgressManager generationProgressManager;
 
     /**
      * 应用聊天生成代码（流式 SSE）
@@ -101,6 +108,17 @@ public class AppController {
                             .data(jsonData)
                             .build();
                 })
+                .onErrorResume(error -> {
+                    // 流内错误（AI 调用失败 / 工具执行失败 / 回复落库失败等）：
+                    // 完整堆栈只记录日志，对前端发固定友好文案的 business-error 事件（不透传原始异常）；
+                    // 错误转为正常信号后流正常 complete，下方 concatWith 的 done 帧照常发出，前端得以正常关闭连接。
+                    log.error("SSE 流式代码生成失败, appId: {}", appId, error);
+                    return Flux.just(ServerSentEvent.<String>builder()
+                            .event(SseErrorEventUtils.BUSINESS_ERROR_EVENT)
+                            .data(SseErrorEventUtils.buildBusinessErrorData(
+                                    ErrorCode.SYSTEM_ERROR.getCode(), SseErrorEventUtils.STREAM_ERROR_MESSAGE))
+                            .build());
+                })
                 .concatWith(Mono.just(
                         // 发送结束事件
                         ServerSentEvent.<String>builder()
@@ -108,6 +126,56 @@ public class AppController {
                                 .data("")
                                 .build()
                 ));
+    }
+
+    /**
+     * 订阅应用的代码生成进度（流式 SSE）
+     * <p>
+     * 用于「生成过程中离开页面后回来」的场景：生成由服务端独立驱动、不随页面断开而中断。
+     * 三种响应形态：
+     * <ul>
+     *     <li>idle：无生成任务，前端无需处理</li>
+     *     <li>finished：生成已结束（AI 回复已入库），前端重新拉取对话历史</li>
+     *     <li>进行中：先一条快照 data 帧（已生成的全部内容），再实时 data 帧，最后 done 帧</li>
+     * </ul>
+     *
+     * @param appId   应用 ID
+     * @param request 请求对象
+     * @return 生成进度流
+     */
+    @GetMapping(value = "/chat/gen/progress", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<String>> subscribeGenerationProgress(@RequestParam Long appId,
+                                                                     HttpServletRequest request) {
+        // 参数校验
+        ThrowUtils.throwIf(appId == null || appId <= 0, ErrorCode.PARAMS_ERROR, "应用ID无效");
+        User loginUser = userService.getLoginUser(request);
+        // 权限校验：仅应用创建者/管理员可订阅（生成内容即对话内容，与对话历史查看权限一致）
+        appService.checkAppOwner(appId, loginUser);
+        GenerationProgressManager.Subscription subscription = generationProgressManager.subscribe(appId);
+        return switch (subscription.state()) {
+            case IDLE -> Flux.just(ServerSentEvent.<String>builder().event("idle").data("{}").build());
+            case FINISHED -> Flux.just(ServerSentEvent.<String>builder().event("finished").data("{}").build());
+            case RUNNING -> subscription.flux()
+                    .map(chunk -> {
+                        // 与 /chat/gen/code 相同的数据帧格式：{"d": 内容}
+                        Map<String, String> wrapper = Map.of("d", chunk);
+                        return ServerSentEvent.<String>builder()
+                                .data(JSONUtil.toJsonStr(wrapper))
+                                .build();
+                    })
+                    .onErrorResume(error -> {
+                        // 与 /chat/gen/code 相同的流内错误处理：转 business-error 事件，不透传原始异常
+                        log.error("SSE 生成进度订阅失败, appId: {}", appId, error);
+                        return Flux.just(ServerSentEvent.<String>builder()
+                                .event(SseErrorEventUtils.BUSINESS_ERROR_EVENT)
+                                .data(SseErrorEventUtils.buildBusinessErrorData(
+                                        ErrorCode.SYSTEM_ERROR.getCode(), SseErrorEventUtils.STREAM_ERROR_MESSAGE))
+                                .build());
+                    })
+                    .concatWith(Mono.just(
+                            ServerSentEvent.<String>builder().event("done").data("").build()
+                    ));
+        };
     }
 
     /**

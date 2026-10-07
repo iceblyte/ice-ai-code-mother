@@ -422,19 +422,25 @@ const fetchAppInfo = async () => {
 
       // 先加载对话历史
       await loadChatHistory()
+      // 检查是否有进行中的生成（生成过程中离开页面后，服务端仍在独立生成），有则续接流式输出。
+      // 即将自动发送初始提示词的场景跳过（避免与新生成的直连流重复渲染）。
+      const willAutoSendInitial = !!(
+        appInfo.value.initPrompt &&
+        isOwner.value &&
+        messages.value.length === 0 &&
+        historyLoaded.value
+      )
+      if (!willAutoSendInitial) {
+        resumeGenerationIfRunning()
+      }
       // 如果有至少2条对话记录，展示对应的网站
       if (messages.value.length >= 2) {
         updatePreview()
       }
       // 检查是否需要自动发送初始提示词
       // 只有在是自己的应用且没有对话历史时才自动发送
-      if (
-        appInfo.value.initPrompt &&
-        isOwner.value &&
-        messages.value.length === 0 &&
-        historyLoaded.value
-      ) {
-        await sendInitialMessage(appInfo.value.initPrompt)
+      if (willAutoSendInitial) {
+        await sendInitialMessage(appInfo.value.initPrompt!)
       }
     } else {
       message.error('获取应用信息失败')
@@ -624,6 +630,92 @@ const generateCode = async (userMessage: string, aiMessageIndex: number) => {
   } catch (error) {
     console.error('创建 EventSource 失败：', error)
     handleError(error, aiMessageIndex)
+  }
+}
+
+// 续接进行中的生成（SSE）：生成过程中离开页面后回来，服务端仍在独立生成，此处续看流式输出。
+// 三种后端响应：idle（无任务，静默关闭）/ finished（已完成，重拉历史）/ 进行中（快照 + 实时流 + done）。
+let resumeEventSource: EventSource | null = null
+
+const resumeGenerationIfRunning = () => {
+  const baseURL = request.defaults.baseURL || API_BASE_URL
+  const url = `${baseURL}/app/chat/gen/progress?appId=${appId.value}`
+  resumeEventSource = new EventSource(url, {
+    withCredentials: true,
+  })
+
+  let aiMessageIndex = -1
+  let fullContent = ''
+
+  // 无生成任务：静默关闭
+  resumeEventSource.addEventListener('idle', () => {
+    resumeEventSource?.close()
+    resumeEventSource = null
+  })
+
+  // 生成已结束（AI 回复已入库）：重新拉取对话历史展示完整回复
+  resumeEventSource.addEventListener('finished', () => {
+    resumeEventSource?.close()
+    resumeEventSource = null
+    lastCreateTime.value = undefined
+    loadChatHistory()
+  })
+
+  // 进行中：首帧为已生成内容的合并快照，之后为实时增量（与生成流相同的数据格式 {"d": ...}）
+  resumeEventSource.onmessage = function (event) {
+    try {
+      const parsed = JSON.parse(event.data)
+      const content = parsed.d
+      if (content === undefined || content === null) return
+      if (aiMessageIndex === -1) {
+        // 首次收到内容：创建 AI 气泡
+        aiMessageIndex = messages.value.length
+        messages.value.push({
+          type: 'ai',
+          content: '',
+          loading: true,
+        })
+        isGenerating.value = true
+      }
+      fullContent += content
+      messages.value[aiMessageIndex].content = fullContent
+      messages.value[aiMessageIndex].loading = false
+      scrollToBottom()
+    } catch (error) {
+      console.error('解析续接消息失败:', error)
+    }
+  }
+
+  // 生成完成：与 generateCode 相同的收尾（Vue 项目转构建进度监听，其余刷新预览）
+  resumeEventSource.addEventListener('done', () => {
+    resumeEventSource?.close()
+    resumeEventSource = null
+    isGenerating.value = false
+    onGenerationFinished()
+  })
+
+  // 生成失败（服务端 business-error 事件，与 generateCode 相同的展示方式）
+  resumeEventSource.addEventListener('business-error', (event: MessageEvent) => {
+    try {
+      const errorData = JSON.parse(event.data)
+      const errorMessage = errorData.message || '生成过程中出现错误'
+      if (aiMessageIndex !== -1) {
+        messages.value[aiMessageIndex].content = `❌ ${errorMessage}`
+        messages.value[aiMessageIndex].loading = false
+      }
+      message.error(errorMessage)
+    } catch (parseError) {
+      console.error('解析续接错误事件失败:', parseError)
+    }
+    resumeEventSource?.close()
+    resumeEventSource = null
+    isGenerating.value = false
+  })
+
+  // 连接异常：静默关闭（回看失败不影响已加载的对话历史）
+  resumeEventSource.onerror = () => {
+    resumeEventSource?.close()
+    resumeEventSource = null
   }
 }
 
@@ -910,6 +1002,8 @@ onUnmounted(() => {
   // 手动关闭 SSE 连接（EventSource 不会随组件卸载自动关闭）
   generationEventSource?.close()
   generationEventSource = null
+  resumeEventSource?.close()
+  resumeEventSource = null
   closeBuildWatch()
 })
 </script>

@@ -1,5 +1,6 @@
 package com.iceblyte.aicodemother.core.handler;
 
+import com.iceblyte.aicodemother.common.SseErrorEventUtils;
 import com.iceblyte.aicodemother.model.entity.User;
 import com.iceblyte.aicodemother.model.enums.ChatHistoryMessageTypeEnum;
 import com.iceblyte.aicodemother.service.ChatHistoryService;
@@ -39,9 +40,16 @@ public class SimpleTextStreamHandler {
                     chatHistoryService.addChatMessage(appId, aiResponse, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
                 })
                 .doOnError(error -> {
-                    // 如果AI回复失败，也要记录错误消息
-                    String errorMessage = "AI回复失败: " + error.getMessage();
-                    chatHistoryService.addChatMessage(appId, errorMessage, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
+                    // 原始异常只记录到日志（完整堆栈），库与前端只见固定友好文案，防止信息泄露
+                    log.error("AI 流式回复失败, appId: {}", appId, error);
+                    try {
+                        // 以 ERROR 类型入库：loadChatHistoryToMemory 白名单只回灌 USER/AI，错误消息不会污染 AI 记忆
+                        chatHistoryService.addChatMessage(appId, SseErrorEventUtils.STREAM_ERROR_MESSAGE,
+                                ChatHistoryMessageTypeEnum.ERROR.getValue(), loginUser.getId());
+                    } catch (Exception e) {
+                        // 存库失败不能再向下游抛二级异常，避免掩盖原始错误信号
+                        log.error("错误消息入库失败, appId: {}", appId, e);
+                    }
                 });
     }
 }

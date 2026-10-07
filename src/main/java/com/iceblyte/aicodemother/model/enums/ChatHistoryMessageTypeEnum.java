@@ -7,7 +7,13 @@ import lombok.Getter;
 public enum ChatHistoryMessageTypeEnum {
 
     USER("用户", "user"),
-    AI("AI", "ai");
+    AI("AI", "ai"),
+    /**
+     * 错误占位消息：AI 回复失败时入库，仅用于对话历史展示。
+     * 注意：loadChatHistoryToMemory 采用白名单机制只回灌 USER/AI 消息，
+     * ERROR 类型不会进入 AI 记忆，防止错误文案污染上下文。
+     */
+    ERROR("错误", "error");
 
     private final String text;
 

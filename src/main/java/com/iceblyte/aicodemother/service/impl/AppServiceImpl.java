@@ -12,6 +12,7 @@ import com.iceblyte.aicodemother.constant.UserConstant;
 import com.iceblyte.aicodemother.core.AiCodeGeneratorFacade;
 import com.iceblyte.aicodemother.core.builder.BuildProgressManager;
 import com.iceblyte.aicodemother.core.builder.VueProjectBuilder;
+import com.iceblyte.aicodemother.core.generation.GenerationProgressManager;
 import com.iceblyte.aicodemother.core.handler.StreamHandlerExecutor;
 import com.iceblyte.aicodemother.exception.BusinessException;
 import com.iceblyte.aicodemother.exception.ErrorCode;
@@ -85,6 +86,9 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
     private BuildProgressManager buildProgressManager;
 
     @Resource
+    private GenerationProgressManager generationProgressManager;
+
+    @Resource
     private ScreenshotService screenshotService;
 
     @Resource
@@ -112,8 +116,22 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
         chatHistoryService.addChatMessage(appId, message, ChatHistoryMessageTypeEnum.USER.getValue(), loginUser.getId());
         // 6. 调用 AI 生成代码（流式）
         Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
-        // 7. 收集 AI 响应内容并在完成后记录到对话历史
-        return streamHandlerExecutor.doExecute(codeStream, chatHistoryService, appId, loginUser, codeGenTypeEnum);
+        // 7. 收集 AI 响应内容并在完成后记录到对话历史；经生成进度管理器跟踪：
+        //    由服务端内部订阅独立驱动生成，SSE 观察者断开（用户离开页面）不中断生成，
+        //    用户回到页面后可通过 /chat/gen/progress 端点续看流式输出
+        Flux<String> handledStream = streamHandlerExecutor.doExecute(codeStream, chatHistoryService, appId, loginUser, codeGenTypeEnum);
+        return generationProgressManager.track(appId, handledStream);
+    }
+
+    @Override
+    public void checkAppOwner(Long appId, User loginUser) {
+        ThrowUtils.throwIf(appId == null || appId <= 0, ErrorCode.PARAMS_ERROR, "应用 ID 不能为空");
+        ThrowUtils.throwIf(loginUser == null, ErrorCode.NOT_LOGIN_ERROR);
+        App app = this.getById(appId);
+        ThrowUtils.throwIf(app == null, ErrorCode.NOT_FOUND_ERROR, "应用不存在");
+        boolean isAdmin = UserConstant.ADMIN_ROLE.equals(loginUser.getUserRole());
+        ThrowUtils.throwIf(!isAdmin && !app.getUserId().equals(loginUser.getId()),
+                ErrorCode.NO_AUTH_ERROR, "无权限访问该应用");
     }
 
     @Override
@@ -127,15 +145,36 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>  implements AppS
         app.setUserId(loginUser.getId());
         // 应用名称暂时为 initPrompt 前 12 位
         app.setAppName(initPrompt.substring(0, Math.min(initPrompt.length(), 12)));
-        // 使用 AI 智能选择代码生成类型（多例模式）
-        AiCodeGenTypeRoutingService routingService = aiCodeGenTypeRoutingServiceFactory.createAiCodeGenTypeRoutingService();
-        CodeGenTypeEnum selectedCodeGenType = routingService.routeCodeGenType(initPrompt);
+        // 使用 AI 智能选择代码生成类型（路由失败时兜底为 HTML，避免路由服务故障导致创建应用直接失败）
+        CodeGenTypeEnum selectedCodeGenType = routeCodeGenTypeWithFallback(initPrompt);
         app.setCodeGenType(selectedCodeGenType.getValue());
         // 插入数据库
         boolean result = this.save(app);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         log.info("应用创建成功，ID: {}, 类型: {}", app.getId(), selectedCodeGenType.getValue());
         return app.getId();
+    }
+
+    /**
+     * AI 路由选择代码生成类型，带兜底。
+     * 路由服务异常（API key 失效 / 网络抖动 / 输出解析失败）或返回空时，
+     * 降级为最保守的 HTML 类型并记录警告日志，保证创建应用主流程不被路由故障阻断。
+     *
+     * @param initPrompt 用户初始化提示词
+     * @return 代码生成类型（永不返回 null）
+     */
+    CodeGenTypeEnum routeCodeGenTypeWithFallback(String initPrompt) {
+        try {
+            AiCodeGenTypeRoutingService routingService = aiCodeGenTypeRoutingServiceFactory.createAiCodeGenTypeRoutingService();
+            CodeGenTypeEnum result = routingService.routeCodeGenType(initPrompt);
+            if (result != null) {
+                return result;
+            }
+            log.warn("AI 路由返回空，兜底使用 HTML 类型, initPrompt: {}", initPrompt);
+        } catch (Exception e) {
+            log.warn("AI 路由失败，兜底使用 HTML 类型, initPrompt: {}", initPrompt, e);
+        }
+        return CodeGenTypeEnum.HTML;
     }
 
     @Override

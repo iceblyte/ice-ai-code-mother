@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>无权访问 · CodeNow</title>
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+<style>
+  .auth-page { display: flex; align-items: center; justify-content: center; padding: var(--sp-10) var(--sp-6); }
+  .na-wrap { text-align: center; max-width: 420px; }
+  .na-code { font-family: var(--font-mono); font-size: 88px; line-height: 1; font-weight: var(--weight-heavy); letter-spacing: -.02em; color: var(--text-muted); }
+  .na-actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); justify-content: center; }
+</style>
+</head>
+<body data-chrome="auth" data-page="auth">
+<div data-chrome="header"></div>
+
+<main class="auth-page">
+  <div class="na-wrap">
+    <p class="na-code">403</p>
+    <h1 class="u-h1 u-mt-6" data-i18n="na.title"></h1>
+    <p class="u-caption u-mt-4" data-i18n="na.desc"></p>
+    <div class="na-actions u-mt-6">
+      <a class="cn-btn cn-btn--primary" href="index.html" data-i18n="na.home"></a>
+      <a class="cn-btn cn-btn--ghost" href="login.html" data-i18n="na.switch"></a>
+    </div>
+  </div>
+</main>
+
+<div data-chrome="footer"></div>
+
+<script>
+I18N.define({
+  'na.title': '无权访问该页面',
+  'na.desc': '你没有权限访问该页面，请联系管理员或切换账号。',
+  'na.home': '返回首页',
+  'na.switch': '登录其他账号'
+}, {
+  'na.title': 'Access denied',
+  'na.desc': "You don't have permission to view this page. Contact an admin or switch accounts.",
+  'na.home': 'Back to home',
+  'na.switch': 'Sign in with another account'
+});
+</script>
+</body>
+</html>

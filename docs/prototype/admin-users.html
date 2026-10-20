@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>用户管理 · CodeNow</title>
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+<style>
+  .au-page { padding: var(--sp-8) 0 var(--sp-9); }
+  .au-toolbar { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+  .au-search { width: 100%; max-width: 320px; }
+  .au-sel { width: auto; min-width: 150px; }
+</style>
+</head>
+<body data-chrome="admin" data-page="userManage">
+<div data-chrome="header"></div>
+
+<main class="u-container au-page">
+  <h1 class="u-h1" data-i18n="au.title"></h1>
+  <p class="u-caption u-mt-2" data-i18n="au.desc"></p>
+
+  <div class="au-toolbar u-mt-6">
+    <input class="cn-input au-search" data-i18n-ph="au.phSearch">
+    <select class="cn-select au-sel">
+      <option selected data-i18n="au.roleAll"></option>
+      <option data-i18n="au.roleAdmin"></option>
+      <option data-i18n="au.roleUser"></option>
+    </select>
+    <select class="cn-select au-sel">
+      <option selected data-i18n="au.statusAll"></option>
+      <option data-i18n="au.statusActive"></option>
+      <option data-i18n="au.statusBanned"></option>
+    </select>
+    <span class="u-grow"></span>
+    <button class="cn-btn cn-btn--primary" data-i18n="au.newUser"></button>
+  </div>
+
+  <div class="cn-table--wrap u-mt-4">
+    <table class="cn-table">
+      <thead>
+        <tr>
+          <th data-i18n="au.cId"></th>
+          <th data-i18n="au.cUser"></th>
+          <th data-i18n="au.cAccount"></th>
+          <th data-i18n="au.cRole"></th>
+          <th data-i18n="au.cStatus"></th>
+          <th data-i18n="au.cCreated"></th>
+          <th data-i18n="au.cAction"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="u-mono">1001</td>
+          <td><span class="u-row u-gap-2"><span class="cn-avatar">冰</span><span>冰淇淋</span></span></td>
+          <td class="u-mono">iceblyte</td>
+          <td><span class="cn-tag cn-tag--brand" data-i18n="au.roleAdmin"></span></td>
+          <td><span class="cn-tag cn-tag--brand" data-i18n="au.statusActive"></span></td>
+          <td class="u-mono">2025-03-08</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oView"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oReset"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="au.oBan"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">1002</td>
+          <td><span class="u-row u-gap-2"><span class="cn-avatar">A</span><span>Alex</span></span></td>
+          <td class="u-mono">alex</td>
+          <td><span class="cn-tag" data-i18n="au.roleUser"></span></td>
+          <td><span class="cn-tag cn-tag--brand" data-i18n="au.statusActive"></span></td>
+          <td class="u-mono">2025-04-15</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oView"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oReset"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="au.oBan"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">1003</td>
+          <td><span class="u-row u-gap-2"><span class="cn-avatar">M</span><span>Mia</span></span></td>
+          <td class="u-mono">mia</td>
+          <td><span class="cn-tag" data-i18n="au.roleUser"></span></td>
+          <td><span class="cn-tag cn-tag--brand" data-i18n="au.statusActive"></span></td>
+          <td class="u-mono">2025-05-02</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oView"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oReset"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="au.oBan"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">1004</td>
+          <td><span class="u-row u-gap-2"><span class="cn-avatar">L</span><span>Leo</span></span></td>
+          <td class="u-mono">leo</td>
+          <td><span class="cn-tag" data-i18n="au.roleUser"></span></td>
+          <td><span class="cn-tag cn-tag--brand" data-i18n="au.statusActive"></span></td>
+          <td class="u-mono">2025-05-20</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oView"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oReset"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="au.oBan"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">1005</td>
+          <td><span class="u-row u-gap-2"><span class="cn-avatar">R</span><span>Rain</span></span></td>
+          <td class="u-mono">rain</td>
+          <td><span class="cn-tag" data-i18n="au.roleUser"></span></td>
+          <td><span class="cn-tag cn-tag--brand" data-i18n="au.statusActive"></span></td>
+          <td class="u-mono">2025-06-11</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oView"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oReset"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="au.oBan"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">1006</td>
+          <td><span class="u-row u-gap-2"><span class="cn-avatar">Z</span><span>Zoey</span></span></td>
+          <td class="u-mono">zoey</td>
+          <td><span class="cn-tag" data-i18n="au.roleUser"></span></td>
+          <td><span class="cn-tag cn-tag--brand" data-i18n="au.statusActive"></span></td>
+          <td class="u-mono">2025-07-03</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oView"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oReset"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="au.oBan"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">1007</td>
+          <td><span class="u-row u-gap-2"><span class="cn-avatar">K</span><span>Kai</span></span></td>
+          <td class="u-mono">kai</td>
+          <td><span class="cn-tag" data-i18n="au.roleUser"></span></td>
+          <td><span class="cn-tag cn-tag--brand" data-i18n="au.statusActive"></span></td>
+          <td class="u-mono">2025-08-19</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oView"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oReset"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="au.oBan"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">1008</td>
+          <td><span class="u-row u-gap-2"><span class="cn-avatar">N</span><span>Nina</span></span></td>
+          <td class="u-mono">nina</td>
+          <td><span class="cn-tag" data-i18n="au.roleUser"></span></td>
+          <td><span class="cn-tag cn-tag--brand" data-i18n="au.statusActive"></span></td>
+          <td class="u-mono">2025-09-01</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oView"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oReset"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="au.oBan"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">1009</td>
+          <td><span class="u-row u-gap-2"><span class="cn-avatar">沐</span><span>沐白</span></span></td>
+          <td class="u-mono">mubai</td>
+          <td><span class="cn-tag" data-i18n="au.roleUser"></span></td>
+          <td><span class="cn-tag cn-tag--brand" data-i18n="au.statusActive"></span></td>
+          <td class="u-mono">2025-10-22</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oView"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oReset"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="au.oBan"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">1010</td>
+          <td><span class="u-row u-gap-2"><span class="cn-avatar">A</span><span>Aria</span></span></td>
+          <td class="u-mono">aria</td>
+          <td><span class="cn-tag" data-i18n="au.roleUser"></span></td>
+          <td><span class="cn-tag cn-tag--danger" data-i18n="au.statusBanned"></span></td>
+          <td class="u-mono">2025-11-05</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oView"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oReset"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="au.oUnban"></button>
+          </span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cn-pagination u-mt-4">
+    <button class="cn-pagination__btn">‹</button>
+    <button class="cn-pagination__btn" aria-current="true">1</button>
+    <button class="cn-pagination__btn">2</button>
+    <button class="cn-pagination__btn">3</button>
+    <button class="cn-pagination__btn">›</button>
+  </div>
+</main>
+
+<div data-chrome="footer"></div>
+
+<script>
+I18N.define({
+  'au.title': '用户管理',
+  'au.desc': '查看平台全部用户，管理角色、状态与账号安全。',
+  'au.phSearch': '搜索昵称或账号',
+  'au.roleAll': '全部角色',
+  'au.roleAdmin': '管理员',
+  'au.roleUser': '用户',
+  'au.statusAll': '全部状态',
+  'au.statusActive': '正常',
+  'au.statusBanned': '封禁',
+  'au.newUser': '新建用户',
+  'au.cId': 'ID',
+  'au.cUser': '用户',
+  'au.cAccount': '账号',
+  'au.cRole': '角色',
+  'au.cStatus': '状态',
+  'au.cCreated': '创建时间',
+  'au.cAction': '操作',
+  'au.oView': '查看',
+  'au.oReset': '重置密码',
+  'au.oBan': '封禁',
+  'au.oUnban': '解封'
+}, {
+  'au.title': 'User management',
+  'au.desc': 'Browse every account and manage roles, status and security.',
+  'au.phSearch': 'Search nickname or account',
+  'au.roleAll': 'All roles',
+  'au.roleAdmin': 'Admin',
+  'au.roleUser': 'User',
+  'au.statusAll': 'All status',
+  'au.statusActive': 'Active',
+  'au.statusBanned': 'Banned',
+  'au.newUser': 'New user',
+  'au.cId': 'ID',
+  'au.cUser': 'User',
+  'au.cAccount': 'Account',
+  'au.cRole': 'Role',
+  'au.cStatus': 'Status',
+  'au.cCreated': 'Created',
+  'au.cAction': 'Actions',
+  'au.oView': 'View',
+  'au.oReset': 'Reset password',
+  'au.oBan': 'Ban',
+  'au.oUnban': 'Unban'
+});
+</script>
+</body>
+</html>

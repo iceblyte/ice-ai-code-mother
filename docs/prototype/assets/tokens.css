@@ -1,0 +1,197 @@
+/* ============================================================
+   CodeNow · Design Tokens
+   方向：A「蓝图」工程精确感 + B「静室」中性克制排版（混搭）
+   规则：中性打底 · 单一品牌色（祖母绿）· 语义色仅表状态 · 禁止紫色与彩虹渐变
+   ============================================================ */
+
+/* ---------- 字体栈 ---------- */
+:root {
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Source Han Sans SC', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* ---------- 字号 / 行高（桌面） ---------- */
+  --text-display: 40px;   --leading-display: 48px;
+  --text-h1: 28px;        --leading-h1: 36px;
+  --text-h2: 20px;        --leading-h2: 28px;
+  --text-title: 16px;     --leading-title: 24px;
+  --text-body: 15px;      --leading-body: 24px;
+  --text-caption: 13px;   --leading-caption: 20px;
+  --text-micro: 12px;     --leading-micro: 18px;
+  --text-code: 13px;      --leading-code: 20px;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-strong: 600;
+  --weight-heavy: 700;
+
+  /* ---------- 间距（4 的倍数） ---------- */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-7: 32px; --sp-8: 40px;
+  --sp-9: 48px; --sp-10: 64px; --sp-11: 80px;
+
+  /* ---------- 圆角 ---------- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-card: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 999px;
+
+  /* ---------- 版心与层级 ---------- */
+  --container: 1200px;
+  --header-h: 64px;
+
+  /* ---------- 过渡 ---------- */
+  --ease: cubic-bezier(.2, .7, .3, 1);
+  --dur-fast: 120ms;
+  --dur: 180ms;
+  --dur-slow: 320ms;
+}
+
+/* ============================================================
+   亮色主题（默认）
+   ============================================================ */
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+
+  /* 中性层 */
+  --bg-app: #fafaf8;            /* 纸白：页面底色 */
+  --bg-surface: #ffffff;        /* 卡片 / 面板 */
+  --bg-surface-muted: #f4f4f1;  /* 次级区块 / 表头 */
+  --bg-elevated: #ffffff;       /* 浮层 */
+  --bg-inset: #f0f0ec;          /* 输入框内陷区 */
+  --border: #e8e8e4;            /* 常规描边（发丝线） */
+  --border-strong: #d6d6d0;     /* 强调描边 */
+  --text-primary: #111114;      /* 墨黑 */
+  --text-secondary: #4a4a52;
+  --text-muted: #7a7a85;
+  --text-inverse: #ffffff;
+  --overlay: rgba(17, 17, 20, .45);
+  --skeleton: #ededE9;
+
+  /* 品牌：祖母绿 Emerald（唯一品牌色） */
+  --brand-50: #e8f6f1;
+  --brand-100: #c9ebdf;
+  --brand-200: #96d9c4;
+  --brand-500: #0e9f76;
+  --brand-600: #0b8a66;   /* 主色 */
+  --brand-700: #0a7156;
+  --brand-800: #075642;
+  --brand: var(--brand-600);
+  --brand-hover: var(--brand-700);
+  --brand-on: #ffffff;          /* 品牌填充上的文字 */
+  --brand-text: #0b8a66;        /* 中性面上使用品牌色文字 */
+  --brand-soft: var(--brand-50);
+  --brand-ring: rgba(14, 159, 118, .30);
+
+  /* 语义（仅用于状态表达，不作装饰） */
+  --success: #0b8a66;  --success-soft: #e8f6f1;
+  --warning: #b45309;  --warning-soft: #fdf3e3;
+  --danger: #c8372d;   --danger-soft: #fdecea;
+  --info: #2563eb;     --info-soft: #eaf1fd;
+
+  /* 代码 / 终端面（明暗主题下都偏深，保持"代码感"） */
+  --code-bg: #14141a;
+  --code-bg-soft: #1e1e26;
+  --code-text: #d9d9e3;
+  --code-dim: #8b8b98;
+  --code-line: #2b2b34;
+
+  /* 阴影（克制，靠描边承担层级） */
+  --shadow-xs: 0 1px 2px rgba(17, 17, 20, .05);
+  --shadow-sm: 0 2px 8px rgba(17, 17, 20, .06);
+  --shadow-md: 0 8px 24px rgba(17, 17, 20, .08);
+  --shadow-lg: 0 16px 48px rgba(17, 17, 20, .12);
+}
+
+/* ============================================================
+   暗色主题
+   ============================================================ */
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg-app: #0b0b0f;
+  --bg-surface: #15151b;
+  --bg-surface-muted: #1c1c24;
+  --bg-elevated: #1a1a22;
+  --bg-inset: #101016;
+  --border: #26262e;
+  --border-strong: #35353f;
+  --text-primary: #ededf2;
+  --text-secondary: #b4b4be;
+  --text-muted: #8a8a96;
+  --text-inverse: #0b0b0f;
+  --overlay: rgba(0, 0, 0, .6);
+  --skeleton: #22222a;
+
+  --brand-50: #10312a;
+  --brand-100: #14453a;
+  --brand-200: #185c4b;
+  --brand-500: #2bd3a3;
+  --brand-600: #2bd3a3;
+  --brand-700: #5ee0bb;
+  --brand-800: #8cead0;
+  --brand: #2bd3a3;
+  --brand-hover: #5ee0bb;
+  --brand-on: #06231c;
+  --brand-text: #5ee0bb;
+  --brand-soft: rgba(43, 211, 163, .12);
+  --brand-ring: rgba(43, 211, 163, .35);
+
+  --success: #2bd3a3;  --success-soft: rgba(43, 211, 163, .14);
+  --warning: #e0a94b;  --warning-soft: rgba(224, 169, 75, .14);
+  --danger: #f2726a;   --danger-soft: rgba(242, 114, 106, .14);
+  --info: #7aa8f7;     --info-soft: rgba(122, 168, 247, .14);
+
+  --code-bg: #0e0e13;
+  --code-bg-soft: #16161d;
+  --code-text: #d9d9e3;
+  --code-dim: #8b8b98;
+  --code-line: #26262e;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, .4);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, .45);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, .5);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, .6);
+}
+
+/* ============================================================
+   基础重置
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  color: var(--text-primary);
+  background: var(--bg-app);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+h1, h2, h3, h4, p, figure { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; }
+img, svg { display: block; max-width: 100%; }
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}

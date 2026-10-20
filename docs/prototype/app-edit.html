@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>应用编辑 · CodeNow</title>
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+<style>
+  .ae-page { padding: var(--sp-8) 0 var(--sp-9); }
+  .ae-toolbar { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+  .ae-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: var(--sp-5); align-items: start; }
+  .ae-files { display: flex; flex-direction: column; gap: var(--sp-1); }
+  .ae-file {
+    padding: var(--sp-2) var(--sp-3); border-radius: var(--radius-sm);
+    font-family: var(--font-mono); font-size: var(--text-caption); color: var(--text-secondary);
+    cursor: pointer; transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+  }
+  .ae-file:hover { background: var(--bg-surface-muted); color: var(--text-primary); }
+  .ae-file.is-active { background: var(--brand-soft); color: var(--brand-text); }
+
+  .ae-frame { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--bg-surface-muted); }
+  .ae-frame__bar { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-2) var(--sp-3); background: var(--bg-surface); border-bottom: 1px solid var(--border); }
+  .ae-frame__dots { display: flex; gap: var(--sp-1); flex: none; }
+  .ae-frame__dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); }
+  .ae-frame__dots i:first-child { background: var(--brand); }
+  .ae-frame__url {
+    flex: 1 1 auto; min-width: 0; padding: var(--sp-1) var(--sp-3);
+    background: var(--bg-inset); border: 1px solid var(--border); border-radius: var(--radius-full);
+    font-family: var(--font-mono); font-size: var(--text-micro); color: var(--text-muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .ae-frame .cn-cover { border-bottom: 0; }
+
+  .ae-select {
+    position: absolute; left: 14%; top: 24%; width: 58%; height: 20%;
+    border: 1px dashed var(--brand); border-radius: var(--radius-xs); background: var(--brand-soft); z-index: 2;
+  }
+  .ae-select__tag {
+    position: absolute; left: 0; top: calc(-1 * var(--sp-5));
+    padding: var(--sp-1) var(--sp-2); background: var(--brand); color: var(--brand-on);
+    border-radius: var(--radius-xs); font-family: var(--font-mono); font-size: var(--text-micro); white-space: nowrap;
+  }
+
+  @media (max-width: 860px) { .ae-layout { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body data-chrome="app" data-page="myapps">
+<div data-chrome="header"></div>
+
+<main class="u-container ae-page">
+  <h1 class="u-h1" data-i18n="ae.title"></h1>
+  <p class="u-caption u-mt-2" data-i18n="ae.desc"></p>
+
+  <div class="ae-toolbar u-mt-6">
+    <div class="cn-seg ae-seg">
+      <button aria-selected="true" data-i18n="ae.mPreview"></button>
+      <button aria-selected="false" data-i18n="ae.mEdit"></button>
+    </div>
+    <button class="cn-btn cn-btn--ghost cn-btn--icon" data-i18n-title="ae.undo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7 4 12l5 5"/><path d="M20 17a6 6 0 0 0-6-6H4"/></svg>
+    </button>
+    <button class="cn-btn cn-btn--ghost cn-btn--icon" data-i18n-title="ae.redo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7 20 12l-5 5"/><path d="M4 17a6 6 0 0 1 6-6h10"/></svg>
+    </button>
+    <span class="u-grow"></span>
+    <button class="cn-btn cn-btn--ghost" data-i18n="ae.bPreview"></button>
+    <button class="cn-btn cn-btn--ghost" data-i18n="act.download"></button>
+    <button class="cn-btn cn-btn--primary" data-i18n="act.deploy"></button>
+  </div>
+
+  <div class="ae-layout u-mt-6">
+    <aside class="cn-card">
+      <div class="cn-card__body">
+        <p class="u-label" data-i18n="ae.files"></p>
+        <div class="ae-files u-mt-4">
+          <div class="ae-file is-active">index.html</div>
+          <div class="ae-file">style.css</div>
+          <div class="ae-file">main.js</div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="u-col u-gap-6">
+      <section class="cn-card">
+        <div class="cn-card__body">
+          <div class="u-section-head" style="margin-bottom:var(--sp-4)">
+            <h2 class="u-title" data-i18n="ae.preview"></h2>
+            <span class="cn-tag cn-tag--mono">#2041</span>
+          </div>
+          <div class="ae-frame">
+            <div class="ae-frame__bar">
+              <span class="ae-frame__dots"><i></i><i></i><i></i></span>
+              <span class="ae-frame__url">codenow.app/p/2041</span>
+            </div>
+            <div class="cn-cover">
+              <div class="cn-cover__grid"></div>
+              <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+              <div class="ae-select"><span class="ae-select__tag">.hero-title</span></div>
+              <span class="cn-cover__mark">#2041 · index.html</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cn-card">
+        <div class="cn-card__body">
+          <h2 class="u-title" data-i18n="ae.props"></h2>
+          <div class="cn-grid cn-grid--2 u-mt-4">
+            <div class="cn-field">
+              <label data-i18n="ae.fWidth"></label>
+              <input class="cn-input u-mono" value="1200">
+              <span class="cn-field__hint" data-i18n="ae.unitPx"></span>
+            </div>
+            <div class="cn-field">
+              <label data-i18n="ae.fHeight"></label>
+              <input class="cn-input u-mono" value="540">
+              <span class="cn-field__hint" data-i18n="ae.unitPx"></span>
+            </div>
+            <div class="cn-field">
+              <label data-i18n="ae.fColor"></label>
+              <input class="cn-input u-mono" value="#0B8A66">
+            </div>
+            <div class="cn-field">
+              <label data-i18n="ae.fSize"></label>
+              <select class="cn-select">
+                <option selected data-i18n="ae.szDisplay"></option>
+                <option data-i18n="ae.szTitle"></option>
+                <option data-i18n="ae.szBody"></option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<div data-chrome="footer"></div>
+
+<script>
+I18N.define({
+  'ae.title': '应用编辑',
+  'ae.desc': '实时预览生成结果，点选页面元素并在属性面板中调整样式。',
+  'ae.mPreview': '预览',
+  'ae.mEdit': '编辑',
+  'ae.undo': '撤销',
+  'ae.redo': '重做',
+  'ae.bPreview': '预览',
+  'ae.files': '文件树',
+  'ae.preview': '实时预览',
+  'ae.props': '元素属性',
+  'ae.fWidth': '宽度',
+  'ae.fHeight': '高度',
+  'ae.fColor': '颜色',
+  'ae.fSize': '字号',
+  'ae.unitPx': '单位 px',
+  'ae.szDisplay': '展示级 · 40',
+  'ae.szTitle': '标题级 · 28',
+  'ae.szBody': '正文级 · 15'
+}, {
+  'ae.title': 'App editor',
+  'ae.desc': 'Preview the generated result live, pick an element and tune its style in the panel.',
+  'ae.mPreview': 'Preview',
+  'ae.mEdit': 'Edit',
+  'ae.undo': 'Undo',
+  'ae.redo': 'Redo',
+  'ae.bPreview': 'Preview',
+  'ae.files': 'Files',
+  'ae.preview': 'Live preview',
+  'ae.props': 'Element properties',
+  'ae.fWidth': 'Width',
+  'ae.fHeight': 'Height',
+  'ae.fColor': 'Color',
+  'ae.fSize': 'Font size',
+  'ae.unitPx': 'in px',
+  'ae.szDisplay': 'Display · 40',
+  'ae.szTitle': 'Heading · 28',
+  'ae.szBody': 'Body · 15'
+});
+
+(function () {
+  var seg = document.querySelector('.ae-seg');
+  if (seg) {
+    seg.addEventListener('click', function (e) {
+      var b = e.target.closest('button');
+      if (!b) return;
+      seg.querySelectorAll('button').forEach(function (x) {
+        x.setAttribute('aria-selected', String(x === b));
+      });
+    });
+  }
+
+  var files = document.querySelector('.ae-files');
+  if (files) {
+    files.addEventListener('click', function (e) {
+      var f = e.target.closest('.ae-file');
+      if (!f) return;
+      files.querySelectorAll('.ae-file').forEach(function (x) {
+        x.classList.toggle('is-active', x === f);
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>

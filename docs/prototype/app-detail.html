@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>案例详情 · CodeNow</title>
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+<style>
+  .dt-page { padding: var(--sp-8) 0 var(--sp-8); }
+  .dt-crumb { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); font-size: var(--text-caption); color: var(--text-muted); }
+  .dt-crumb a:hover { color: var(--text-primary); }
+  .dt-crumb__sep { color: var(--border-strong); }
+  .dt-head { margin-top: var(--sp-5); }
+  .dt-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-4); margin-top: var(--sp-4); font-size: var(--text-caption); color: var(--text-muted); }
+  .dt-meta__pair { display: inline-flex; align-items: center; gap: var(--sp-2); }
+  .dt-actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-5); }
+  .dt-body { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr); gap: var(--sp-6); align-items: start; margin-top: var(--sp-7); }
+  .dt-browser { border: 1px solid var(--border); border-radius: var(--radius-card); overflow: hidden; background: var(--bg-surface); }
+  .dt-browser__bar { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--border); background: var(--bg-surface-muted); }
+  .dt-browser__dots { display: flex; gap: 6px; }
+  .dt-browser__dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--border-strong); }
+  .dt-browser__dots i:first-child { background: var(--brand); }
+  .dt-browser__url { flex: 1 1 auto; display: flex; align-items: center; height: 26px; padding: 0 var(--sp-3); border: 1px solid var(--border); border-radius: var(--radius-full); background: var(--bg-surface); color: var(--text-muted); font-size: var(--text-micro); }
+  .dt-browser .cn-cover { border-bottom: 0; }
+  .dt-info__row { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); padding: var(--sp-3) 0; border-bottom: 1px solid var(--border); font-size: var(--text-caption); }
+  .dt-info__row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .dt-info__row > span:first-child { color: var(--text-muted); }
+  .dt-section { margin-top: var(--sp-9); }
+  .dt-chat { display: flex; flex-direction: column; gap: var(--sp-5); max-width: 760px; }
+  @media (max-width: 860px) { .dt-body { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body data-chrome="app" data-page="explore">
+<div data-chrome="header"></div>
+
+<main class="u-container dt-page">
+
+  <nav class="dt-crumb">
+    <a href="explore.html" data-i18n="nav.explore"></a>
+    <span class="dt-crumb__sep">/</span>
+    <a href="explore.html" data-i18n="type.web"></a>
+    <span class="dt-crumb__sep">/</span>
+    <span data-i18n="dt.name"></span>
+  </nav>
+
+  <header class="dt-head">
+    <div class="u-row u-gap-3">
+      <h1 class="u-h1" data-i18n="dt.name"></h1>
+      <span class="cn-tag u-mono" data-i18n="type.web"></span>
+      <span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="dt.live"></span></span>
+    </div>
+    <div class="dt-meta">
+      <span class="dt-meta__pair"><span class="cn-avatar">A</span><span>Alex</span></span>
+      <span class="dt-meta__pair"><span data-i18n="dt.updated"></span><span class="u-mono">2026-10-16</span></span>
+      <span class="dt-meta__pair"><span data-i18n="dt.views"></span><span class="u-mono">2.4k</span></span>
+    </div>
+    <div class="dt-actions">
+      <button class="cn-btn cn-btn--primary" data-i18n="dt.preview"></button>
+      <button class="cn-btn cn-btn--ghost" data-i18n="act.openNew"></button>
+      <button class="cn-btn cn-btn--ghost" data-i18n="dt.copy"></button>
+      <button class="cn-btn cn-btn--danger" data-i18n="dt.report"></button>
+    </div>
+  </header>
+
+  <div class="dt-body">
+    <div class="dt-browser">
+      <div class="dt-browser__bar">
+        <div class="dt-browser__dots"><i></i><i></i><i></i></div>
+        <span class="dt-browser__url u-mono">codenow.app/p/2041</span>
+      </div>
+      <div class="cn-cover">
+        <div class="cn-cover__grid"></div>
+        <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+        <div class="cn-cover__badge"><span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="dt.live"></span></span></div>
+        <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+        <span class="cn-cover__mark">#2041 · index.html</span>
+      </div>
+    </div>
+
+    <aside class="cn-card">
+      <div class="cn-card__body">
+        <h2 class="u-title" data-i18n="dt.info"></h2>
+        <div class="u-mt-4">
+          <div class="dt-info__row"><span data-i18n="dt.id"></span><span class="u-mono">#2041</span></div>
+          <div class="dt-info__row"><span data-i18n="dt.type"></span><span class="cn-tag u-mono" data-i18n="type.web"></span></div>
+          <div class="dt-info__row"><span data-i18n="dt.owner"></span><span>Alex</span></div>
+          <div class="dt-info__row"><span data-i18n="dt.created"></span><span class="u-mono">2026-10-16</span></div>
+          <div class="dt-info__row"><span data-i18n="dt.status"></span><span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="dt.live"></span></span></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="dt-section">
+    <div class="u-section-head">
+      <h2 data-i18n="dt.summary"></h2>
+    </div>
+    <div class="dt-chat">
+      <div class="cn-msg cn-msg--user">
+        <span class="cn-msg__avatar">A</span>
+        <div class="cn-msg__bubble" data-i18n="dt.m1"></div>
+      </div>
+      <div class="cn-msg cn-msg--ai">
+        <span class="cn-msg__avatar cn-msg__avatar--ai">&gt;</span>
+        <div class="cn-msg__bubble"><span data-i18n="dt.m2"></span>
+          <div class="cn-msg__tools"><span data-i18n="dt.regenerate"></span><span data-i18n="dt.copyMsg"></span></div>
+        </div>
+      </div>
+      <div class="cn-msg cn-msg--ai">
+        <span class="cn-msg__avatar cn-msg__avatar--ai">&gt;</span>
+        <div class="cn-msg__bubble u-mono" data-i18n="dt.m3"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dt-section">
+    <div class="u-section-head">
+      <h2 data-i18n="dt.related"></h2>
+    </div>
+    <div class="cn-grid cn-grid--4">
+      <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+        <div class="cn-cover"><div class="cn-cover__grid"></div><div class="cn-cover__dots"><i></i><i></i><i></i></div>
+          <div class="cn-cover__wire"><span></span><span></span><span></span></div><span class="cn-cover__mark">#1980</span></div>
+        <div class="cn-appcard__body">
+          <h3 class="cn-appcard__title u-truncate" data-i18n="dt.r1"></h3>
+          <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.web"></span><span>Leo</span>
+            <span class="u-grow"></span><span class="cn-appcard__stats">1.2k</span></div>
+        </div>
+      </a>
+      <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+        <div class="cn-cover"><div class="cn-cover__grid"></div><div class="cn-cover__dots"><i></i><i></i><i></i></div>
+          <div class="cn-cover__wire"><span></span><span></span><span></span></div><span class="cn-cover__mark">#1974</span></div>
+        <div class="cn-appcard__body">
+          <h3 class="cn-appcard__title u-truncate" data-i18n="dt.r2"></h3>
+          <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.vue"></span><span>Mia</span>
+            <span class="u-grow"></span><span class="cn-appcard__stats">986</span></div>
+        </div>
+      </a>
+      <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+        <div class="cn-cover"><div class="cn-cover__grid"></div><div class="cn-cover__dots"><i></i><i></i><i></i></div>
+          <div class="cn-cover__wire"><span></span><span></span><span></span></div><span class="cn-cover__mark">#1961</span></div>
+        <div class="cn-appcard__body">
+          <h3 class="cn-appcard__title u-truncate" data-i18n="dt.r3"></h3>
+          <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.game"></span><span>Zoey</span>
+            <span class="u-grow"></span><span class="cn-appcard__stats">742</span></div>
+        </div>
+      </a>
+      <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+        <div class="cn-cover"><div class="cn-cover__grid"></div><div class="cn-cover__dots"><i></i><i></i><i></i></div>
+          <div class="cn-cover__wire"><span></span><span></span><span></span></div><span class="cn-cover__mark">#1902</span></div>
+        <div class="cn-appcard__body">
+          <h3 class="cn-appcard__title u-truncate" data-i18n="dt.r4"></h3>
+          <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.vue"></span><span>Kai</span>
+            <span class="u-grow"></span><span class="cn-appcard__stats">530</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<div data-chrome="footer"></div>
+
+<script>
+I18N.define({
+  'dt.name': '摄影工作室预约官网',
+  'dt.preview': '预览',
+  'dt.copy': '复制应用',
+  'dt.report': '举报',
+  'dt.live': '在线',
+  'dt.updated': '更新于',
+  'dt.views': '浏览',
+  'dt.info': '应用信息',
+  'dt.id': '应用 ID',
+  'dt.type': '类型',
+  'dt.owner': '创建者',
+  'dt.created': '创建时间',
+  'dt.status': '状态',
+  'dt.summary': '生成过程摘要',
+  'dt.related': '相关推荐',
+  'dt.regenerate': '重新生成',
+  'dt.copyMsg': '复制',
+  'dt.m1': '帮我做一个带预约功能的摄影工作室官网',
+  'dt.m2': '已为你生成摄影工作室官网，包含作品画廊与预约表单。',
+  'dt.m3': '构建通过，已部署至 codenow.app/p/2041',
+
+  'type.web': '网页',
+  'type.vue': 'Vue 项目',
+  'type.game': '游戏',
+
+  'dt.r1': '咖啡品牌官网',
+  'dt.r2': '健身房会员管理',
+  'dt.r3': '贪吃蛇小游戏',
+  'dt.r4': '个人记账看板'
+}, {
+  'dt.name': 'Photo studio booking site',
+  'dt.preview': 'Preview',
+  'dt.copy': 'Copy app',
+  'dt.report': 'Report',
+  'dt.live': 'Live',
+  'dt.updated': 'Updated',
+  'dt.views': 'Views',
+  'dt.info': 'App info',
+  'dt.id': 'App ID',
+  'dt.type': 'Type',
+  'dt.owner': 'Creator',
+  'dt.created': 'Created',
+  'dt.status': 'Status',
+  'dt.summary': 'Generation summary',
+  'dt.related': 'Related',
+  'dt.regenerate': 'Regenerate',
+  'dt.copyMsg': 'Copy',
+  'dt.m1': 'Build a photography studio site with a booking form',
+  'dt.m2': 'Generated a photo studio site with a gallery and booking form.',
+  'dt.m3': 'Build passed, deployed to codenow.app/p/2041',
+
+  'type.web': 'Web',
+  'type.vue': 'Vue project',
+  'type.game': 'Game',
+
+  'dt.r1': 'Coffee brand site',
+  'dt.r2': 'Gym member manager',
+  'dt.r3': 'Snake mini game',
+  'dt.r4': 'Personal expense board'
+});
+</script>
+</body>
+</html>

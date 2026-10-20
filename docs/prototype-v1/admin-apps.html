@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>应用管理 · CodeNow</title>
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+<style>
+  .aa-page { padding: var(--sp-8) 0 var(--sp-9); }
+  .aa-toolbar { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+  .aa-search { width: 100%; max-width: 320px; }
+  .aa-sel { width: auto; min-width: 150px; }
+  .aa-thumb { width: var(--sp-8); flex: none; }
+  .aa-thumb .cn-cover { display: block; border-bottom: 0; border: 1px solid var(--border); border-radius: var(--radius-xs); }
+</style>
+</head>
+<body data-chrome="admin" data-page="appManage">
+<div data-chrome="header"></div>
+
+<main class="u-container aa-page">
+  <h1 class="u-h1" data-i18n="aa.title"></h1>
+  <p class="u-caption u-mt-2" data-i18n="aa.desc"></p>
+
+  <div class="aa-toolbar u-mt-6">
+    <input class="cn-input aa-search" data-i18n-ph="aa.phSearch">
+    <select class="cn-select aa-sel">
+      <option selected data-i18n="aa.typeAll"></option>
+      <option data-i18n="aa.tWeb"></option>
+      <option data-i18n="aa.tVue"></option>
+      <option data-i18n="aa.tGame"></option>
+    </select>
+    <select class="cn-select aa-sel">
+      <option selected data-i18n="aa.statusAll"></option>
+      <option data-i18n="aa.sLive"></option>
+      <option data-i18n="aa.sDraft"></option>
+      <option data-i18n="aa.sFailed"></option>
+    </select>
+    <select class="cn-select aa-sel">
+      <option selected data-i18n="aa.sortNew"></option>
+      <option data-i18n="aa.sortUsed"></option>
+    </select>
+  </div>
+
+  <div class="cn-table--wrap u-mt-4">
+    <table class="cn-table">
+      <thead>
+        <tr>
+          <th data-i18n="aa.cId"></th>
+          <th data-i18n="aa.cName"></th>
+          <th data-i18n="aa.cType"></th>
+          <th data-i18n="aa.cOwner"></th>
+          <th data-i18n="aa.cStatus"></th>
+          <th data-i18n="aa.cCreated"></th>
+          <th data-i18n="aa.cAction"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="u-mono">#2041</td>
+          <td><span class="u-row u-gap-3">
+            <span class="aa-thumb"><span class="cn-cover"><span class="cn-cover__grid"></span><span class="cn-cover__dots"><i></i><i></i><i></i></span></span></span>
+            <span class="u-truncate" data-i18n="aa.app1"></span></span></td>
+          <td><span class="cn-tag u-mono" data-i18n="aa.tWeb"></span></td>
+          <td>Alex</td>
+          <td><span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="aa.sLive"></span></span></td>
+          <td class="u-mono">2026-10-16</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--brand-soft cn-btn--sm" data-i18n="aa.oEdit"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="aa.oPick"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="aa.oDelete"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">#2038</td>
+          <td><span class="u-row u-gap-3">
+            <span class="aa-thumb"><span class="cn-cover"><span class="cn-cover__grid"></span><span class="cn-cover__dots"><i></i><i></i><i></i></span></span></span>
+            <span class="u-truncate" data-i18n="aa.app2"></span></span></td>
+          <td><span class="cn-tag u-mono" data-i18n="aa.tVue"></span></td>
+          <td>Alex</td>
+          <td><span class="cn-tag" data-i18n="aa.sDraft"></span></td>
+          <td class="u-mono">2026-10-12</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--brand-soft cn-btn--sm" data-i18n="aa.oEdit"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="aa.oPick"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="aa.oDelete"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">#2033</td>
+          <td><span class="u-row u-gap-3">
+            <span class="aa-thumb"><span class="cn-cover"><span class="cn-cover__grid"></span><span class="cn-cover__dots"><i></i><i></i><i></i></span></span></span>
+            <span class="u-truncate" data-i18n="aa.app3"></span></span></td>
+          <td><span class="cn-tag u-mono" data-i18n="aa.tGame"></span></td>
+          <td>Alex</td>
+          <td><span class="cn-tag" data-i18n="aa.sDraft"></span></td>
+          <td class="u-mono">2026-10-05</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--brand-soft cn-btn--sm" data-i18n="aa.oEdit"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="aa.oPick"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="aa.oDelete"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">#1980</td>
+          <td><span class="u-row u-gap-3">
+            <span class="aa-thumb"><span class="cn-cover"><span class="cn-cover__grid"></span><span class="cn-cover__dots"><i></i><i></i><i></i></span></span></span>
+            <span class="u-truncate" data-i18n="aa.app4"></span></span></td>
+          <td><span class="cn-tag u-mono" data-i18n="aa.tWeb"></span></td>
+          <td>Leo</td>
+          <td><span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="aa.sLive"></span></span></td>
+          <td class="u-mono">2026-09-28</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--brand-soft cn-btn--sm" data-i18n="aa.oEdit"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="aa.oPick"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="aa.oDelete"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">#1974</td>
+          <td><span class="u-row u-gap-3">
+            <span class="aa-thumb"><span class="cn-cover"><span class="cn-cover__grid"></span><span class="cn-cover__dots"><i></i><i></i><i></i></span></span></span>
+            <span class="u-truncate" data-i18n="aa.app5"></span></span></td>
+          <td><span class="cn-tag u-mono" data-i18n="aa.tVue"></span></td>
+          <td>Mia</td>
+          <td><span class="cn-tag" data-i18n="aa.sDraft"></span></td>
+          <td class="u-mono">2026-09-21</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--brand-soft cn-btn--sm" data-i18n="aa.oEdit"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="aa.oPick"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="aa.oDelete"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">#1961</td>
+          <td><span class="u-row u-gap-3">
+            <span class="aa-thumb"><span class="cn-cover"><span class="cn-cover__grid"></span><span class="cn-cover__dots"><i></i><i></i><i></i></span></span></span>
+            <span class="u-truncate" data-i18n="aa.app6"></span></span></td>
+          <td><span class="cn-tag u-mono" data-i18n="aa.tGame"></span></td>
+          <td>Zoey</td>
+          <td><span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="aa.sLive"></span></span></td>
+          <td class="u-mono">2026-09-14</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--brand-soft cn-btn--sm" data-i18n="aa.oEdit"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="aa.oPick"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="aa.oDelete"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">#1955</td>
+          <td><span class="u-row u-gap-3">
+            <span class="aa-thumb"><span class="cn-cover"><span class="cn-cover__grid"></span><span class="cn-cover__dots"><i></i><i></i><i></i></span></span></span>
+            <span class="u-truncate" data-i18n="aa.app7"></span></span></td>
+          <td><span class="cn-tag u-mono" data-i18n="aa.tWeb"></span></td>
+          <td>Rain</td>
+          <td><span class="cn-tag" data-i18n="aa.sDraft"></span></td>
+          <td class="u-mono">2026-09-07</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--brand-soft cn-btn--sm" data-i18n="aa.oEdit"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="aa.oPick"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="aa.oDelete"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">#1902</td>
+          <td><span class="u-row u-gap-3">
+            <span class="aa-thumb"><span class="cn-cover"><span class="cn-cover__grid"></span><span class="cn-cover__dots"><i></i><i></i><i></i></span></span></span>
+            <span class="u-truncate" data-i18n="aa.app8"></span></span></td>
+          <td><span class="cn-tag u-mono" data-i18n="aa.tVue"></span></td>
+          <td>Kai</td>
+          <td><span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="aa.sLive"></span></span></td>
+          <td class="u-mono">2026-08-30</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--brand-soft cn-btn--sm" data-i18n="aa.oEdit"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="aa.oPick"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="aa.oDelete"></button>
+          </span></td>
+        </tr>
+        <tr>
+          <td class="u-mono">#1888</td>
+          <td><span class="u-row u-gap-3">
+            <span class="aa-thumb"><span class="cn-cover"><span class="cn-cover__grid"></span><span class="cn-cover__dots"><i></i><i></i><i></i></span></span></span>
+            <span class="u-truncate" data-i18n="aa.app9"></span></span></td>
+          <td><span class="cn-tag u-mono" data-i18n="aa.tWeb"></span></td>
+          <td>Nina</td>
+          <td><span class="cn-tag cn-tag--danger" data-i18n="aa.sFailed"></span></td>
+          <td class="u-mono">2026-08-23</td>
+          <td><span class="u-row u-gap-2">
+            <button class="cn-btn cn-btn--brand-soft cn-btn--sm" data-i18n="aa.oEdit"></button>
+            <button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="aa.oPick"></button>
+            <button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="aa.oDelete"></button>
+          </span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cn-pagination u-mt-4">
+    <button class="cn-pagination__btn">‹</button>
+    <button class="cn-pagination__btn" aria-current="true">1</button>
+    <button class="cn-pagination__btn">2</button>
+    <button class="cn-pagination__btn">3</button>
+    <button class="cn-pagination__btn">›</button>
+  </div>
+</main>
+
+<div data-chrome="footer"></div>
+
+<script>
+I18N.define({
+  'aa.title': '应用管理',
+  'aa.desc': '审核并维护平台上全部应用，支持编辑、精选与删除。',
+  'aa.phSearch': '搜索应用名称或 ID',
+  'aa.typeAll': '全部类型',
+  'aa.tWeb': '网页',
+  'aa.tVue': 'Vue 项目',
+  'aa.tGame': '游戏',
+  'aa.statusAll': '全部状态',
+  'aa.sLive': '在线',
+  'aa.sDraft': '草稿',
+  'aa.sFailed': '构建失败',
+  'aa.sortNew': '最新创建',
+  'aa.sortUsed': '最多使用',
+  'aa.cId': 'ID',
+  'aa.cName': '应用名称',
+  'aa.cType': '类型',
+  'aa.cOwner': '创建者',
+  'aa.cStatus': '状态',
+  'aa.cCreated': '创建时间',
+  'aa.cAction': '操作',
+  'aa.oEdit': '编辑',
+  'aa.oPick': '精选',
+  'aa.oDelete': '删除',
+  'aa.app1': '摄影工作室预约官网',
+  'aa.app2': '在线商城后台',
+  'aa.app3': '像素风小游戏',
+  'aa.app4': '咖啡品牌官网',
+  'aa.app5': '健身房会员管理',
+  'aa.app6': '贪吃蛇小游戏',
+  'aa.app7': '活动报名落地页',
+  'aa.app8': '个人记账看板',
+  'aa.app9': '民宿预订官网'
+}, {
+  'aa.title': 'App management',
+  'aa.desc': 'Review and maintain every app on the platform — edit, feature or delete.',
+  'aa.phSearch': 'Search by app name or ID',
+  'aa.typeAll': 'All types',
+  'aa.tWeb': 'Web',
+  'aa.tVue': 'Vue project',
+  'aa.tGame': 'Game',
+  'aa.statusAll': 'All status',
+  'aa.sLive': 'Live',
+  'aa.sDraft': 'Draft',
+  'aa.sFailed': 'Build failed',
+  'aa.sortNew': 'Newest',
+  'aa.sortUsed': 'Most used',
+  'aa.cId': 'ID',
+  'aa.cName': 'App name',
+  'aa.cType': 'Type',
+  'aa.cOwner': 'Owner',
+  'aa.cStatus': 'Status',
+  'aa.cCreated': 'Created',
+  'aa.cAction': 'Actions',
+  'aa.oEdit': 'Edit',
+  'aa.oPick': 'Feature',
+  'aa.oDelete': 'Delete',
+  'aa.app1': 'Photo studio booking site',
+  'aa.app2': 'Online store admin',
+  'aa.app3': 'Pixel mini game',
+  'aa.app4': 'Coffee brand site',
+  'aa.app5': 'Gym member manager',
+  'aa.app6': 'Snake mini game',
+  'aa.app7': 'Event sign-up page',
+  'aa.app8': 'Personal expense board',
+  'aa.app9': 'Homestay booking site'
+});
+</script>
+</body>
+</html>

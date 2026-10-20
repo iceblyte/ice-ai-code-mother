@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>生成工作台 · CodeNow</title>
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+<style>
+  :root { --ws-top: 121px; }
+
+  .ws-bar {
+    height: 56px; display: flex; align-items: center; gap: var(--sp-4);
+    padding: 0 var(--sp-5); border-bottom: 1px solid var(--border);
+    background: var(--bg-app);
+  }
+  .ws-bar__id { font-family: var(--font-mono); font-size: var(--text-micro); color: var(--text-muted); }
+  .ws-bar__actions { display: flex; align-items: center; gap: var(--sp-2); }
+
+  .ws {
+    display: grid; height: calc(100vh - var(--ws-top));
+    grid-template-columns: 380px minmax(0, 1fr) 304px;
+  }
+  body[data-mode='preview'] .ws { grid-template-columns: 380px minmax(0, 1fr); }
+  body[data-mode='preview'] .ws__inspect { display: none; }
+
+  .ws__col { min-height: 0; display: flex; flex-direction: column; border-right: 1px solid var(--border); background: var(--bg-surface); }
+  .ws__col:last-child { border-right: 0; }
+  .ws__head {
+    flex: none; height: 46px; display: flex; align-items: center; gap: var(--sp-2);
+    padding: 0 var(--sp-4); border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono); font-size: var(--text-micro); color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+  .ws__scroll { flex: 1; min-height: 0; overflow-y: auto; padding: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-5); }
+  .ws__foot { flex: none; border-top: 1px solid var(--border); padding: var(--sp-3) var(--sp-4); background: var(--bg-surface); }
+  .ws__canvas { flex: 1; min-height: 0; overflow: auto; padding: var(--sp-6); background: var(--bg-app); }
+
+  /* 构建步骤卡 */
+  .ws-steps { border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--bg-surface-muted); padding: var(--sp-4); }
+  .ws-files { display: flex; flex-direction: column; gap: 2px; margin-top: var(--sp-3); }
+  .ws-files code {
+    font-family: var(--font-mono); font-size: var(--text-micro); color: var(--text-secondary);
+    display: flex; align-items: center; gap: var(--sp-2); padding: 3px 0;
+  }
+  .ws-files code::before { content: '›'; color: var(--brand); }
+
+  /* 预览画布 */
+  .ws-frame {
+    display: flex; flex-direction: column; height: 100%; min-height: 420px;
+    border: 1px solid var(--border); border-radius: var(--radius-card); overflow: hidden;
+    background: var(--bg-surface); box-shadow: var(--shadow-sm);
+  }
+  .ws-frame__bar {
+    flex: none; height: 38px; display: flex; align-items: center; gap: var(--sp-3);
+    padding: 0 var(--sp-3); border-bottom: 1px solid var(--border); background: var(--bg-surface-muted);
+  }
+  .ws-frame__dots { display: flex; gap: 5px; }
+  .ws-frame__dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); }
+  .ws-frame__dots i:first-child { background: var(--brand); }
+  .ws-frame__url {
+    flex: 1; height: 24px; display: flex; align-items: center; padding: 0 var(--sp-3);
+    border: 1px solid var(--border); border-radius: var(--radius-full); background: var(--bg-inset);
+    font-family: var(--font-mono); font-size: var(--text-micro); color: var(--text-muted);
+  }
+  .ws-frame__view { flex: 1; min-height: 0; overflow: auto; }
+
+  .ws-log { border-top: 1px solid var(--border); background: var(--bg-surface); }
+  .ws-log > summary {
+    cursor: pointer; list-style: none; display: flex; align-items: center; gap: var(--sp-3);
+    padding: var(--sp-2) var(--sp-4); font-family: var(--font-mono); font-size: var(--text-micro);
+    color: var(--text-muted);
+  }
+  .ws-log > summary::-webkit-details-marker { display: none; }
+  .ws-log > summary::before { content: '›'; transition: transform var(--dur) var(--ease); }
+  .ws-log[open] > summary::before { transform: rotate(90deg); }
+  .ws-log .cn-code { border-radius: 0; }
+
+  /* 生成结果的示意页面 */
+  .mock { padding: var(--sp-6); display: flex; flex-direction: column; gap: var(--sp-6); background: var(--bg-surface); min-height: 100%; }
+  .mock__nav { display: flex; align-items: center; justify-content: space-between; }
+  .mock__brand { font-family: var(--font-mono); font-size: var(--text-micro); letter-spacing: .08em; color: var(--text-secondary); }
+  .mock__links { display: flex; gap: var(--sp-3); }
+  .mock__links i { width: 34px; height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--text-muted) 26%, transparent); }
+  .mock__hero {
+    display: grid; grid-template-columns: 1.05fr 1fr; min-height: 210px;
+    border: 1px solid var(--border); border-radius: var(--radius-card); overflow: hidden;
+  }
+  .mock__photo { position: relative; background: var(--bg-surface-muted); }
+  .mock__photo::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--border-strong) 60%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--border-strong) 60%, transparent) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  .mock__photo::after {
+    content: 'hero.jpg'; position: absolute; left: var(--sp-3); bottom: var(--sp-3);
+    font-family: var(--font-mono); font-size: var(--text-micro); color: var(--text-muted);
+  }
+  .mock__text { padding: var(--sp-6); display: flex; flex-direction: column; justify-content: center; gap: var(--sp-3); }
+  .mock__h1 { position: relative; font-size: 26px; line-height: 1.25; font-weight: var(--weight-strong); letter-spacing: -.01em; }
+  .mock__sub { font-size: var(--text-caption); color: var(--text-muted); }
+  .mock__cta {
+    align-self: flex-start; height: 34px; padding: 0 var(--sp-4); border-radius: var(--radius);
+    background: var(--brand); color: var(--brand-on); font-size: var(--text-caption);
+    font-weight: var(--weight-medium); display: inline-flex; align-items: center;
+  }
+  body[data-mode='edit'] .mock__h1 { outline: 2px dashed var(--brand); outline-offset: 8px; }
+  body[data-mode='edit'] .mock__h1::after {
+    content: '.hero-title'; position: absolute; top: -30px; left: -8px;
+    font-family: var(--font-mono); font-size: var(--text-micro); font-weight: var(--weight-regular);
+    background: var(--brand); color: var(--brand-on); padding: 2px 6px; border-radius: var(--radius-xs);
+  }
+  .mock__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-4); }
+  .mock__card { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .mock__card .ph { height: 78px; background: var(--bg-surface-muted); border-bottom: 1px solid var(--border); }
+  .mock__card p { padding: var(--sp-3); font-size: var(--text-micro); color: var(--text-muted); margin: 0; }
+  .mock__form {
+    border: 1px solid var(--border); border-radius: var(--radius-card); padding: var(--sp-5);
+    display: grid; grid-template-columns: 1fr 1fr auto; gap: var(--sp-4); align-items: end;
+  }
+  .mock__field { display: flex; flex-direction: column; gap: 6px; }
+  .mock__field span { font-family: var(--font-mono); font-size: var(--text-micro); color: var(--text-muted); }
+  .mock__field i { height: 32px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg-inset); }
+
+  .ws-inspector { display: flex; flex-direction: column; gap: var(--sp-5); }
+  .ws-inspector__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); }
+
+  @media (max-width: 1180px) {
+    body[data-mode='edit'] .ws, .ws { grid-template-columns: 340px minmax(0, 1fr); }
+    .ws__inspect { display: none; }
+  }
+  @media (max-width: 860px) {
+    :root { --ws-top: 113px; }
+    .ws { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) minmax(0, .9fr); }
+    body[data-mode='preview'] .ws, body[data-mode='edit'] .ws { grid-template-columns: minmax(0, 1fr); }
+    .ws__col { border-right: 0; border-bottom: 1px solid var(--border); }
+    .ws__chat { order: 2; }
+    .ws__preview { order: 1; }
+    .ws-bar { padding: 0 var(--sp-4); gap: var(--sp-3); }
+    .ws-bar__actions .cn-btn--ghost { display: none; }
+    .mock__hero { grid-template-columns: 1fr; }
+    .mock__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ws__canvas { padding: var(--sp-4); }
+  }
+  @media (max-width: 560px) {
+    .ws-bar { gap: var(--sp-2); }
+    .ws-bar > .u-row { min-width: 0; }
+    .ws-bar > .u-row > .u-title { min-width: 0; }
+    .ws-bar__id, .ws-bar .cn-tag, .ws-bar__actions .cn-iconbtn { display: none; }
+    .ws__head { padding: 0 var(--sp-4); }
+  }
+</style>
+</head>
+<body data-chrome="app" data-page="home" data-mode="preview">
+<div data-chrome="header"></div>
+
+<div class="ws-bar">
+  <div class="u-row u-gap-3">
+    <span class="u-title u-truncate" data-i18n="bd.appName"></span>
+    <span class="ws-bar__id">#2041</span>
+    <span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="bd.live"></span></span>
+  </div>
+  <div class="u-grow"></div>
+  <div class="ws-bar__actions">
+    <div class="cn-seg" role="tablist">
+      <button role="tab" data-mode-btn="preview" aria-selected="true" data-i18n="bd.preview"></button>
+      <button role="tab" data-mode-btn="edit" aria-selected="false" data-i18n="bd.edit"></button>
+    </div>
+    <button class="cn-iconbtn" data-i18n-title="bd.undo" aria-label="undo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-4"/></svg>
+    </button>
+    <button class="cn-iconbtn" data-i18n-title="bd.redo" aria-label="redo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h4"/></svg>
+    </button>
+    <button class="cn-btn cn-btn--ghost" data-i18n="act.download"></button>
+    <button class="cn-btn cn-btn--primary" data-i18n="act.deploy"></button>
+  </div>
+</div>
+
+<div class="ws">
+  <!-- 左：对话 -->
+  <section class="ws__col ws__chat" aria-label="Chat">
+    <div class="ws__head"><span data-i18n="bd.chatTitle"></span></div>
+    <div class="ws__scroll">
+      <div class="cn-msg cn-msg--user">
+        <span class="cn-avatar">A</span>
+        <div class="cn-msg__bubble" data-i18n="bd.m1"></div>
+      </div>
+
+      <div class="cn-msg cn-msg--ai">
+        <span class="cn-msg__avatar cn-msg__avatar--ai">&gt;</span>
+        <div class="cn-msg__bubble" style="max-width:none">
+          <span data-i18n="bd.a1"></span>
+          <div class="ws-steps u-mt-4">
+            <div class="cn-steps">
+              <div class="cn-step is-done"><span class="cn-step__mark">✓</span><span data-i18n="bd.st1"></span></div>
+              <div class="cn-step is-done"><span class="cn-step__mark">✓</span><span data-i18n="bd.st2"></span></div>
+              <div class="cn-step is-active"><span class="cn-step__mark"></span><span data-i18n="bd.st3"></span></div>
+              <div class="cn-step"><span class="cn-step__mark">4</span><span data-i18n="bd.st4"></span></div>
+            </div>
+            <div class="cn-progress u-mt-4"><i style="width:72%"></i></div>
+            <div class="ws-files">
+              <code>index.html</code>
+              <code>style.css</code>
+              <code>main.js</code>
+            </div>
+          </div>
+          <div class="cn-msg__tools"><span data-i18n="bd.regenerate"></span><span data-i18n="bd.copy"></span></div>
+        </div>
+      </div>
+
+      <div class="cn-msg cn-msg--user">
+        <span class="cn-avatar">A</span>
+        <div class="cn-msg__bubble" data-i18n="bd.m2"></div>
+      </div>
+
+      <div class="cn-msg cn-msg--ai">
+        <span class="cn-msg__avatar cn-msg__avatar--ai">&gt;</span>
+        <div class="cn-msg__bubble"><span class="cn-typing"><i></i><i></i><i></i></span></div>
+      </div>
+    </div>
+
+    <div class="ws__foot">
+      <div class="cn-composer">
+        <textarea class="cn-composer__input" rows="2" style="font-size:var(--text-body);padding:var(--sp-3) var(--sp-3) var(--sp-1)" data-i18n-ph="bd.phChat"></textarea>
+        <div class="cn-composer__bar" style="padding:0 var(--sp-3) var(--sp-3)">
+          <div class="cn-composer__tools">
+            <button class="cn-chip cn-chip--mono" data-i18n="act.attach"></button>
+          </div>
+          <button class="cn-send" style="width:32px;height:32px" data-i18n-title="act.generate">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 中：实时预览 -->
+  <section class="ws__col ws__preview" aria-label="Preview">
+    <div class="ws__canvas">
+      <div class="ws-frame">
+        <div class="ws-frame__bar">
+          <div class="ws-frame__dots"><i></i><i></i><i></i></div>
+          <span class="ws-frame__url">codenow.app/p/2041</span>
+          <button class="cn-iconbtn" style="height:26px;min-width:26px" data-i18n-title="act.refresh" aria-label="refresh">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>
+          </button>
+          <button class="cn-iconbtn" style="height:26px;min-width:26px" data-i18n-title="act.openNew" aria-label="open">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
+          </button>
+        </div>
+
+        <div class="ws-frame__view">
+          <div class="mock">
+            <div class="mock__nav">
+              <span class="mock__brand">STUDIO · 光间摄影</span>
+              <span class="mock__links"><i></i><i></i><i></i></span>
+            </div>
+            <div class="mock__hero">
+              <div class="mock__photo"></div>
+              <div class="mock__text">
+                <h3 class="mock__h1" data-i18n="bd.mockH1"></h3>
+                <p class="mock__sub" data-i18n="bd.mockSub"></p>
+                <span class="mock__cta" data-i18n="bd.mockCta"></span>
+              </div>
+            </div>
+            <div class="mock__grid">
+              <div class="mock__card"><div class="ph"></div><p data-i18n="bd.mockC1"></p></div>
+              <div class="mock__card"><div class="ph"></div><p data-i18n="bd.mockC2"></p></div>
+              <div class="mock__card"><div class="ph"></div><p data-i18n="bd.mockC3"></p></div>
+            </div>
+            <div class="mock__form">
+              <label class="mock__field"><span data-i18n="bd.mockF1"></span><i></i></label>
+              <label class="mock__field"><span data-i18n="bd.mockF2"></span><i></i></label>
+              <span class="mock__cta" data-i18n="bd.mockCta"></span>
+            </div>
+          </div>
+        </div>
+
+        <details class="ws-log">
+          <summary><span data-i18n="bd.buildLog"></span><span class="u-mono">vite build · 1.24s</span></summary>
+          <div class="cn-code">
+            <div class="cn-code__line cn-code__line--dim">$ npm run build</div>
+            <div class="cn-code__line">vite v5.4.8 building for production...</div>
+            <div class="cn-code__line">✓ 42 modules transformed.</div>
+            <div class="cn-code__line cn-code__line--dim">dist/index.html   0.46 kB │ gzip: 0.30 kB</div>
+            <div class="cn-code__line cn-code__line--dim">dist/assets/style.css   3.21 kB │ gzip: 1.12 kB</div>
+            <div class="cn-code__line">✓ built in 1.24s</div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 右：元素属性（编辑模式） -->
+  <aside class="ws__col ws__inspect" aria-label="Inspector">
+    <div class="ws__head"><span data-i18n="bd.inspector"></span></div>
+    <div class="ws__scroll">
+      <div class="cn-field">
+        <label data-i18n="bd.selected"></label>
+        <span class="cn-tag cn-tag--mono cn-tag--brand">.hero-title</span>
+      </div>
+
+      <div class="ws-inspector__row">
+        <div class="cn-field"><label data-i18n="bd.width"></label><input class="cn-input u-mono" value="auto"></div>
+        <div class="cn-field"><label data-i18n="bd.height"></label><input class="cn-input u-mono" value="auto"></div>
+      </div>
+      <div class="ws-inspector__row">
+        <div class="cn-field"><label data-i18n="bd.fontSize"></label><input class="cn-input u-mono" value="26px"></div>
+        <div class="cn-field"><label data-i18n="bd.radius"></label><input class="cn-input u-mono" value="0px"></div>
+      </div>
+
+      <div class="cn-field">
+        <label data-i18n="bd.color"></label>
+        <span class="u-row u-gap-3">
+          <span style="width:32px;height:32px;flex:none;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--text-primary)"></span>
+          <input class="cn-input u-mono" value="--text-primary">
+        </span>
+      </div>
+
+      <div class="cn-field">
+        <label data-i18n="bd.align"></label>
+        <select class="cn-select">
+          <option data-i18n="bd.alignLeft"></option>
+          <option data-i18n="bd.alignCenter"></option>
+          <option data-i18n="bd.alignRight"></option>
+        </select>
+      </div>
+
+      <div class="u-row u-gap-3 u-mt-4">
+        <button class="cn-btn cn-btn--ghost cn-btn--sm u-grow" data-i18n="bd.reset"></button>
+        <button class="cn-btn cn-btn--primary cn-btn--sm u-grow" data-i18n="bd.apply"></button>
+      </div>
+
+      <div class="cn-alert u-mt-6"><span class="u-mono">i</span><span data-i18n="bd.hint"></span></div>
+    </div>
+  </aside>
+</div>
+
+<script>
+I18N.define({
+  'bd.appName': '摄影工作室预约官网',
+  'bd.live': '在线',
+  'bd.preview': '预览',
+  'bd.edit': '编辑',
+  'bd.undo': '撤销',
+  'bd.redo': '重做',
+  'bd.chatTitle': '对话',
+  'bd.inspector': '元素属性',
+  'bd.selected': '已选中元素',
+  'bd.width': '宽度',
+  'bd.height': '高度',
+  'bd.fontSize': '字号',
+  'bd.color': '颜色',
+  'bd.align': '对齐',
+  'bd.alignLeft': '左对齐',
+  'bd.alignCenter': '居中',
+  'bd.alignRight': '右对齐',
+  'bd.radius': '圆角',
+  'bd.reset': '重置',
+  'bd.apply': '应用',
+  'bd.hint': '在预览中点击元素即可选中并修改样式，改动会实时同步到右侧属性面板。',
+  'bd.buildLog': '构建日志',
+  'bd.regenerate': '重新生成',
+  'bd.copy': '复制',
+  'bd.m1': '帮我做一个带预约功能的摄影工作室官网',
+  'bd.a1': '好的。我会生成首屏大图、作品画廊和一个预约表单。开始构建 ——',
+  'bd.m2': '把首屏标题改大一点，并加一个预约按钮',
+  'bd.st1': '解析提示词',
+  'bd.st2': '生成页面代码',
+  'bd.st3': '构建项目产物',
+  'bd.st4': '部署上线',
+  'bd.phChat': '继续描述你想修改的地方…',
+  'bd.mockH1': '用光影记录你的故事',
+  'bd.mockSub': '人像 · 婚礼 · 商业摄影 | 北京 · 上海',
+  'bd.mockCta': '立即预约',
+  'bd.mockC1': '人像写真',
+  'bd.mockC2': '婚礼跟拍',
+  'bd.mockC3': '商业产品',
+  'bd.mockF1': '预约日期',
+  'bd.mockF2': '联系电话'
+}, {
+  'bd.appName': 'Photo studio booking site',
+  'bd.live': 'Live',
+  'bd.preview': 'Preview',
+  'bd.edit': 'Edit',
+  'bd.undo': 'Undo',
+  'bd.redo': 'Redo',
+  'bd.chatTitle': 'Chat',
+  'bd.inspector': 'Element',
+  'bd.selected': 'Selected element',
+  'bd.width': 'Width',
+  'bd.height': 'Height',
+  'bd.fontSize': 'Font size',
+  'bd.color': 'Color',
+  'bd.align': 'Align',
+  'bd.alignLeft': 'Left',
+  'bd.alignCenter': 'Center',
+  'bd.alignRight': 'Right',
+  'bd.radius': 'Radius',
+  'bd.reset': 'Reset',
+  'bd.apply': 'Apply',
+  'bd.hint': 'Click any element in the preview to select it and edit its styles; changes stay in sync with the panel.',
+  'bd.buildLog': 'Build log',
+  'bd.regenerate': 'Regenerate',
+  'bd.copy': 'Copy',
+  'bd.m1': 'Build a photography studio site with a booking form',
+  'bd.a1': 'Sure. I will generate a hero section, a portfolio gallery and a booking form. Building now —',
+  'bd.m2': 'Make the hero title bigger and add a booking button',
+  'bd.st1': 'Parse prompt',
+  'bd.st2': 'Generate page code',
+  'bd.st3': 'Build project',
+  'bd.st4': 'Deploy live',
+  'bd.phChat': 'Describe what you want to change…',
+  'bd.mockH1': 'Tell your story with light',
+  'bd.mockSub': 'Portrait · Wedding · Commercial | Beijing · Shanghai',
+  'bd.mockCta': 'Book now',
+  'bd.mockC1': 'Portrait',
+  'bd.mockC2': 'Wedding',
+  'bd.mockC3': 'Commercial',
+  'bd.mockF1': 'Date',
+  'bd.mockF2': 'Phone'
+});
+
+/* 预览 / 编辑 模式切换（本地交互） */
+document.querySelectorAll('[data-mode-btn]').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var mode = btn.dataset.modeBtn;
+    document.body.dataset.mode = mode;
+    document.querySelectorAll('[data-mode-btn]').forEach(function (b) {
+      b.setAttribute('aria-selected', String(b.dataset.modeBtn === mode));
+    });
+  });
+});
+</script>
+</body>
+</html>

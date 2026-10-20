@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我的应用 · CodeNow</title>
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+<style>
+  .pf-page { padding: var(--sp-8) 0 var(--sp-9); }
+  .pf-avatar { width: var(--sp-9); height: var(--sp-9); font-size: var(--text-h2); font-weight: var(--weight-strong); }
+  .pf-toolbar { display: flex; align-items: center; gap: var(--sp-4); flex-wrap: wrap; }
+  .pf-filters { flex: 1 1 auto; min-width: 0; }
+  .pf-search { width: 100%; max-width: 320px; }
+  #viewCards[hidden], #viewList[hidden] { display: none !important; }
+</style>
+</head>
+<body data-chrome="app" data-page="myapps">
+<div data-chrome="header"></div>
+
+<main class="u-container pf-page">
+  <h1 class="u-h1" data-i18n="pf.title"></h1>
+  <p class="u-caption u-mt-2" data-i18n="pf.desc"></p>
+
+  <div class="cn-card u-mt-6">
+    <div class="cn-card__body">
+      <div class="u-row u-gap-4" style="flex-wrap:wrap">
+        <span class="cn-avatar pf-avatar">A</span>
+        <div class="u-grow">
+          <h2 class="u-h2">Alex</h2>
+          <p class="u-caption u-mono u-mt-2">iceblyte</p>
+          <p class="u-micro u-mt-2"><span data-i18n="pf.joined"></span> <span class="u-mono">2024-08-12</span></p>
+        </div>
+        <button class="cn-btn cn-btn--ghost" data-i18n="pf.edit"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pf-toolbar u-mt-6">
+    <div class="cn-filters pf-filters">
+      <button class="cn-filter" aria-pressed="true" data-i18n="pf.fAll"></button>
+      <button class="cn-filter" aria-pressed="false" data-i18n="pf.tWeb"></button>
+      <button class="cn-filter" aria-pressed="false" data-i18n="pf.tVue"></button>
+      <button class="cn-filter" aria-pressed="false" data-i18n="pf.tGame"></button>
+    </div>
+    <input class="cn-input pf-search" data-i18n-ph="pf.phSearch">
+    <div class="cn-seg pf-seg">
+      <button aria-selected="true" data-view="cards" data-i18n="pf.vCard"></button>
+      <button aria-selected="false" data-view="list" data-i18n="pf.vList"></button>
+    </div>
+  </div>
+
+  <div id="viewCards" class="cn-grid cn-grid--4 u-mt-6">
+    <article class="cn-card cn-card--hover cn-appcard">
+      <div class="cn-cover">
+        <div class="cn-cover__grid"></div>
+        <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+        <div class="cn-cover__badge"><span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="pf.sLive"></span></span></div>
+        <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+        <span class="cn-cover__mark">#2041 · index.html</span>
+      </div>
+      <div class="cn-appcard__body">
+        <h3 class="cn-appcard__title u-truncate" data-i18n="pf.app1"></h3>
+        <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="pf.tWeb"></span><span data-i18n="pf.updated"></span><span class="u-mono">3d</span></div>
+      </div>
+    </article>
+
+    <article class="cn-card cn-card--hover cn-appcard">
+      <div class="cn-cover">
+        <div class="cn-cover__grid"></div>
+        <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+        <div class="cn-cover__badge"><span class="cn-tag" data-i18n="pf.sDraft"></span></div>
+        <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+        <span class="cn-cover__mark">#2038 · app.vue</span>
+      </div>
+      <div class="cn-appcard__body">
+        <h3 class="cn-appcard__title u-truncate" data-i18n="pf.app2"></h3>
+        <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="pf.tVue"></span><span data-i18n="pf.updated"></span><span class="u-mono">1w</span></div>
+      </div>
+    </article>
+
+    <article class="cn-card cn-card--hover cn-appcard">
+      <div class="cn-cover">
+        <div class="cn-cover__grid"></div>
+        <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+        <div class="cn-cover__badge"><span class="cn-tag" data-i18n="pf.sDraft"></span></div>
+        <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+        <span class="cn-cover__mark">#2033 · index.html</span>
+      </div>
+      <div class="cn-appcard__body">
+        <h3 class="cn-appcard__title u-truncate" data-i18n="pf.app3"></h3>
+        <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="pf.tGame"></span><span data-i18n="pf.updated"></span><span class="u-mono">2w</span></div>
+      </div>
+    </article>
+
+    <article class="cn-card cn-card--hover cn-appcard">
+      <div class="cn-cover">
+        <div class="cn-cover__grid"></div>
+        <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+        <div class="cn-cover__badge"><span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="pf.sLive"></span></span></div>
+        <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+        <span class="cn-cover__mark">#2015 · index.html</span>
+      </div>
+      <div class="cn-appcard__body">
+        <h3 class="cn-appcard__title u-truncate" data-i18n="pf.app4"></h3>
+        <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="pf.tWeb"></span><span data-i18n="pf.updated"></span><span class="u-mono">5d</span></div>
+      </div>
+    </article>
+
+    <article class="cn-card cn-card--hover cn-appcard">
+      <div class="cn-cover">
+        <div class="cn-cover__grid"></div>
+        <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+        <div class="cn-cover__badge"><span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="pf.sLive"></span></span></div>
+        <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+        <span class="cn-cover__mark">#2007 · app.vue</span>
+      </div>
+      <div class="cn-appcard__body">
+        <h3 class="cn-appcard__title u-truncate" data-i18n="pf.app5"></h3>
+        <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="pf.tVue"></span><span data-i18n="pf.updated"></span><span class="u-mono">1w</span></div>
+      </div>
+    </article>
+
+    <article class="cn-card cn-card--hover cn-appcard">
+      <div class="cn-cover">
+        <div class="cn-cover__grid"></div>
+        <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+        <div class="cn-cover__badge"><span class="cn-tag" data-i18n="pf.sDraft"></span></div>
+        <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+        <span class="cn-cover__mark">#1998 · index.html</span>
+      </div>
+      <div class="cn-appcard__body">
+        <h3 class="cn-appcard__title u-truncate" data-i18n="pf.app6"></h3>
+        <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="pf.tGame"></span><span data-i18n="pf.updated"></span><span class="u-mono">3w</span></div>
+      </div>
+    </article>
+  </div>
+
+  <div id="viewList" class="u-mt-6" hidden>
+    <div class="cn-table--wrap">
+      <table class="cn-table">
+        <thead>
+          <tr>
+            <th data-i18n="pf.cId"></th>
+            <th data-i18n="pf.cName"></th>
+            <th data-i18n="pf.cType"></th>
+            <th data-i18n="pf.cStatus"></th>
+            <th data-i18n="pf.cUpdated"></th>
+            <th data-i18n="pf.cAction"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="u-mono">#2041</td>
+            <td data-i18n="pf.app1"></td>
+            <td><span class="cn-tag u-mono" data-i18n="pf.tWeb"></span></td>
+            <td><span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="pf.sLive"></span></span></td>
+            <td class="u-mono">2026-10-16</td>
+            <td><span class="u-row u-gap-2"><button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="pf.oEdit"></button><button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="pf.oDelete"></button></span></td>
+          </tr>
+          <tr>
+            <td class="u-mono">#2038</td>
+            <td data-i18n="pf.app2"></td>
+            <td><span class="cn-tag u-mono" data-i18n="pf.tVue"></span></td>
+            <td><span class="cn-tag" data-i18n="pf.sDraft"></span></td>
+            <td class="u-mono">2026-10-12</td>
+            <td><span class="u-row u-gap-2"><button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="pf.oEdit"></button><button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="pf.oDelete"></button></span></td>
+          </tr>
+          <tr>
+            <td class="u-mono">#2033</td>
+            <td data-i18n="pf.app3"></td>
+            <td><span class="cn-tag u-mono" data-i18n="pf.tGame"></span></td>
+            <td><span class="cn-tag" data-i18n="pf.sDraft"></span></td>
+            <td class="u-mono">2026-10-05</td>
+            <td><span class="u-row u-gap-2"><button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="pf.oEdit"></button><button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="pf.oDelete"></button></span></td>
+          </tr>
+          <tr>
+            <td class="u-mono">#2015</td>
+            <td data-i18n="pf.app4"></td>
+            <td><span class="cn-tag u-mono" data-i18n="pf.tWeb"></span></td>
+            <td><span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="pf.sLive"></span></span></td>
+            <td class="u-mono">2026-10-14</td>
+            <td><span class="u-row u-gap-2"><button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="pf.oEdit"></button><button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="pf.oDelete"></button></span></td>
+          </tr>
+          <tr>
+            <td class="u-mono">#2007</td>
+            <td data-i18n="pf.app5"></td>
+            <td><span class="cn-tag u-mono" data-i18n="pf.tVue"></span></td>
+            <td><span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="pf.sLive"></span></span></td>
+            <td class="u-mono">2026-10-11</td>
+            <td><span class="u-row u-gap-2"><button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="pf.oEdit"></button><button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="pf.oDelete"></button></span></td>
+          </tr>
+          <tr>
+            <td class="u-mono">#1998</td>
+            <td data-i18n="pf.app6"></td>
+            <td><span class="cn-tag u-mono" data-i18n="pf.tGame"></span></td>
+            <td><span class="cn-tag" data-i18n="pf.sDraft"></span></td>
+            <td class="u-mono">2026-09-28</td>
+            <td><span class="u-row u-gap-2"><button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="pf.oEdit"></button><button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="pf.oDelete"></button></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="cn-pagination u-mt-6">
+    <button class="cn-pagination__btn">‹</button>
+    <button class="cn-pagination__btn" aria-current="true">1</button>
+    <button class="cn-pagination__btn">2</button>
+    <button class="cn-pagination__btn">›</button>
+  </div>
+</main>
+
+<div data-chrome="footer"></div>
+
+<script>
+I18N.define({
+  'pf.title': '我的应用',
+  'pf.desc': '管理你生成的全部应用，支持卡片与列表两种视图。',
+  'pf.edit': '编辑资料',
+  'pf.joined': '注册于',
+
+  'pf.fAll': '全部',
+  'pf.tWeb': '网页',
+  'pf.tVue': 'Vue 项目',
+  'pf.tGame': '游戏',
+  'pf.phSearch': '搜索应用名称或 ID',
+  'pf.vCard': '卡片',
+  'pf.vList': '列表',
+  'pf.updated': '更新于',
+
+  'pf.sLive': '在线',
+  'pf.sDraft': '草稿',
+
+  'pf.cId': 'ID',
+  'pf.cName': '应用名称',
+  'pf.cType': '类型',
+  'pf.cStatus': '状态',
+  'pf.cUpdated': '更新时间',
+  'pf.cAction': '操作',
+  'pf.oEdit': '编辑',
+  'pf.oDelete': '删除',
+
+  'pf.app1': '摄影工作室预约官网',
+  'pf.app2': '在线商城后台',
+  'pf.app3': '像素风小游戏',
+  'pf.app4': '旅行摄影博客',
+  'pf.app5': '团队协作看板',
+  'pf.app6': '打字练习小游戏'
+}, {
+  'pf.title': 'My apps',
+  'pf.desc': 'Manage everything you have built, in card or list view.',
+  'pf.edit': 'Edit profile',
+  'pf.joined': 'Joined',
+
+  'pf.fAll': 'All',
+  'pf.tWeb': 'Web',
+  'pf.tVue': 'Vue project',
+  'pf.tGame': 'Game',
+  'pf.phSearch': 'Search by app name or ID',
+  'pf.vCard': 'Cards',
+  'pf.vList': 'List',
+  'pf.updated': 'Updated',
+
+  'pf.sLive': 'Live',
+  'pf.sDraft': 'Draft',
+
+  'pf.cId': 'ID',
+  'pf.cName': 'App name',
+  'pf.cType': 'Type',
+  'pf.cStatus': 'Status',
+  'pf.cUpdated': 'Updated',
+  'pf.cAction': 'Actions',
+  'pf.oEdit': 'Edit',
+  'pf.oDelete': 'Delete',
+
+  'pf.app1': 'Photo studio booking site',
+  'pf.app2': 'Online store admin',
+  'pf.app3': 'Pixel mini game',
+  'pf.app4': 'Travel photo blog',
+  'pf.app5': 'Team kanban board',
+  'pf.app6': 'Typing practice game'
+});
+
+(function () {
+  var seg = document.querySelector('.pf-seg');
+  if (seg) {
+    seg.addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-view]');
+      if (!b) return;
+      seg.querySelectorAll('button').forEach(function (x) {
+        x.setAttribute('aria-selected', String(x === b));
+      });
+      var v = b.getAttribute('data-view');
+      document.getElementById('viewCards').hidden = v !== 'cards';
+      document.getElementById('viewList').hidden = v !== 'list';
+    });
+  }
+
+  var filters = document.querySelector('.pf-filters');
+  if (filters) {
+    filters.addEventListener('click', function (e) {
+      var b = e.target.closest('.cn-filter');
+      if (!b) return;
+      filters.querySelectorAll('.cn-filter').forEach(function (x) {
+        x.setAttribute('aria-pressed', String(x === b));
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>

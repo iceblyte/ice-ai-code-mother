@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>对话管理 · CodeNow</title>
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+<style>
+  .ac-page { padding: var(--sp-8) 0 var(--sp-9); }
+  .ac-toolbar { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+  .ac-search { width: 100%; max-width: 320px; }
+  .ac-sel { width: auto; min-width: 150px; }
+</style>
+</head>
+<body data-chrome="admin" data-page="chatManage">
+<div data-chrome="header"></div>
+
+<main class="u-container ac-page">
+  <h1 class="u-h1" data-i18n="ac.title"></h1>
+  <p class="u-caption u-mt-2" data-i18n="ac.desc"></p>
+
+  <div class="ac-toolbar u-mt-6">
+    <input class="cn-input ac-search" data-i18n-ph="ac.phSearch">
+    <select class="cn-select ac-sel">
+      <option selected data-i18n="ac.timeAll"></option>
+      <option data-i18n="ac.timeToday"></option>
+      <option data-i18n="ac.time7"></option>
+      <option data-i18n="ac.time30"></option>
+    </select>
+  </div>
+
+  <div class="cn-table--wrap u-mt-4">
+    <table class="cn-table">
+      <thead>
+        <tr>
+          <th data-i18n="ac.cId"></th>
+          <th data-i18n="ac.cUser"></th>
+          <th data-i18n="ac.cApp"></th>
+          <th data-i18n="ac.cMsgs"></th>
+          <th data-i18n="ac.cCreated"></th>
+          <th data-i18n="ac.cAction"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="u-mono">c-8821</td>
+          <td>Alex</td>
+          <td data-i18n="ac.n1"></td>
+          <td class="u-mono">24</td>
+          <td class="u-mono">2026-10-16 14:20</td>
+          <td><button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="ac.oView"></button></td>
+        </tr>
+        <tr>
+          <td class="u-mono">c-8790</td>
+          <td>Mia</td>
+          <td data-i18n="ac.n2"></td>
+          <td class="u-mono">61</td>
+          <td class="u-mono">2026-10-15 09:42</td>
+          <td><button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="ac.oView"></button></td>
+        </tr>
+        <tr>
+          <td class="u-mono">c-8733</td>
+          <td>Leo</td>
+          <td data-i18n="ac.n3"></td>
+          <td class="u-mono">18</td>
+          <td class="u-mono">2026-10-14 18:05</td>
+          <td><button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="ac.oView"></button></td>
+        </tr>
+        <tr>
+          <td class="u-mono">c-8701</td>
+          <td>Zoey</td>
+          <td data-i18n="ac.n4"></td>
+          <td class="u-mono">42</td>
+          <td class="u-mono">2026-10-13 11:30</td>
+          <td><button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="ac.oView"></button></td>
+        </tr>
+        <tr>
+          <td class="u-mono">c-8655</td>
+          <td>Rain</td>
+          <td data-i18n="ac.n5"></td>
+          <td class="u-mono">12</td>
+          <td class="u-mono">2026-10-12 16:48</td>
+          <td><button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="ac.oView"></button></td>
+        </tr>
+        <tr>
+          <td class="u-mono">c-8620</td>
+          <td>Kai</td>
+          <td data-i18n="ac.n6"></td>
+          <td class="u-mono">33</td>
+          <td class="u-mono">2026-10-10 10:12</td>
+          <td><button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="ac.oView"></button></td>
+        </tr>
+        <tr>
+          <td class="u-mono">c-8588</td>
+          <td>Nina</td>
+          <td data-i18n="ac.n7"></td>
+          <td class="u-mono">9</td>
+          <td class="u-mono">2026-10-08 20:37</td>
+          <td><button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="ac.oView"></button></td>
+        </tr>
+        <tr>
+          <td class="u-mono">c-8540</td>
+          <td>Aria</td>
+          <td data-i18n="ac.n8"></td>
+          <td class="u-mono">27</td>
+          <td class="u-mono">2026-10-05 08:55</td>
+          <td><button class="cn-btn cn-btn--quiet cn-btn--sm" data-i18n="ac.oView"></button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cn-card u-mt-6">
+    <div class="cn-card__body">
+      <div class="u-row u-gap-2 u-mb-4" style="flex-wrap:wrap">
+        <h2 class="u-title" data-i18n="ac.preview"></h2>
+        <span class="u-caption u-mono">· c-8821</span>
+      </div>
+      <div class="u-col u-gap-4">
+        <div class="cn-msg cn-msg--ai">
+          <span class="cn-msg__avatar cn-msg__avatar--ai">&gt;</span>
+          <div class="cn-msg__bubble" data-i18n="ac.m1"></div>
+        </div>
+        <div class="cn-msg cn-msg--user">
+          <span class="cn-msg__avatar">A</span>
+          <div class="cn-msg__bubble" data-i18n="ac.m2"></div>
+        </div>
+        <div class="cn-msg cn-msg--ai">
+          <span class="cn-msg__avatar cn-msg__avatar--ai">&gt;</span>
+          <div class="cn-msg__bubble" data-i18n="ac.m3"></div>
+        </div>
+        <div class="cn-msg cn-msg--user">
+          <span class="cn-msg__avatar">A</span>
+          <div class="cn-msg__bubble" data-i18n="ac.m4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cn-pagination u-mt-4">
+    <button class="cn-pagination__btn">‹</button>
+    <button class="cn-pagination__btn" aria-current="true">1</button>
+    <button class="cn-pagination__btn">2</button>
+    <button class="cn-pagination__btn">3</button>
+    <button class="cn-pagination__btn">›</button>
+  </div>
+</main>
+
+<div data-chrome="footer"></div>
+
+<script>
+I18N.define({
+  'ac.title': '对话管理',
+  'ac.desc': '查看平台生成的对话记录，追踪每次生成的过程与上下文。',
+  'ac.phSearch': '搜索对话 ID、用户或应用',
+  'ac.timeAll': '全部时间',
+  'ac.timeToday': '今天',
+  'ac.time7': '近 7 天',
+  'ac.time30': '近 30 天',
+  'ac.cId': 'ID',
+  'ac.cUser': '用户',
+  'ac.cApp': '关联应用',
+  'ac.cMsgs': '消息数',
+  'ac.cCreated': '创建时间',
+  'ac.cAction': '操作',
+  'ac.oView': '查看',
+  'ac.preview': '对话预览',
+
+  'ac.n1': '摄影工作室预约官网',
+  'ac.n2': '健身房会员管理',
+  'ac.n3': '咖啡品牌官网',
+  'ac.n4': '贪吃蛇小游戏',
+  'ac.n5': '活动报名落地页',
+  'ac.n6': '个人记账看板',
+  'ac.n7': '民宿预订官网',
+  'ac.n8': '像素风小游戏',
+
+  'ac.m1': '已为你生成一个摄影工作室官网，包含作品画廊与预约表单。',
+  'ac.m2': '把首屏标题改大一点，加一个预约按钮',
+  'ac.m3': '已完成：首屏标题字号提升，并新增了主色预约按钮。',
+  'ac.m4': '再帮我把配色统一成祖母绿主题'
+}, {
+  'ac.title': 'Chat management',
+  'ac.desc': 'Browse every generated conversation and trace each build and its context.',
+  'ac.phSearch': 'Search chat ID, user or app',
+  'ac.timeAll': 'All time',
+  'ac.timeToday': 'Today',
+  'ac.time7': 'Last 7 days',
+  'ac.time30': 'Last 30 days',
+  'ac.cId': 'ID',
+  'ac.cUser': 'User',
+  'ac.cApp': 'App',
+  'ac.cMsgs': 'Messages',
+  'ac.cCreated': 'Created',
+  'ac.cAction': 'Actions',
+  'ac.oView': 'View',
+  'ac.preview': 'Chat preview',
+
+  'ac.n1': 'Photo studio booking site',
+  'ac.n2': 'Gym member manager',
+  'ac.n3': 'Coffee brand site',
+  'ac.n4': 'Snake mini game',
+  'ac.n5': 'Event sign-up page',
+  'ac.n6': 'Personal expense board',
+  'ac.n7': 'Homestay booking site',
+  'ac.n8': 'Pixel mini game',
+
+  'ac.m1': 'Generated a photo studio site with a gallery and booking form.',
+  'ac.m2': 'Make the hero title bigger and add a booking button',
+  'ac.m3': 'Done: the hero title is larger and a brand-colored booking button was added.',
+  'ac.m4': 'Also unify the palette into an emerald theme'
+});
+</script>
+</body>
+</html>

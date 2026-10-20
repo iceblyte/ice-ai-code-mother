@@ -1,0 +1,10 @@
+{
+  "description": "Create logos based on uploaded reference images, ensuring accurate visual replication and providing complete, functional HTML and embedded SVG outputs.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

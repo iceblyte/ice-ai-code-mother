@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CodeNow · 一句话生成应用</title>
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+<style>
+  .home-hero { position: relative; padding: var(--sp-11) 0 var(--sp-9); text-align: center; overflow: hidden; }
+  .home-hero__grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--border-strong) 45%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--border-strong) 45%, transparent) 1px, transparent 1px);
+    background-size: 32px 32px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 0%, transparent 72%);
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 0%, transparent 72%);
+  }
+  .home-hero__eyebrow {
+    position: relative; display: inline-flex; align-items: center; gap: var(--sp-2);
+    font-family: var(--font-mono); font-size: var(--text-micro); letter-spacing: .06em;
+    text-transform: uppercase; color: var(--text-muted);
+    margin-bottom: var(--sp-5);
+  }
+  .home-hero__title { position: relative; max-width: 760px; margin: 0 auto var(--sp-4); }
+  .home-hero__sub { position: relative; max-width: 560px; margin: 0 auto var(--sp-8); color: var(--text-secondary); }
+  .home-hero__composer { position: relative; max-width: 780px; margin: 0 auto; text-align: left; }
+  .home-quick { position: relative; max-width: 780px; margin: var(--sp-5) auto 0; text-align: left; }
+  .home-quick__label { font-family: var(--font-mono); font-size: var(--text-micro); color: var(--text-muted); margin-bottom: var(--sp-2); }
+  .home-meta { position: relative; margin-top: var(--sp-6); font-family: var(--font-mono); font-size: var(--text-micro); color: var(--text-muted); }
+
+  .home-section { padding: var(--sp-9) 0 0; }
+  .cn-newcard {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-3);
+    min-height: 100%; border: 1px dashed var(--border-strong); border-radius: var(--radius-card);
+    color: var(--text-muted); cursor: pointer; padding: var(--sp-8) var(--sp-6);
+    transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease), background var(--dur) var(--ease);
+  }
+  .cn-newcard:hover { border-color: var(--brand); color: var(--brand-text); background: var(--brand-soft); }
+  .cn-newcard__plus { width: 34px; height: 34px; border-radius: 50%; border: 1px solid currentColor; display: grid; place-items: center; font-family: var(--font-mono); }
+  .home-filter { display: flex; align-items: center; gap: var(--sp-3); }
+  @media (max-width: 860px) { .home-hero { padding: var(--sp-8) 0 var(--sp-7); } }
+</style>
+</head>
+<body data-chrome="app" data-page="home">
+<div data-chrome="header"></div>
+
+<main>
+  <section class="home-hero">
+    <div class="home-hero__grid" aria-hidden="true"></div>
+    <div class="u-container">
+      <span class="home-hero__eyebrow"><i class="cn-dot cn-dot--live"></i><span data-i18n="home.eyebrow"></span></span>
+      <h1 class="u-display home-hero__title" data-i18n="home.title"></h1>
+      <p class="home-hero__sub" data-i18n="home.sub"></p>
+
+      <div class="cn-composer home-hero__composer">
+        <textarea class="cn-composer__input" rows="3" data-i18n-ph="home.ph"></textarea>
+        <div class="cn-composer__bar">
+          <div class="cn-composer__tools">
+            <button class="cn-chip cn-chip--mono" data-i18n="act.attach"></button>
+            <button class="cn-chip cn-chip--mono" aria-pressed="true" data-i18n="type.web"></button>
+            <button class="cn-chip cn-chip--mono" data-i18n="type.vue"></button>
+            <button class="cn-chip cn-chip--mono" data-i18n="type.game"></button>
+          </div>
+          <button class="cn-send" data-i18n-title="act.generate">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="home-quick">
+        <p class="home-quick__label" data-i18n="home.quick"></p>
+        <div class="cn-quick">
+          <button class="cn-chip" data-i18n="quick.blog"></button>
+          <button class="cn-chip" data-i18n="quick.corp"></button>
+          <button class="cn-chip" data-i18n="quick.shop"></button>
+          <button class="cn-chip" data-i18n="quick.dash"></button>
+          <button class="cn-chip" data-i18n="quick.game"></button>
+          <button class="cn-chip" data-i18n="quick.landing"></button>
+        </div>
+      </div>
+
+      <p class="home-meta" data-i18n="home.meta"></p>
+    </div>
+  </section>
+
+  <section class="home-section">
+    <div class="u-container">
+      <div class="u-section-head">
+        <h2 data-i18n="home.mine"></h2>
+        <a class="cn-btn cn-btn--quiet cn-btn--sm" href="profile.html" data-i18n="home.all"></a>
+      </div>
+      <div class="cn-grid cn-grid--4">
+        <article class="cn-card cn-card--hover cn-appcard">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__badge"><span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="home.live"></span></span></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#2041 · index.html</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="app.studio"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.web"></span><span data-i18n="home.updated"></span><span class="u-mono">3d</span></div>
+          </div>
+        </article>
+
+        <article class="cn-card cn-card--hover cn-appcard">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#2038 · app.vue</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="app.shop"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.vue"></span><span data-i18n="home.updated"></span><span class="u-mono">1w</span></div>
+          </div>
+        </article>
+
+        <article class="cn-card cn-card--hover cn-appcard">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__badge"><span class="cn-tag" data-i18n="home.draft"></span></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#2033 · index.html</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="app.game"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.game"></span><span data-i18n="home.updated"></span><span class="u-mono">2w</span></div>
+          </div>
+        </article>
+
+        <a class="cn-newcard" href="builder.html">
+          <span class="cn-newcard__plus">+</span>
+          <span class="u-label" data-i18n="home.new"></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section">
+    <div class="u-container">
+      <div class="u-section-head">
+        <h2 data-i18n="home.featured"></h2>
+        <div class="home-filter">
+          <div class="cn-filters">
+            <button class="cn-filter" aria-pressed="true" data-i18n="filter.all"></button>
+            <button class="cn-filter" data-i18n="type.web"></button>
+            <button class="cn-filter" data-i18n="type.vue"></button>
+            <button class="cn-filter" data-i18n="type.game"></button>
+          </div>
+          <a class="cn-btn cn-btn--quiet cn-btn--sm" href="explore.html" data-i18n="home.all"></a>
+        </div>
+      </div>
+      <div class="cn-grid cn-grid--4">
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover"><div class="cn-cover__grid"></div><div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div><span class="cn-cover__mark">#1980</span></div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="app.f1"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.web"></span><span>Leo</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats u-mono">1.2k</span></div>
+          </div>
+        </a>
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover"><div class="cn-cover__grid"></div><div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div><span class="cn-cover__mark">#1974</span></div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="app.f2"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.vue"></span><span>Mia</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats u-mono">986</span></div>
+          </div>
+        </a>
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover"><div class="cn-cover__grid"></div><div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div><span class="cn-cover__mark">#1961</span></div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="app.f3"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.game"></span><span>Zoey</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats u-mono">742</span></div>
+          </div>
+        </a>
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover"><div class="cn-cover__grid"></div><div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div><span class="cn-cover__mark">#1955</span></div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="app.f4"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.web"></span><span>Rain</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats u-mono">618</span></div>
+          </div>
+        </a>
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover"><div class="cn-cover__grid"></div><div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div><span class="cn-cover__mark">#1902</span></div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="app.f5"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.vue"></span><span>Kai</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats u-mono">530</span></div>
+          </div>
+        </a>
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover"><div class="cn-cover__grid"></div><div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div><span class="cn-cover__mark">#1888</span></div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="app.f6"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.web"></span><span>Nina</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats u-mono">417</span></div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div data-chrome="footer"></div>
+
+<script>
+I18N.define({
+  'home.eyebrow': 'AI 应用生成平台',
+  'home.title': '把一句话，编译成可运行的应用',
+  'home.sub': '描述你的想法，CodeNow 会生成页面、实时预览，并一键部署上线。',
+  'home.ph': '帮我做一个带预约功能的摄影工作室官网',
+  'home.quick': '快速开始',
+  'home.meta': '支持 网页 / Vue 项目 / 游戏 · 生成后可实时预览、可视化编辑与部署',
+  'home.mine': '我的作品',
+  'home.featured': '精选案例',
+  'home.all': '查看全部',
+  'home.new': '新建应用',
+  'home.live': '在线',
+  'home.draft': '草稿',
+  'home.updated': '更新于',
+
+  'act.attach': '+ 附件',
+  'act.generate': '生成',
+  'type.web': '网页',
+  'type.vue': 'Vue 项目',
+  'type.game': '游戏',
+  'filter.all': '全部',
+
+  'quick.blog': '个人博客',
+  'quick.corp': '企业官网',
+  'quick.shop': '在线商城',
+  'quick.dash': '数据看板',
+  'quick.game': '小游戏',
+  'quick.landing': '活动落地页',
+
+  'app.studio': '摄影工作室预约官网',
+  'app.shop': '在线商城后台',
+  'app.game': '像素风小游戏',
+  'app.f1': '咖啡品牌官网',
+  'app.f2': '健身房会员管理',
+  'app.f3': '贪吃蛇小游戏',
+  'app.f4': '活动报名落地页',
+  'app.f5': '个人记账看板',
+  'app.f6': '民宿预订官网'
+}, {
+  'home.eyebrow': 'AI APP BUILDER',
+  'home.title': 'Turn one sentence into a running app',
+  'home.sub': 'Describe your idea. CodeNow generates the pages, previews them live and deploys in one click.',
+  'home.ph': 'Build a photography studio site with a booking form',
+  'home.quick': 'Quick start',
+  'home.meta': 'Web / Vue project / Game · live preview, visual editing and one-click deploy',
+  'home.mine': 'My apps',
+  'home.featured': 'Featured',
+  'home.all': 'View all',
+  'home.new': 'New app',
+  'home.live': 'Live',
+  'home.draft': 'Draft',
+  'home.updated': 'Updated',
+
+  'act.attach': '+ Attach',
+  'act.generate': 'Generate',
+  'type.web': 'Web',
+  'type.vue': 'Vue project',
+  'type.game': 'Game',
+  'filter.all': 'All',
+
+  'quick.blog': 'Personal blog',
+  'quick.corp': 'Company site',
+  'quick.shop': 'Online store',
+  'quick.dash': 'Analytics dashboard',
+  'quick.game': 'Mini game',
+  'quick.landing': 'Campaign landing page',
+
+  'app.studio': 'Photo studio booking site',
+  'app.shop': 'Online store admin',
+  'app.game': 'Pixel mini game',
+  'app.f1': 'Coffee brand site',
+  'app.f2': 'Gym member manager',
+  'app.f3': 'Snake mini game',
+  'app.f4': 'Event sign-up page',
+  'app.f5': 'Personal expense board',
+  'app.f6': 'Homestay booking site'
+});
+</script>
+</body>
+</html>

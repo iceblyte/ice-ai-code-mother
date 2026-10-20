@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>登录 · CodeNow</title>
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+<style>
+  .auth-page { display: flex; align-items: center; justify-content: center; padding: var(--sp-10) var(--sp-6); }
+  .auth-card { width: 100%; max-width: 420px; }
+  .auth-card .cn-card__body { padding: var(--sp-8); }
+  .auth-divider { display: flex; align-items: center; gap: var(--sp-3); color: var(--text-muted); font-size: var(--text-micro); }
+  .auth-divider::before, .auth-divider::after { content: ''; flex: 1 1 auto; height: 1px; background: var(--border); }
+  .auth-check { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--text-caption); color: var(--text-secondary); cursor: pointer; }
+  .auth-check input { accent-color: var(--brand); }
+  .auth-note { text-align: center; }
+  .auth-note a { color: var(--brand-text); font-weight: var(--weight-medium); }
+  .auth-note a:hover { text-decoration: underline; }
+</style>
+</head>
+<body data-chrome="auth" data-page="auth">
+<div data-chrome="header"></div>
+
+<main class="auth-page">
+  <div class="cn-card auth-card">
+    <div class="cn-card__body">
+      <a class="cn-logo" href="index.html" aria-label="CodeNow">
+        <svg class="cn-logo__mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="var(--brand)"/><path d="M10.4 11.6 6.6 16l3.8 4.4M21.6 11.6 25.4 16l-3.8 4.4" fill="none" stroke="var(--brand-on)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.9 8.6l-4.1 8h2.9l-1.2 6.4 5.6-8.2h-3l1.4-6.2z" fill="var(--brand-on)"/></svg>
+        <span class="cn-logo__word">Code<i>Now</i></span>
+      </a>
+
+      <h1 class="u-h1 u-mt-6" data-i18n="lg.title"></h1>
+      <p class="u-caption u-mt-4" data-i18n="lg.sub"></p>
+
+      <div class="u-col u-gap-4 u-mt-6">
+        <div class="cn-field">
+          <label data-i18n="lg.account"></label>
+          <input class="cn-input" data-i18n-ph="lg.phAccount">
+        </div>
+        <div class="cn-field">
+          <label data-i18n="lg.password"></label>
+          <input class="cn-input" type="password" data-i18n-ph="lg.phPassword">
+        </div>
+        <div class="u-row--between">
+          <label class="auth-check"><input type="checkbox"><span data-i18n="lg.remember"></span></label>
+          <a class="u-caption" href="#" data-i18n="lg.forgot"></a>
+        </div>
+        <button class="cn-btn cn-btn--primary cn-btn--block cn-btn--lg" data-i18n="lg.signin"></button>
+      </div>
+
+      <div class="auth-divider u-mt-6"><span data-i18n="lg.or"></span></div>
+
+      <div class="u-col u-gap-3 u-mt-6">
+        <button class="cn-btn cn-btn--ghost cn-btn--block">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          <span data-i18n="lg.github"></span>
+        </button>
+        <button class="cn-btn cn-btn--ghost cn-btn--block">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-8 8H7l-4 3v-6.5A8 8 0 0 1 11 4h2a8 8 0 0 1 8 8Z"/></svg>
+          <span data-i18n="lg.wechat"></span>
+        </button>
+      </div>
+
+      <p class="u-caption auth-note u-mt-6">
+        <span data-i18n="lg.noAccount"></span>
+        <a href="register.html" data-i18n="lg.register"></a>
+      </p>
+    </div>
+  </div>
+</main>
+
+<div data-chrome="footer"></div>
+
+<script>
+I18N.define({
+  'lg.title': '登录 CodeNow',
+  'lg.sub': '欢迎回来，继续构建你的应用。',
+  'lg.account': '账号',
+  'lg.phAccount': '请输入账号',
+  'lg.password': '密码',
+  'lg.phPassword': '请输入密码',
+  'lg.remember': '记住我',
+  'lg.forgot': '忘记密码？',
+  'lg.signin': '登录',
+  'lg.or': '或',
+  'lg.github': '使用 GitHub 登录',
+  'lg.wechat': '使用微信登录',
+  'lg.noAccount': '还没有账号？',
+  'lg.register': '注册'
+}, {
+  'lg.title': 'Sign in to CodeNow',
+  'lg.sub': 'Welcome back — keep building your apps.',
+  'lg.account': 'Account',
+  'lg.phAccount': 'Enter your account',
+  'lg.password': 'Password',
+  'lg.phPassword': 'Enter your password',
+  'lg.remember': 'Remember me',
+  'lg.forgot': 'Forgot password?',
+  'lg.signin': 'Sign in',
+  'lg.or': 'or',
+  'lg.github': 'Continue with GitHub',
+  'lg.wechat': 'Continue with WeChat',
+  'lg.noAccount': 'No account yet?',
+  'lg.register': 'Sign up'
+});
+</script>
+</body>
+</html>

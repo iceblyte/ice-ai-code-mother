@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>案例广场 · CodeNow</title>
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+<style>
+  .ex-head { padding: var(--sp-9) 0 var(--sp-7); }
+  .ex-toolbar { display: flex; align-items: center; gap: var(--sp-4); flex-wrap: wrap; margin-top: var(--sp-6); }
+  .ex-toolbar .cn-filters { flex: 1 1 auto; }
+  .ex-toolbar__ctl { display: flex; align-items: center; gap: var(--sp-3); flex: 0 1 auto; }
+  .ex-search { flex: 1 1 160px; max-width: 260px; }
+  .ex-search::placeholder { font-family: var(--font-mono); }
+  .ex-sort { width: auto; flex: 0 0 auto; }
+  .ex-foot { margin-top: var(--sp-7); }
+</style>
+</head>
+<body data-chrome="app" data-page="explore">
+<div data-chrome="header"></div>
+
+<main>
+  <section class="ex-head">
+    <div class="u-container">
+      <h1 class="u-h1" data-i18n="ex.title"></h1>
+      <p class="u-caption u-mt-4" data-i18n="ex.sub"></p>
+
+      <div class="ex-toolbar">
+        <div class="cn-filters">
+          <button class="cn-filter" aria-pressed="true" data-i18n="ex.all"></button>
+          <button class="cn-filter" data-i18n="type.web"></button>
+          <button class="cn-filter" data-i18n="type.vue"></button>
+          <button class="cn-filter" data-i18n="type.game"></button>
+          <button class="cn-filter" data-i18n="ex.featured"></button>
+        </div>
+        <div class="ex-toolbar__ctl">
+          <input class="cn-input ex-search" type="search" data-i18n-ph="ex.search">
+          <select class="cn-select ex-sort" data-i18n-title="ex.sort">
+            <option data-i18n="ex.sortNew"></option>
+            <option data-i18n="ex.sortHot"></option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="u-container">
+      <div class="cn-grid cn-grid--4">
+
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__badge"><span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="ex.live"></span></span></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#2041 · index.html</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="ex.a1"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.web"></span><span>Alex</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats">2.4k</span></div>
+          </div>
+        </a>
+
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__badge"><span class="cn-tag" data-i18n="ex.draft"></span></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#2038 · app.vue</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="ex.a2"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.vue"></span><span>Alex</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats">1.8k</span></div>
+          </div>
+        </a>
+
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__badge"><span class="cn-tag" data-i18n="ex.draft"></span></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#2033 · index.html</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="ex.a3"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.game"></span><span>Alex</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats">1.1k</span></div>
+          </div>
+        </a>
+
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#1980 · index.html</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="ex.a4"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.web"></span><span>Leo</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats">1.2k</span></div>
+          </div>
+        </a>
+
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#1974 · app.vue</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="ex.a5"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.vue"></span><span>Mia</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats">986</span></div>
+          </div>
+        </a>
+
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#1961 · index.html</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="ex.a6"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.game"></span><span>Zoey</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats">742</span></div>
+          </div>
+        </a>
+
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#1955 · index.html</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="ex.a7"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.web"></span><span>Rain</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats">618</span></div>
+          </div>
+        </a>
+
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#1902 · app.vue</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="ex.a8"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.vue"></span><span>Kai</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats">530</span></div>
+          </div>
+        </a>
+
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#1888 · index.html</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="ex.a9"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.web"></span><span>Nina</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats">417</span></div>
+          </div>
+        </a>
+
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#2047 · index.html</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="ex.a10"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.web"></span><span>Iris</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats">864</span></div>
+          </div>
+        </a>
+
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#2029 · app.vue</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="ex.a11"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.vue"></span><span>Owen</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats">703</span></div>
+          </div>
+        </a>
+
+        <a class="cn-card cn-card--hover cn-appcard" href="app-detail.html">
+          <div class="cn-cover">
+            <div class="cn-cover__grid"></div>
+            <div class="cn-cover__dots"><i></i><i></i><i></i></div>
+            <div class="cn-cover__wire"><span></span><span></span><span></span></div>
+            <span class="cn-cover__mark">#2015 · Dashboard.vue</span>
+          </div>
+          <div class="cn-appcard__body">
+            <h3 class="cn-appcard__title u-truncate" data-i18n="ex.a12"></h3>
+            <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="type.vue"></span><span>Tara</span>
+              <span class="u-grow"></span><span class="cn-appcard__stats">512</span></div>
+          </div>
+        </a>
+
+      </div>
+
+      <div class="u-row--between ex-foot">
+        <span class="u-caption" data-i18n="ex.count"></span>
+        <div class="cn-pagination">
+          <button class="cn-pagination__btn" data-i18n-title="ex.prev">‹</button>
+          <button class="cn-pagination__btn" aria-current="true">1</button>
+          <button class="cn-pagination__btn">2</button>
+          <button class="cn-pagination__btn">3</button>
+          <button class="cn-pagination__btn">4</button>
+          <button class="cn-pagination__btn" data-i18n-title="ex.next">›</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div data-chrome="footer"></div>
+
+<script>
+I18N.define({
+  'ex.title': '案例广场',
+  'ex.sub': '看看大家用 CodeNow 做出了什么，或直接复用他们的创意。',
+  'ex.all': '全部',
+  'ex.featured': '精选',
+  'ex.search': '搜索应用名称或创建者',
+  'ex.sort': '排序方式',
+  'ex.sortNew': '最新',
+  'ex.sortHot': '最热',
+  'ex.live': '在线',
+  'ex.draft': '草稿',
+  'ex.count': '共 128 个应用',
+  'ex.prev': '上一页',
+  'ex.next': '下一页',
+
+  'type.web': '网页',
+  'type.vue': 'Vue 项目',
+  'type.game': '游戏',
+
+  'ex.a1': '摄影工作室预约官网',
+  'ex.a2': '在线商城后台',
+  'ex.a3': '像素风小游戏',
+  'ex.a4': '咖啡品牌官网',
+  'ex.a5': '健身房会员管理',
+  'ex.a6': '贪吃蛇小游戏',
+  'ex.a7': '活动报名落地页',
+  'ex.a8': '个人记账看板',
+  'ex.a9': '民宿预订官网',
+  'ex.a10': '宠物医院官网',
+  'ex.a11': '课程表小程序页',
+  'ex.a12': '财务报销系统'
+}, {
+  'ex.title': 'Explore',
+  'ex.sub': 'See what people built with CodeNow — or remix their ideas.',
+  'ex.all': 'All',
+  'ex.featured': 'Featured',
+  'ex.search': 'Search by app name or creator',
+  'ex.sort': 'Sort by',
+  'ex.sortNew': 'Newest',
+  'ex.sortHot': 'Hottest',
+  'ex.live': 'Live',
+  'ex.draft': 'Draft',
+  'ex.count': '128 apps in total',
+  'ex.prev': 'Previous page',
+  'ex.next': 'Next page',
+
+  'type.web': 'Web',
+  'type.vue': 'Vue project',
+  'type.game': 'Game',
+
+  'ex.a1': 'Photo studio booking site',
+  'ex.a2': 'Online store admin',
+  'ex.a3': 'Pixel mini game',
+  'ex.a4': 'Coffee brand site',
+  'ex.a5': 'Gym member manager',
+  'ex.a6': 'Snake mini game',
+  'ex.a7': 'Event sign-up page',
+  'ex.a8': 'Personal expense board',
+  'ex.a9': 'Homestay booking site',
+  'ex.a10': 'Pet hospital website',
+  'ex.a11': 'Class schedule mini page',
+  'ex.a12': 'Expense reimbursement system'
+});
+</script>
+</body>
+</html>

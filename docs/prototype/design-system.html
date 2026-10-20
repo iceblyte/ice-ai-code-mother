@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>设计系统 · CodeNow</title>
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+<style>
+  .ds-section { padding: var(--sp-9) 0; border-bottom: 1px solid var(--border); }
+  .ds-section > h2 { font-size: var(--text-h1); font-weight: var(--weight-strong); letter-spacing: -.01em; margin-bottom: var(--sp-2); }
+  .ds-section > p.ds-lead { color: var(--text-muted); font-size: var(--text-body); max-width: 720px; margin-bottom: var(--sp-7); }
+  .ds-h3 { font-size: var(--text-title); font-weight: var(--weight-strong); margin: var(--sp-7) 0 var(--sp-4); }
+  .ds-h3:first-of-type { margin-top: 0; }
+
+  .ds-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: var(--sp-3); }
+  .ds-swatch { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--bg-surface); }
+  .ds-swatch__chip { height: 56px; border-bottom: 1px solid var(--border); }
+  .ds-swatch__meta { padding: var(--sp-3); display: flex; flex-direction: column; gap: 2px; }
+  .ds-swatch__name { font-family: var(--font-mono); font-size: var(--text-micro); color: var(--text-primary); }
+  .ds-swatch__hex { font-family: var(--font-mono); font-size: var(--text-micro); color: var(--text-muted); }
+
+  .ds-type-row { display: flex; align-items: baseline; gap: var(--sp-5); padding: var(--sp-4) 0; border-bottom: 1px dashed var(--border); }
+  .ds-type-row .ds-type-label { width: 190px; flex: none; font-family: var(--font-mono); font-size: var(--text-micro); color: var(--text-muted); }
+
+  .ds-bars { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .ds-bar { display: flex; align-items: center; gap: var(--sp-4); }
+  .ds-bar__label { width: 90px; flex: none; font-family: var(--font-mono); font-size: var(--text-micro); color: var(--text-muted); }
+  .ds-bar__fill { height: 16px; background: var(--brand-soft); border: 1px solid var(--brand); border-radius: var(--radius-xs); }
+  .ds-bar__val { font-family: var(--font-mono); font-size: var(--text-micro); color: var(--text-muted); }
+
+  .ds-demo { padding: var(--sp-5); border: 1px dashed var(--border-strong); border-radius: var(--radius-card); background: var(--bg-surface); }
+  .ds-split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+  .ds-split > div { padding: var(--sp-5); border-radius: var(--radius-card); border: 1px solid var(--border); }
+  .ds-split .ds-light { background: #fafaf8; color: #111114; }
+  .ds-split .ds-dark { background: #0b0b0f; color: #ededf2; }
+  .ds-split .ds-light .cn-btn--primary { background: #0b8a66; color: #fff; }
+  .ds-split .ds-dark .cn-btn--primary { background: #2bd3a3; color: #06231c; }
+  .ds-note { font-size: var(--text-caption); color: var(--text-muted); }
+  .ds-note code { font-family: var(--font-mono); font-size: var(--text-micro); background: var(--bg-surface-muted); padding: 1px 5px; border-radius: var(--radius-xs); }
+  @media (max-width: 860px) { .ds-split { grid-template-columns: 1fr; } .ds-type-row { flex-direction: column; gap: var(--sp-2); } }
+</style>
+</head>
+<body data-chrome="app" data-page="design">
+<div data-chrome="header"></div>
+
+<main class="u-container">
+
+  <section class="ds-section" style="padding-top:var(--sp-9)">
+    <h2 data-i18n="ds.title"></h2>
+    <p class="ds-lead" data-i18n="ds.lead"></p>
+    <div class="cn-grid cn-grid--3">
+      <div class="cn-card"><div class="cn-card__body">
+        <span class="cn-tag cn-tag--mono">P1</span>
+        <h3 class="u-title u-mt-4" data-i18n="ds.p1t"></h3>
+        <p class="u-caption u-mt-4" data-i18n="ds.p1d"></p>
+      </div></div>
+      <div class="cn-card"><div class="cn-card__body">
+        <span class="cn-tag cn-tag--mono">P2</span>
+        <h3 class="u-title u-mt-4" data-i18n="ds.p2t"></h3>
+        <p class="u-caption u-mt-4" data-i18n="ds.p2d"></p>
+      </div></div>
+      <div class="cn-card"><div class="cn-card__body">
+        <span class="cn-tag cn-tag--mono">P3</span>
+        <h3 class="u-title u-mt-4" data-i18n="ds.p3t"></h3>
+        <p class="u-caption u-mt-4" data-i18n="ds.p3d"></p>
+      </div></div>
+    </div>
+  </section>
+
+  <section class="ds-section">
+    <h2 data-i18n="ds.colorTitle"></h2>
+    <p class="ds-lead" data-i18n="ds.colorLead"></p>
+
+    <h3 class="ds-h3" data-i18n="ds.colorBrand"></h3>
+    <div class="ds-swatches" id="swBrand"></div>
+
+    <h3 class="ds-h3" data-i18n="ds.colorNeutral"></h3>
+    <div class="ds-swatches" id="swNeutral"></div>
+
+    <h3 class="ds-h3" data-i18n="ds.colorSemantic"></h3>
+    <div class="ds-swatches" id="swSemantic"></div>
+
+    <h3 class="ds-h3" data-i18n="ds.colorCompare"></h3>
+    <div class="ds-split">
+      <div class="ds-light">
+        <p class="u-label">Light</p>
+        <p class="u-h2" style="margin:var(--sp-3) 0" data-i18n="ds.demoHead"></p>
+        <div class="u-row u-gap-2" style="flex-wrap:wrap">
+          <button class="cn-btn cn-btn--primary" data-i18n="ds.bGen"></button>
+          <button class="cn-btn cn-btn--ink" data-i18n="ds.bDeploy"></button>
+          <span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="ds.tLive"></span></span>
+        </div>
+      </div>
+      <div class="ds-dark">
+        <p class="u-label">Dark</p>
+        <p class="u-h2" style="margin:var(--sp-3) 0" data-i18n="ds.demoHead"></p>
+        <div class="u-row u-gap-2" style="flex-wrap:wrap">
+          <button class="cn-btn cn-btn--primary" style="background:#2bd3a3;color:#06231c" data-i18n="ds.bGen"></button>
+          <button class="cn-btn" style="background:#ededf2;color:#0b0b0f" data-i18n="ds.bDeploy"></button>
+          <span class="cn-tag" style="background:rgba(43,211,163,.14);color:#5ee0bb;border-color:transparent"><i class="cn-dot cn-dot--live"></i><span data-i18n="ds.tLive"></span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ds-section">
+    <h2 data-i18n="ds.typeTitle"></h2>
+    <p class="ds-lead" data-i18n="ds.typeLead"></p>
+    <div class="ds-demo">
+      <div class="ds-type-row"><span class="ds-type-label">display · 40/48</span><span class="u-display">把一句话变成应用</span></div>
+      <div class="ds-type-row"><span class="ds-type-label">h1 · 28/36</span><span class="u-h1">我的作品与精选案例</span></div>
+      <div class="ds-type-row"><span class="ds-type-label">h2 · 20/28</span><span class="u-h2">生成工作台</span></div>
+      <div class="ds-type-row"><span class="ds-type-label">title · 16/24</span><span class="u-title">摄影工作室预约官网</span></div>
+      <div class="ds-type-row"><span class="ds-type-label">body · 15/24</span><span>描述你的想法，CodeNow 会生成、预览并部署它。</span></div>
+      <div class="ds-type-row"><span class="ds-type-label">caption · 13/20</span><span class="u-caption">共 128 个应用 · 更新于 3 分钟前</span></div>
+      <div class="ds-type-row"><span class="ds-type-label">micro · 12/18</span><span class="u-micro">构建产物已就绪</span></div>
+      <div class="ds-type-row"><span class="ds-type-label">mono · 13/20</span><span class="u-mono">CodeNow▍ · #app-2041 · gen/builder</span></div>
+    </div>
+    <p class="ds-note u-mt-4" data-i18n="ds.typeNote"></p>
+  </section>
+
+  <section class="ds-section">
+    <h2 data-i18n="ds.spaceTitle"></h2>
+    <p class="ds-lead" data-i18n="ds.spaceLead"></p>
+    <div class="ds-demo">
+      <div class="ds-bars">
+        <div class="ds-bar"><span class="ds-bar__label">sp-2</span><span class="ds-bar__fill" style="width:8px"></span><span class="ds-bar__val">8px</span></div>
+        <div class="ds-bar"><span class="ds-bar__label">sp-4</span><span class="ds-bar__fill" style="width:16px"></span><span class="ds-bar__val">16px</span></div>
+        <div class="ds-bar"><span class="ds-bar__label">sp-6</span><span class="ds-bar__fill" style="width:24px"></span><span class="ds-bar__val">24px</span></div>
+        <div class="ds-bar"><span class="ds-bar__label">sp-8</span><span class="ds-bar__fill" style="width:40px"></span><span class="ds-bar__val">40px</span></div>
+        <div class="ds-bar"><span class="ds-bar__label">sp-10</span><span class="ds-bar__fill" style="width:64px"></span><span class="ds-bar__val">64px</span></div>
+      </div>
+      <div class="u-row u-gap-4 u-mt-6" style="flex-wrap:wrap">
+        <div style="width:64px;height:40px;border:1px solid var(--brand);border-radius:var(--radius-xs);display:grid;place-items:center" class="u-micro">4</div>
+        <div style="width:64px;height:40px;border:1px solid var(--brand);border-radius:var(--radius);display:grid;place-items:center" class="u-micro">8</div>
+        <div style="width:64px;height:40px;border:1px solid var(--brand);border-radius:var(--radius-card);display:grid;place-items:center" class="u-micro">12</div>
+        <div style="width:64px;height:40px;border:1px solid var(--brand);border-radius:var(--radius-lg);display:grid;place-items:center" class="u-micro">16</div>
+        <div style="width:64px;height:40px;border:1px solid var(--brand);border-radius:var(--radius-full);display:grid;place-items:center" class="u-micro">999</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ds-section">
+    <h2 data-i18n="ds.compTitle"></h2>
+    <p class="ds-lead" data-i18n="ds.compLead"></p>
+
+    <h3 class="ds-h3">Button</h3>
+    <div class="ds-demo u-row u-gap-3" style="flex-wrap:wrap">
+      <button class="cn-btn cn-btn--primary" data-i18n="ds.bGen"></button>
+      <button class="cn-btn cn-btn--ink" data-i18n="ds.bDeploy"></button>
+      <button class="cn-btn cn-btn--ghost" data-i18n="ds.bPreview"></button>
+      <button class="cn-btn cn-btn--quiet" data-i18n="ds.bCancel"></button>
+      <button class="cn-btn cn-btn--brand-soft" data-i18n="ds.bDownload"></button>
+      <button class="cn-btn cn-btn--danger" data-i18n="ds.bDelete"></button>
+      <button class="cn-btn cn-btn--ghost is-disabled" data-i18n="ds.bDisabled"></button>
+      <button class="cn-btn cn-btn--primary cn-btn--sm" data-i18n="ds.bSmall"></button>
+      <button class="cn-btn cn-btn--primary cn-btn--lg" data-i18n="ds.bLarge"></button>
+    </div>
+
+    <h3 class="ds-h3" data-i18n="ds.hComposer"></h3>
+    <div class="ds-demo">
+      <div class="cn-composer" style="max-width:760px">
+        <textarea class="cn-composer__input" rows="2" data-i18n-ph="ds.phComposer"></textarea>
+        <div class="cn-composer__bar">
+          <div class="cn-composer__tools">
+            <button class="cn-chip cn-chip--mono" data-i18n="ds.cAttach"></button>
+            <button class="cn-chip cn-chip--mono" aria-pressed="true" data-i18n="ds.cWeb"></button>
+            <button class="cn-chip cn-chip--mono" data-i18n="ds.cVue"></button>
+            <button class="cn-chip cn-chip--mono" data-i18n="ds.cGame"></button>
+          </div>
+          <button class="cn-send" aria-label="生成">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="ds-h3">Tag / Chip / Badge</h3>
+    <div class="ds-demo u-row u-gap-3" style="flex-wrap:wrap">
+      <span class="cn-tag u-mono" data-i18n="ds.tWeb"></span>
+      <span class="cn-tag u-mono">#2041</span>
+      <span class="cn-tag cn-tag--brand"><i class="cn-dot cn-dot--live"></i><span data-i18n="ds.tLive"></span></span>
+      <span class="cn-tag cn-tag--warning" data-i18n="ds.tFeatured"></span>
+      <span class="cn-tag cn-tag--danger" data-i18n="ds.tFailed"></span>
+      <span class="cn-tag cn-tag--solid">NEW</span>
+      <button class="cn-chip" data-i18n="ds.iBlog"></button>
+      <button class="cn-chip" aria-pressed="true" data-i18n="ds.iCorp"></button>
+    </div>
+
+    <h3 class="ds-h3">Form</h3>
+    <div class="ds-demo ds-split" style="grid-template-columns:1fr 1fr">
+      <div class="cn-field"><label data-i18n="ds.fAccount"></label><input class="cn-input" data-i18n-ph="ds.phAccount"></div>
+      <div class="cn-field"><label data-i18n="ds.fPassword"></label><input class="cn-input" type="password" data-i18n-ph="ds.phPassword"><span class="cn-field__error" data-i18n="ds.fPasswordErr"></span></div>
+    </div>
+
+    <h3 class="ds-h3">App Card</h3>
+    <div class="cn-grid cn-grid--3" style="max-width:900px">
+      <article class="cn-card cn-card--hover cn-appcard">
+        <div class="cn-appcard__cover cn-appcard__cover--fallback"><span>preview.webp</span></div>
+        <div class="cn-appcard__body">
+          <h4 class="cn-appcard__title u-truncate" data-i18n="ds.cardA"></h4>
+          <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="ds.tWeb"></span><span>Alex</span></div>
+        </div>
+      </article>
+      <article class="cn-card cn-card--hover cn-appcard">
+        <div class="cn-appcard__cover cn-appcard__cover--fallback"><span>preview.webp</span></div>
+        <div class="cn-appcard__body">
+          <h4 class="cn-appcard__title u-truncate" data-i18n="ds.cardB"></h4>
+          <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="ds.cVue"></span><span>Alex</span></div>
+        </div>
+      </article>
+      <article class="cn-card cn-card--hover cn-appcard">
+        <div class="cn-appcard__cover cn-appcard__cover--fallback"><span>preview.webp</span></div>
+        <div class="cn-appcard__body">
+          <h4 class="cn-appcard__title u-truncate" data-i18n="ds.cardC"></h4>
+          <div class="cn-appcard__meta"><span class="cn-tag u-mono" data-i18n="ds.cGame"></span><span>Alex</span></div>
+        </div>
+      </article>
+    </div>
+
+    <h3 class="ds-h3">Steps / Progress / Alert</h3>
+    <div class="ds-demo ds-split" style="grid-template-columns:1fr 1fr">
+      <div>
+        <div class="cn-steps">
+          <div class="cn-step is-done"><span class="cn-step__mark">✓</span><span data-i18n="ds.s1"></span></div>
+          <div class="cn-step is-done"><span class="cn-step__mark">✓</span><span data-i18n="ds.s2"></span></div>
+          <div class="cn-step is-active"><span class="cn-step__mark"></span><span data-i18n="ds.s3"></span></div>
+          <div class="cn-step"><span class="cn-step__mark">4</span><span data-i18n="ds.s4"></span></div>
+        </div>
+      </div>
+      <div class="u-col u-gap-4">
+        <div class="cn-progress"><i style="width:68%"></i></div>
+        <div class="cn-alert"><span class="u-mono">i</span><span data-i18n="ds.selected"></span></div>
+        <div class="cn-alert cn-alert--danger"><span class="u-mono">!</span><span data-i18n="ds.buildFail"></span></div>
+      </div>
+    </div>
+
+    <h3 class="ds-h3">Code / Terminal</h3>
+    <div class="cn-code" style="max-width:640px">
+      <div class="cn-code__line cn-code__line--dim">$ npm run build</div>
+      <div class="cn-code__line">vite v5.4.8 building for production...</div>
+      <div class="cn-code__line">✓ 42 modules transformed.</div>
+      <div class="cn-code__line cn-code__line--dim">dist/index.html  0.46 kB</div>
+    </div>
+
+    <h3 class="ds-h3">Chat</h3>
+    <div class="ds-demo u-col u-gap-5" style="max-width:760px">
+      <div class="cn-msg cn-msg--ai">
+        <span class="cn-msg__avatar cn-msg__avatar--ai">&gt;</span>
+        <div class="cn-msg__bubble"><span data-i18n="ds.m1"></span>
+          <div class="cn-msg__tools"><span data-i18n="ds.regenerate"></span><span data-i18n="ds.copy"></span></div></div>
+      </div>
+      <div class="cn-msg cn-msg--user">
+        <span class="cn-msg__avatar">A</span>
+        <div class="cn-msg__bubble" data-i18n="ds.m2"></div>
+      </div>
+      <div class="cn-msg cn-msg--ai">
+        <span class="cn-msg__avatar cn-msg__avatar--ai">&gt;</span>
+        <div class="cn-msg__bubble"><span class="cn-typing"><i></i><i></i><i></i></span></div>
+      </div>
+    </div>
+
+    <h3 class="ds-h3">Table / Pagination</h3>
+    <div class="cn-table--wrap">
+      <table class="cn-table">
+        <thead><tr><th data-i18n="ds.tbId">ID</th><th data-i18n="ds.tbName">App</th><th data-i18n="ds.tbType">Type</th><th data-i18n="ds.tbOwner">Owner</th><th data-i18n="ds.tbAction">Actions</th></tr></thead>
+        <tbody>
+          <tr><td class="u-mono">2041</td><td data-i18n="ds.cardA"></td><td><span class="cn-tag u-mono" data-i18n="ds.tWeb"></span></td><td>Alex</td>
+            <td><span class="u-row u-gap-2"><button class="cn-btn cn-btn--brand-soft cn-btn--sm" data-i18n="ds.bEdit"></button><button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="ds.bDelete"></button></span></td></tr>
+          <tr><td class="u-mono">2040</td><td data-i18n="ds.cardB"></td><td><span class="cn-tag u-mono" data-i18n="ds.cVue"></span></td><td>Alex</td>
+            <td><span class="u-row u-gap-2"><button class="cn-btn cn-btn--brand-soft cn-btn--sm" data-i18n="ds.bEdit"></button><button class="cn-btn cn-btn--danger cn-btn--sm" data-i18n="ds.bDelete"></button></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cn-pagination u-mt-4">
+      <button class="cn-pagination__btn">‹</button>
+      <button class="cn-pagination__btn" aria-current="true">1</button>
+      <button class="cn-pagination__btn">2</button>
+      <button class="cn-pagination__btn">3</button>
+      <button class="cn-pagination__btn">›</button>
+    </div>
+
+    <h3 class="ds-h3">States</h3>
+    <div class="ds-demo">
+      <div class="cn-state">
+        <span class="cn-state__icon">▦</span>
+        <h3 data-i18n="ds.emptyT"></h3>
+        <p data-i18n="ds.emptyD"></p>
+        <button class="cn-btn cn-btn--primary" data-i18n="ds.emptyB"></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="ds-section" style="border-bottom:0">
+    <h2 data-i18n="ds.mapTitle"></h2>
+    <p class="ds-lead" data-i18n="ds.mapLead"></p>
+    <div class="cn-table--wrap" style="max-width:860px">
+      <table class="cn-table">
+        <thead><tr><th>Ant Design Token</th><th>CodeNow 变量</th><th data-i18n="ds.mapLight"></th><th data-i18n="ds.mapDark"></th></tr></thead>
+        <tbody id="mapBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<div data-chrome="footer"></div>
+
+<script>
+I18N.define({
+  'ds.title': '设计系统',
+  'ds.lead': '这是整套原型的唯一规格来源。所有页面只使用本页定义的颜色、字号、间距与组件；切换右上角的主题与语言，可实时校验两套主题与中英文下的表现。',
+  'ds.p1t': '中性打底',
+  'ds.p1d': '以纸白 / 墨黑构成层级，靠发丝描边与留白承担结构，不依赖阴影与大面积色块。',
+  'ds.p2t': '单一品牌色',
+  'ds.p2d': '祖母绿是全站唯一品牌色；语义色只表达状态（在线、精选、失败），绝不用于装饰。',
+  'ds.p3t': '工程质感',
+  'ds.p3d': '品牌名、类型标签、ID、日志等"代码类"元素统一使用等宽字体，形成可识别的技术气质。',
+
+  'ds.colorTitle': '色彩',
+  'ds.colorLead': '下列色值取自当前主题的实时计算值——切换主题即可看到另一套取值。',
+  'ds.colorBrand': '品牌色 · Emerald（唯一）',
+  'ds.colorNeutral': '中性层',
+  'ds.colorSemantic': '语义色（仅状态）',
+  'ds.colorCompare': '亮 / 暗 对照',
+  'ds.typeTitle': '字体',
+  'ds.typeLead': '正文使用 Inter（中文回退 PingFang SC / 思源黑体），代码类元素使用 JetBrains Mono。仅 8 级字阶。',
+  'ds.typeNote': '规则：不使用渐变色文字；标题字重 600，正文 400；等宽字体仅用于品牌、类型、ID、日志、数值。',
+  'ds.spaceTitle': '间距与圆角',
+  'ds.spaceLead': '间距为 4 的倍数；圆角只有 5 档，卡片固定 12px，胶囊/圆点用 999px。',
+  'ds.compTitle': '组件',
+  'ds.compLead': '以下为全套原型使用的原子组件，页面之间完全复用。',
+  'ds.mapTitle': 'Ant Design 映射',
+  'ds.mapLead': '为后续把该设计落到真实 Vue + Ant Design Vue 工程提供直接映射（本次仅做原型，不改动工程代码）。',
+  'ds.mapLight': '亮色',
+  'ds.mapDark': '暗色',
+  'ds.hComposer': 'Composer（核心输入）',
+  'ds.phComposer': '帮我做一个带预约功能的摄影工作室官网',
+  'ds.fAccount': '账号',
+  'ds.fPassword': '密码',
+  'ds.phAccount': '请输入账号',
+  'ds.phPassword': '至少 8 位',
+  'ds.fPasswordErr': '密码长度不能小于 8 位',
+  'ds.cAttach': '+ 附件',
+  'ds.cWeb': '网页',
+  'ds.cVue': 'Vue 项目',
+  'ds.cGame': '游戏',
+  'ds.bGen': '生成',
+  'ds.bDeploy': '部署',
+  'ds.bPreview': '预览',
+  'ds.bCancel': '取消',
+  'ds.bDownload': '下载代码',
+  'ds.bDelete': '删除',
+  'ds.bDisabled': '禁用',
+  'ds.bSmall': '小号',
+  'ds.bLarge': '大号',
+  'ds.bEdit': '编辑',
+  'ds.tWeb': '网页',
+  'ds.tLive': '已部署',
+  'ds.tFeatured': '精选',
+  'ds.tFailed': '构建失败',
+  'ds.iBlog': '个人博客',
+  'ds.iCorp': '企业官网',
+  'ds.demoHead': '把一句话，编译成应用',
+  'ds.cardA': '摄影工作室预约官网',
+  'ds.cardB': '在线商城后台',
+  'ds.cardC': '像素风小游戏',
+  'ds.s1': '解析提示词',
+  'ds.s2': '生成页面代码',
+  'ds.s3': '构建项目产物',
+  'ds.s4': '部署上线',
+  'ds.selected': '已选中 .hero-title，可继续对话修改该元素。',
+  'ds.buildFail': '构建失败：vite build 退出码 1，请在对话中重试。',
+  'ds.m1': '已为你生成一个摄影工作室官网，包含作品画廊与预约表单。',
+  'ds.m2': '把首屏标题改大一点，加一个预约按钮',
+  'ds.regenerate': '重新生成',
+  'ds.copy': '复制',
+  'ds.tbId': 'ID',
+  'ds.tbName': '应用名称',
+  'ds.tbType': '生成类型',
+  'ds.tbOwner': '创建者',
+  'ds.tbAction': '操作',
+  'ds.emptyT': '还没有作品',
+  'ds.emptyD': '在上方输入你的想法，CodeNow 会生成第一个可运行的应用。',
+  'ds.emptyB': '开始生成'
+}, {
+  'ds.title': 'Design system',
+  'ds.lead': 'The single source of truth for the whole prototype. Every page uses only the colors, type scale, spacing and components defined here. Toggle the theme and language at top-right to verify all four combinations live.',
+  'ds.p1t': 'Neutral first',
+  'ds.p1d': 'Hierarchy comes from paper/ink tones, hairline borders and whitespace — not shadows or large color fills.',
+  'ds.p2t': 'One brand color',
+  'ds.p2d': 'Emerald is the only brand color; semantic colors express state only (live, featured, failed) and are never decorative.',
+  'ds.p3t': 'Engineering feel',
+  'ds.p3d': 'Brand name, type tags, IDs and logs all use a monospace face, forming a recognizable technical character.',
+
+  'ds.colorTitle': 'Color',
+  'ds.colorLead': 'Values below are read live from the current theme — switch the theme to see the other set.',
+  'ds.colorBrand': 'Brand · Emerald (the only one)',
+  'ds.colorNeutral': 'Neutrals',
+  'ds.colorSemantic': 'Semantic (state only)',
+  'ds.colorCompare': 'Light / dark side by side',
+  'ds.typeTitle': 'Typography',
+  'ds.typeLead': 'Body uses Inter (fallback PingFang SC / Source Han Sans); code-like elements use JetBrains Mono. Eight levels only.',
+  'ds.typeNote': 'Rules: no gradient text; headings 600, body 400; monospace only for brand, types, IDs, logs and numerics.',
+  'ds.spaceTitle': 'Spacing & radius',
+  'ds.spaceLead': 'Spacing is always a multiple of 4; radius has five steps, cards are always 12px, pills and dots 999px.',
+  'ds.compTitle': 'Components',
+  'ds.compLead': 'These are the atomic components reused across every page of the prototype.',
+  'ds.mapTitle': 'Ant Design mapping',
+  'ds.mapLead': 'A direct mapping for later porting this design into the real Vue + Ant Design Vue project (prototype only — no app code changed).',
+  'ds.mapLight': 'Light',
+  'ds.mapDark': 'Dark',
+  'ds.hComposer': 'Composer (core input)',
+  'ds.phComposer': 'Build a photography studio site with a booking form',
+  'ds.fAccount': 'Account',
+  'ds.fPassword': 'Password',
+  'ds.phAccount': 'Enter your account',
+  'ds.phPassword': 'At least 8 characters',
+  'ds.fPasswordErr': 'Password must be at least 8 characters',
+  'ds.cAttach': '+ Attach',
+  'ds.cWeb': 'Web',
+  'ds.cVue': 'Vue project',
+  'ds.cGame': 'Game',
+  'ds.bGen': 'Generate',
+  'ds.bDeploy': 'Deploy',
+  'ds.bPreview': 'Preview',
+  'ds.bCancel': 'Cancel',
+  'ds.bDownload': 'Download',
+  'ds.bDelete': 'Delete',
+  'ds.bDisabled': 'Disabled',
+  'ds.bSmall': 'Small',
+  'ds.bLarge': 'Large',
+  'ds.bEdit': 'Edit',
+  'ds.tWeb': 'Web',
+  'ds.tLive': 'Live',
+  'ds.tFeatured': 'Featured',
+  'ds.tFailed': 'Build failed',
+  'ds.iBlog': 'Personal blog',
+  'ds.iCorp': 'Company site',
+  'ds.demoHead': 'One sentence, compiled into an app',
+  'ds.cardA': 'Photo studio booking site',
+  'ds.cardB': 'Online store admin',
+  'ds.cardC': 'Pixel mini game',
+  'ds.s1': 'Parse prompt',
+  'ds.s2': 'Generate page code',
+  'ds.s3': 'Build project',
+  'ds.s4': 'Deploy live',
+  'ds.selected': 'Selected .hero-title — keep chatting to modify this element.',
+  'ds.buildFail': 'Build failed: vite build exited with code 1. Retry in the chat.',
+  'ds.m1': 'Generated a photo studio site with a gallery and booking form.',
+  'ds.m2': 'Make the hero title bigger and add a booking button',
+  'ds.regenerate': 'Regenerate',
+  'ds.copy': 'Copy',
+  'ds.tbId': 'ID',
+  'ds.tbName': 'App name',
+  'ds.tbType': 'Type',
+  'ds.tbOwner': 'Owner',
+  'ds.tbAction': 'Actions',
+  'ds.emptyT': 'No apps yet',
+  'ds.emptyD': 'Describe your idea above and CodeNow will generate your first running app.',
+  'ds.emptyB': 'Start building'
+});
+
+/* ---- 实时色板 ---- */
+var SWATCHES = {
+  swBrand: [
+    ['--brand-50', 'brand-50'], ['--brand-100', 'brand-100'], ['--brand-500', 'brand-500'],
+    ['--brand-600', 'brand-600 (主)'], ['--brand-700', 'brand-700'], ['--brand-800', 'brand-800']
+  ],
+  swNeutral: [
+    ['--bg-app', 'bg-app'], ['--bg-surface', 'bg-surface'], ['--bg-surface-muted', 'bg-surface-muted'],
+    ['--border', 'border'], ['--border-strong', 'border-strong'], ['--text-primary', 'text-primary'],
+    ['--text-secondary', 'text-secondary'], ['--text-muted', 'text-muted']
+  ],
+  swSemantic: [
+    ['--success', 'success'], ['--warning', 'warning'], ['--danger', 'danger'], ['--info', 'info'],
+    ['--code-bg', 'code-bg']
+  ]
+};
+
+function buildSwatches() {
+  Object.keys(SWATCHES).forEach(function (id) {
+    var host = document.getElementById(id);
+    if (!host) return;
+    host.innerHTML = SWATCHES[id].map(function (pair) {
+      return '<div class="ds-swatch" data-var="' + pair[0] + '">' +
+        '<div class="ds-swatch__chip" style="background:var(' + pair[0] + ')"></div>' +
+        '<div class="ds-swatch__meta"><span class="ds-swatch__name">' + pair[1] + '</span>' +
+        '<span class="ds-swatch__hex" data-hex></span></div></div>';
+    }).join('');
+    fillHex(host);
+  });
+}
+function fillHex(scope) {
+  (scope || document).querySelectorAll('.ds-swatch').forEach(function (el) {
+    var v = getComputedStyle(document.documentElement).getPropertyValue(el.dataset.var).trim();
+    var out = el.querySelector('[data-hex]');
+    if (out) out.textContent = v.toUpperCase();
+  });
+}
+
+/* ---- AntD 映射表 ---- */
+var MAP = [
+  ['colorPrimary', '--brand', '#0B8A66', '#2BD3A3'],
+  ['colorPrimaryBg', '--brand-soft', '#E8F6F1', 'rgba(43,211,163,.12)'],
+  ['colorBgBase / colorBgLayout', '--bg-app', '#FAFAF8', '#0B0B0F'],
+  ['colorBgContainer', '--bg-surface', '#FFFFFF', '#15151B'],
+  ['colorBgElevated', '--bg-elevated', '#FFFFFF', '#1A1A22'],
+  ['colorFillQuaternary', '--bg-surface-muted', '#F4F4F1', '#1C1C24'],
+  ['colorText', '--text-primary', '#111114', '#EDEDF2'],
+  ['colorTextSecondary', '--text-secondary', '#4A4A52', '#B4B4BE'],
+  ['colorTextTertiary', '--text-muted', '#7A7A85', '#8A8A96'],
+  ['colorBorder / colorBorderSecondary', '--border / --border-strong', '#E8E8E4 / #D6D6D0', '#26262E / #35353F'],
+  ['colorSuccess', '--success', '#0B8A66', '#2BD3A3'],
+  ['colorWarning', '--warning', '#B45309', '#E0A94B'],
+  ['colorError', '--danger', '#C8372D', '#F2726A'],
+  ['colorInfo', '--info', '#2563EB', '#7AA8F7'],
+  ['borderRadius', '--radius', '8px', '8px'],
+  ['borderRadiusLG', '--radius-card', '12px', '12px'],
+  ['controlHeight / controlHeightLG', '36 / 48', '36 / 48', '36 / 48'],
+  ['fontSize / fontSizeLG / fontSizeSM', '15 / 16 / 13', '15 / 16 / 13', '15 / 16 / 13'],
+  ['fontFamily', '--font-sans', 'Inter, PingFang SC, …', '同左 / same']
+];
+function buildMap() {
+  var body = document.getElementById('mapBody');
+  if (!body) return;
+  body.innerHTML = MAP.map(function (r) {
+    return '<tr><td class="u-mono">' + r[0] + '</td><td class="u-mono">' + r[1] + '</td>' +
+      '<td class="u-mono">' + r[2] + '</td><td class="u-mono">' + r[3] + '</td></tr>';
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  buildSwatches();
+  buildMap();
+});
+document.addEventListener('cn:theme', function () { fillHex(); });
+</script>
+</body>
+</html>

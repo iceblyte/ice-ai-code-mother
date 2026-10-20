@@ -91,19 +91,7 @@
     sun: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>',
     moon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>',
     menu: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
-    mark: '<svg class="cn-logo__mark" viewBox="0 0 120 120" aria-hidden="true">' +
-      '<defs>' +
-        '<linearGradient id="cnNavyM" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2B3A8E"/><stop offset="1" stop-color="#151F55"/></linearGradient>' +
-        '<linearGradient id="cnTealM" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#47E0D6"/><stop offset="1" stop-color="#12A2C2"/></linearGradient>' +
-        '<linearGradient id="cnBoltM" x1="0" y1="0" x2="0.85" y2="1"><stop offset="0" stop-color="#58A9F8"/><stop offset="1" stop-color="#2450D8"/></linearGradient>' +
-      '</defs>' +
-      '<circle cx="40" cy="62" r="12" fill="none" stroke="url(#cnTealM)" stroke-width="10"/>' +
-      '<ellipse cx="40" cy="62" rx="28" ry="9" transform="rotate(-25 40 62)" fill="none" stroke="#FFFFFF" stroke-width="4.5"/>' +
-      '<path d="M14 50 V37 L60 10 L106 37 V50" fill="none" stroke="url(#cnNavyM)" stroke-width="13" stroke-linejoin="round"/>' +
-      '<path d="M106 68 V83 L60 110 L14 83 V68" fill="none" stroke="url(#cnNavyM)" stroke-width="13" stroke-linejoin="round"/>' +
-      '<path d="M64 35 L76 29 L86 60 L86 28 L100 21 L88 54 L96 54 L76 98 L70 58 L70 91 L54 91 Z" fill="url(#cnBoltM)"/>' +
-      '<path d="M4 55 H21 M9 64 H21" fill="none" stroke="url(#cnTealM)" stroke-width="4.5" stroke-linecap="round"/>' +
-    '</svg>'
+    mark: '<svg class="cn-logo__mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="var(--brand)"/><path d="M10.4 11.6 6.6 16l3.8 4.4M21.6 11.6 25.4 16l-3.8 4.4" fill="none" stroke="var(--brand-on)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.9 8.6l-4.1 8h2.9l-1.2 6.4 5.6-8.2h-3l1.4-6.2z" fill="var(--brand-on)"/></svg>'
   };
 
   function navItems(mode) {

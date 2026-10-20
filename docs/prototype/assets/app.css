@@ -51,14 +51,12 @@
   font-family: var(--font-mono); font-size: 18px; font-weight: var(--weight-heavy);
   letter-spacing: -.01em; color: var(--text-primary);
 }
-.cn-logo__word i { font-style: normal; color: #2E63E6; }
-[data-theme='dark'] .cn-logo__word i { color: #5B8AF5; }
+.cn-logo__word i { font-style: normal; color: var(--brand); }
 .cn-logo__cursor {
   display: inline-block; width: 8px; height: 18px; margin-left: 2px;
-  background: #2E63E6; border-radius: 1px; vertical-align: -3px;
+  background: var(--brand); border-radius: 1px; vertical-align: -3px;
   animation: cn-blink 1.4s steps(2, start) infinite;
 }
-[data-theme='dark'] .cn-logo__cursor { background: #5B8AF5; }
 @keyframes cn-blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
 
 .cn-nav { display: flex; align-items: center; gap: var(--sp-1); }

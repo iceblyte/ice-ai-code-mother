@@ -46,18 +46,9 @@
 }
 .cn-header__inner { height: var(--header-h); display: flex; align-items: center; gap: var(--sp-6); }
 .cn-logo { display: inline-flex; align-items: center; gap: var(--sp-2); }
-.cn-logo__mark { width: 26px; height: 26px; }
-.cn-logo__word {
-  font-family: var(--font-mono); font-size: 18px; font-weight: var(--weight-heavy);
-  letter-spacing: -.01em; color: var(--text-primary);
-}
-.cn-logo__word i { font-style: normal; color: var(--brand); }
-.cn-logo__cursor {
-  display: inline-block; width: 8px; height: 18px; margin-left: 2px;
-  background: var(--brand); border-radius: 1px; vertical-align: -3px;
-  animation: cn-blink 1.4s steps(2, start) infinite;
-}
-@keyframes cn-blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+.cn-logo__mark { width: 25px; height: auto; flex: none; }
+.cn-logo__wordmark { height: 19px; width: auto; flex: none; }
+.cn-footer .cn-logo__wordmark { height: 17px; }
 
 .cn-nav { display: flex; align-items: center; gap: var(--sp-1); }
 .cn-nav a {
@@ -113,6 +104,51 @@
 }
 .cn-iconbtn:hover { color: var(--text-primary); border-color: var(--border-strong); background: var(--bg-surface-muted); }
 .cn-iconbtn__text { font-size: var(--text-caption); font-weight: var(--weight-medium); font-family: var(--font-mono); }
+
+/* 外观切换器 */
+.cn-skinpicker { position: relative; }
+.cn-skinpicker__menu {
+  position: absolute; right: 0; top: calc(100% + var(--sp-2)); z-index: 70;
+  width: 316px; padding: var(--sp-3);
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius-card); box-shadow: var(--shadow-lg);
+}
+.cn-skinpicker__head {
+  padding: var(--sp-1) var(--sp-1) var(--sp-3);
+  font-size: var(--text-micro); font-weight: var(--weight-strong);
+  color: var(--text-secondary); letter-spacing: .04em;
+}
+.cn-skinpicker__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2); }
+.cn-skinopt {
+  display: flex; align-items: center; gap: var(--sp-2); min-width: 0;
+  padding: var(--sp-2); text-align: left;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.cn-skinopt:hover { border-color: var(--border-strong); }
+.cn-skinopt[aria-pressed='true'] { border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand-ring); }
+.cn-skinopt__swatch {
+  position: relative; width: 30px; height: 30px; flex: none; overflow: hidden;
+  border-radius: var(--radius-xs); border: 1px solid rgba(0, 0, 0, .12);
+  background: var(--sw-bg);
+}
+.cn-skinopt__swatch::before {
+  content: ''; position: absolute; left: 5px; top: 5px;
+  width: 11px; height: 11px; border-radius: 2px; background: var(--sw-ink);
+}
+.cn-skinopt__swatch::after {
+  content: ''; position: absolute; right: -7px; bottom: -7px;
+  width: 20px; height: 20px; border-radius: 50%; background: var(--sw-acc);
+}
+.cn-skinopt__name {
+  font-size: var(--text-caption); font-weight: var(--weight-medium); color: var(--text-primary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cn-skinpicker__note {
+  margin: var(--sp-3) var(--sp-1) 0;
+  font-size: var(--text-micro); color: var(--text-muted);
+}
 
 /* ---------------- 标签 / 徽标 ---------------- */
 .cn-tag {
@@ -389,6 +425,12 @@
 .cn-mobilenav { border-top: 1px solid var(--border); background: var(--bg-surface); }
 .cn-mobilenav .cn-nav { display: flex; flex-direction: column; align-items: stretch; padding: var(--sp-2) 0; gap: 0; }
 .cn-mobilenav .cn-nav a { padding: var(--sp-3) var(--sp-2); }
+.cn-mobilenav__account {
+  display: flex; gap: var(--sp-4); padding: var(--sp-3) 0;
+  border-top: 1px solid var(--border);
+  font-size: var(--text-caption); color: var(--text-secondary);
+}
+.cn-mobilenav__account a:hover { color: var(--text-primary); }
 .cn-burger { display: none; }
 @media (max-width: 860px) {
   .cn-nav { display: none; }
@@ -405,4 +447,9 @@
 @media (max-width: 560px) {
   .cn-grid--4, .cn-grid--3, .cn-grid--2 { grid-template-columns: minmax(0, 1fr); }
   .cn-footer__inner { flex-direction: column; gap: var(--sp-6); }
+  .cn-user { display: none; }
+  .cn-skinpicker__menu {
+    position: fixed; left: var(--sp-4); right: var(--sp-4);
+    top: calc(var(--header-h) + var(--sp-2)); width: auto;
+  }
 }

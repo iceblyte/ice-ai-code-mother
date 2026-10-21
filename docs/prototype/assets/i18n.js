@@ -11,6 +11,8 @@
   var listeners = [];
   var KEY_THEME = 'cn-theme';
   var KEY_LANG = 'cn-lang';
+  var KEY_SKIN = 'cn-skin';
+  var SKINS = ['minimal', 'codenow', 'cohere', 'dell'];
 
   function read(k, fb) { try { return localStorage.getItem(k) || fb; } catch (e) { return fb; } }
   function write(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -18,6 +20,8 @@
   var I18N = {
     lang: 'zh',
     theme: 'light',
+    skin: 'minimal',
+    SKINS: SKINS,
 
     /* ---------- 字典 ---------- */
     define: function (zh, en) {
@@ -43,6 +47,17 @@
     },
     toggleTheme: function () {
       this.setTheme(this.theme === 'dark' ? 'light' : 'dark');
+    },
+
+    /* ---------- 外观皮肤（与明暗主题正交） ---------- */
+    applySkin: function (skin) {
+      this.skin = SKINS.indexOf(skin) > -1 ? skin : 'minimal';
+      document.documentElement.setAttribute('data-skin', this.skin);
+      document.dispatchEvent(new CustomEvent('cn:skin', { detail: { skin: this.skin } }));
+    },
+    setSkin: function (skin) {
+      write(KEY_SKIN, skin);
+      this.applySkin(skin);
     },
 
     /* ---------- 语言 ---------- */
@@ -84,6 +99,7 @@
       var storedTheme = read(KEY_THEME, null);
       var sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       this.applyTheme(storedTheme || (sysDark ? 'dark' : 'light'));
+      this.applySkin(read(KEY_SKIN, 'minimal'));
       this.lang = read(KEY_LANG, 'zh') === 'en' ? 'en' : 'zh';
       document.documentElement.setAttribute('lang', this.lang === 'en' ? 'en' : 'zh-CN');
 

@@ -105,6 +105,11 @@
   --shadow-sm: 0 2px 8px rgba(17, 17, 20, .06);
   --shadow-md: 0 8px 24px rgba(17, 17, 20, .08);
   --shadow-lg: 0 16px 48px rgba(17, 17, 20, .12);
+
+  /* 品牌图形（logo / wordmark）标准色：保持品牌识别，不随皮肤改变 */
+  --logo-ink: #031036;
+  --logo-accent: #1659fe;
+  --logo-cyan: #0ec4b8;
 }
 
 /* ============================================================
@@ -156,6 +161,11 @@
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, .45);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, .5);
   --shadow-lg: 0 16px 48px rgba(0, 0, 0, .6);
+
+  /* 品牌图形在暗色面上提亮，保持辨识度 */
+  --logo-ink: #f2f5fa;
+  --logo-accent: #6e9bff;
+  --logo-cyan: #2be3d6;
 }
 
 /* ============================================================

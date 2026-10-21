@@ -7,6 +7,7 @@
 <link rel="icon" href="assets/favicon.svg">
 <link rel="stylesheet" href="assets/tokens.css">
 <link rel="stylesheet" href="assets/app.css">
+<link rel="stylesheet" href="assets/skins.css">
 <script src="assets/i18n.js"></script>
 <script src="assets/chrome.js"></script>
 <style>
@@ -79,8 +80,17 @@
   .ws-log[open] > summary::before { transform: rotate(90deg); }
   .ws-log .cn-code { border-radius: 0; }
 
-  /* 生成结果的示意页面 */
-  .mock { padding: var(--sp-6); display: flex; flex-direction: column; gap: var(--sp-6); background: var(--bg-surface); min-height: 100%; }
+  /* 生成结果的示意页面：属于产物自身的视觉，不随平台外观皮肤变化 */
+  .mock {
+    padding: var(--sp-6); display: flex; flex-direction: column; gap: var(--sp-6); background: var(--bg-surface); min-height: 100%;
+    --font-sans: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    --brand: #0b8a66; --brand-hover: #0a7a5b; --brand-on: #ffffff;
+    --bg-surface: #ffffff; --bg-surface-muted: #f6f6f3; --bg-inset: #fafaf8;
+    --border: #e7e7e2; --border-strong: #d5d5cf;
+    --text-secondary: #55555c; --text-muted: #8a8a92;
+    --radius-xs: 4px; --radius: 8px; --radius-card: 12px;
+    font-family: var(--font-sans);
+  }
   .mock__nav { display: flex; align-items: center; justify-content: space-between; }
   .mock__brand { font-family: var(--font-mono); font-size: var(--text-micro); letter-spacing: .08em; color: var(--text-secondary); }
   .mock__links { display: flex; gap: var(--sp-3); }

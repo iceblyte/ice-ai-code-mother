@@ -7,6 +7,7 @@
 <link rel="icon" href="assets/favicon.svg">
 <link rel="stylesheet" href="assets/tokens.css">
 <link rel="stylesheet" href="assets/app.css">
+<link rel="stylesheet" href="assets/skins.css">
 <script src="assets/i18n.js"></script>
 <script src="assets/chrome.js"></script>
 <style>
@@ -41,7 +42,23 @@
   .ds-split .ds-dark .cn-btn--primary { background: #2bd3a3; color: #06231c; }
   .ds-note { font-size: var(--text-caption); color: var(--text-muted); }
   .ds-note code { font-family: var(--font-mono); font-size: var(--text-micro); background: var(--bg-surface-muted); padding: 1px 5px; border-radius: var(--radius-xs); }
-  @media (max-width: 860px) { .ds-split { grid-template-columns: 1fr; } .ds-type-row { flex-direction: column; gap: var(--sp-2); } }
+  @media (max-width: 860px) { .ds-split { grid-template-columns: 1fr; } .ds-type-row { flex-direction: column; gap: var(--sp-2); } .ds-skins { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  /* 外观预设 */
+  .ds-skins { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-3); }
+  .ds-skin {
+    display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-2);
+    padding: var(--sp-3); text-align: left; cursor: pointer;
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+  }
+  .ds-skin:hover { border-color: var(--border-strong); }
+  .ds-skin[aria-pressed='true'] { border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand-ring); }
+  .ds-skin__bar { display: flex; width: 100%; height: 34px; overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-xs); }
+  .ds-skin__bar i { flex: 1; }
+  .ds-skin__name { font-size: var(--text-title); font-weight: var(--weight-strong); color: var(--text-primary); }
+  .ds-skin__meta { font-size: var(--text-micro); color: var(--text-muted); }
 </style>
 </head>
 <body data-chrome="app" data-page="design">
@@ -295,6 +312,12 @@
     </div>
   </section>
 
+  <section class="ds-section">
+    <h2 data-i18n="ds.skinTitle"></h2>
+    <p class="ds-lead" data-i18n="ds.skinLead"></p>
+    <div class="ds-skins" id="skinList"></div>
+  </section>
+
   <section class="ds-section" style="border-bottom:0">
     <h2 data-i18n="ds.mapTitle"></h2>
     <p class="ds-lead" data-i18n="ds.mapLead"></p>
@@ -332,6 +355,8 @@ I18N.define({
   'ds.typeNote': '规则：不使用渐变色文字；标题字重 600，正文 400；等宽字体仅用于品牌、类型、ID、日志、数值。',
   'ds.spaceTitle': '间距与圆角',
   'ds.spaceLead': '间距为 4 的倍数；圆角只有 5 档，卡片固定 12px，胶囊/圆点用 999px。',
+  'ds.skinTitle': '外观预设',
+  'ds.skinLead': '四套界面外观共用同一套结构与组件，仅覆盖设计令牌中的形态与色彩。点击任一项即可整站切换，选择会被记住；品牌 logo 图形与标准色始终不变。',
   'ds.compTitle': '组件',
   'ds.compLead': '以下为全套原型使用的原子组件，页面之间完全复用。',
   'ds.mapTitle': 'Ant Design 映射',
@@ -408,6 +433,8 @@ I18N.define({
   'ds.typeNote': 'Rules: no gradient text; headings 600, body 400; monospace only for brand, types, IDs, logs and numerics.',
   'ds.spaceTitle': 'Spacing & radius',
   'ds.spaceLead': 'Spacing is always a multiple of 4; radius has five steps, cards are always 12px, pills and dots 999px.',
+  'ds.skinTitle': 'Appearance presets',
+  'ds.skinLead': 'Four appearances share the same structure and components, overriding only form and color tokens. Click any card to restyle the whole site; the choice is remembered. The brand logo and its standard colors never change.',
   'ds.compTitle': 'Components',
   'ds.compLead': 'These are the atomic components reused across every page of the prototype.',
   'ds.mapTitle': 'Ant Design mapping',
@@ -534,11 +561,41 @@ function buildMap() {
   }).join('');
 }
 
+/* ---- 外观预设 ---- */
+var SKIN_CARDS = [
+  { id: 'minimal', c: ['#1d1d1f', '#f5f5f7', '#0066cc'] },
+  { id: 'codenow', c: ['#0b8a66', '#fafaf8', '#2bd3a3'] },
+  { id: 'cohere', c: ['#1c1c22', '#eeece7', '#ff7759'] },
+  { id: 'dell', c: ['#d81e28', '#ffffff', '#0000ee'] }
+];
+function buildSkins() {
+  var host = document.getElementById('skinList');
+  if (!host) return;
+  host.innerHTML = SKIN_CARDS.map(function (s) {
+    return '<button class="ds-skin" type="button" data-pick="' + s.id +
+      '" aria-pressed="' + (I18N.skin === s.id) + '">' +
+      '<span class="ds-skin__bar">' + s.c.map(function (c) {
+        return '<i style="background:' + c + '"></i>';
+      }).join('') + '</span>' +
+      '<span class="ds-skin__name">' + I18N.t('skin.' + s.id) + '</span>' +
+      '<span class="ds-skin__meta">' + s.id + '</span></button>';
+  }).join('');
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   buildSwatches();
   buildMap();
+  buildSkins();
+  var host = document.getElementById('skinList');
+  if (host) host.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-pick]');
+    if (!b) return;
+    I18N.setSkin(b.getAttribute('data-pick'));
+  });
 });
+document.addEventListener('cn:skin', function () { buildSkins(); fillHex(); });
 document.addEventListener('cn:theme', function () { fillHex(); });
+document.addEventListener('cn:lang', function () { buildSkins(); });
 </script>
 </body>
 </html>

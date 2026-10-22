@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
+import i18n from '@/i18n'
 import { API_BASE_URL } from '@/config/env'
 
 // 创建 Axios 实例
@@ -32,7 +33,7 @@ myAxios.interceptors.response.use(
         !response.request.responseURL.includes('user/get/login') &&
         !window.location.pathname.includes('/user/login')
       ) {
-        message.warning('请先登录')
+        message.warning(i18n.global.t('common.pleaseLogin'))
         const redirect = `${window.location.pathname}${window.location.search}${window.location.hash}`
         window.location.href = `/user/login?redirect=${encodeURIComponent(redirect)}`
       }

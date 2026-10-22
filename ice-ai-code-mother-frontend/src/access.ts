@@ -1,5 +1,6 @@
 import { useLoginUserStore } from '@/stores/loginUser'
 import { message } from 'ant-design-vue'
+import i18n from '@/i18n'
 import router from '@/router'
 
 // 是否为首次获取登录用户
@@ -20,7 +21,7 @@ router.beforeEach(async (to, from, next) => {
   const toUrl = to.fullPath
   if (toUrl.startsWith('/admin')) {
     if (!loginUser || loginUser.userRole !== 'admin') {
-      message.error('没有权限')
+      message.error(i18n.global.t('common.accessDenied'))
       next(`/user/login?redirect=${to.fullPath}`)
       return
     }

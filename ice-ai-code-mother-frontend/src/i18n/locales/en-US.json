@@ -9,7 +9,9 @@
     "close": "Close",
     "copy": "Copy",
     "copied": "Copied",
-    "unknownUser": "Unknown user"
+    "unknownUser": "Unknown user",
+    "accessDenied": "Access denied",
+    "pleaseLogin": "Please log in first"
   },
   "header": {
     "siteTitle": "AI App Builder",

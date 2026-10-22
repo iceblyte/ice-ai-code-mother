@@ -44,6 +44,23 @@ const md: MarkdownIt = new MarkdownIt({
       }
     }
 
+    // AI 输出的代码块常缺少语言标记：限定常用子集做自动检测，避免无高亮
+    try {
+      const auto = hljs.highlightAuto(str, [
+        'html',
+        'xml',
+        'css',
+        'javascript',
+        'typescript',
+        'json',
+        'bash',
+        'markdown',
+      ])
+      return '<pre class="hljs"><code>' + auto.value + '</code></pre>'
+    } catch {
+      // 自动检测失败时退回纯转义
+    }
+
     return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>'
   },
 })

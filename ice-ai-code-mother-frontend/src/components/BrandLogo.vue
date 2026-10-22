@@ -32,6 +32,7 @@
     </svg>
     <!-- 品牌 wordmark：CodeNow 文字标，颜色随 --logo-* 令牌适配主题/皮肤 -->
     <svg
+      v-if="wordmark"
       class="brand-logo__wordmark"
       :height="wordHeight"
       viewBox="0 0 955 173"
@@ -57,12 +58,23 @@
 <script setup lang="ts">
 // 品牌 logo：mark + CodeNow wordmark 组合（与原型 .cn-logo 一致），
 // 内联 SVG 颜色走 --logo-ink/--logo-accent/--logo-cyan 令牌，随主题/皮肤适配
-withDefaults(defineProps<{ markWidth?: number; wordHeight?: number; gap?: number; alt?: string }>(), {
-  markWidth: 25,
-  wordHeight: 19,
-  gap: 8,
-  alt: 'CodeNow',
-})
+withDefaults(
+  defineProps<{
+    markWidth?: number
+    wordHeight?: number
+    gap?: number
+    alt?: string
+    /** 是否显示 CodeNow 文字标（头像等场景可关闭，仅用 mark） */
+    wordmark?: boolean
+  }>(),
+  {
+    markWidth: 25,
+    wordHeight: 19,
+    gap: 8,
+    alt: 'CodeNow',
+    wordmark: true,
+  },
+)
 </script>
 
 <style scoped>

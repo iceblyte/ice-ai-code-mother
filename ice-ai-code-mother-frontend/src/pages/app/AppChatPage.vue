@@ -38,23 +38,6 @@
           </template>
           {{ t('chat.deploy') }}
         </a-button>
-        <a-button
-          v-if="isOwner && previewUrl"
-          type="default"
-          @click="toggleEditMode"
-          :class="{ 'edit-mode-active': isEditMode }"
-        >
-          <template #icon>
-            <EditOutlined />
-          </template>
-          {{ isEditMode ? t('chat.exitEditMode') : t('chat.editMode') }}
-        </a-button>
-        <a-button v-if="previewUrl" type="default" @click="openInNewTab">
-          <template #icon>
-            <ExportOutlined />
-          </template>
-          {{ t('chat.openNewTab') }}
-        </a-button>
       </div>
     </div>
 
@@ -79,7 +62,7 @@
             </div>
             <div v-else class="ai-message">
               <div class="message-avatar">
-                <span class="ai-avatar"><BrandLogo :mark-width="20" /></span>
+                <span class="ai-avatar"><BrandLogo :mark-width="24" :wordmark="false" /></span>
               </div>
               <div class="message-content">
                 <MarkdownRenderer
@@ -186,7 +169,27 @@
       <div class="preview-section">
         <div class="preview-header">
           <h3>{{ t('chat.previewTitle') }}</h3>
-          <span v-if="isEditMode" class="editing-tag">{{ t('chat.editMode') }}</span>
+          <div class="preview-actions">
+            <a-button
+              v-if="isOwner && previewUrl"
+              type="link"
+              :danger="isEditMode"
+              @click="toggleEditMode"
+              :class="{ 'edit-mode-active': isEditMode }"
+              style="padding: 0; height: auto; margin-right: 12px"
+            >
+              <template #icon>
+                <EditOutlined />
+              </template>
+              {{ isEditMode ? t('chat.exitEditMode') : t('chat.editMode') }}
+            </a-button>
+            <a-button v-if="previewUrl" type="link" @click="openInNewTab">
+              <template #icon>
+                <ExportOutlined />
+              </template>
+              {{ t('chat.openNewTab') }}
+            </a-button>
+          </div>
         </div>
         <div class="preview-content">
           <div v-if="isGenerating" class="preview-loading">
@@ -1258,16 +1261,16 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
-/* AI 头像：品牌 logo 圆形底 */
+/* AI 头像：品牌 logo 圆形底（完整显示，不裁切） */
 .ai-avatar {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  display: grid;
-  place-items: center;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .loading-indicator {

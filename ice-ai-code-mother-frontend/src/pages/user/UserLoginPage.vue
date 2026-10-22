@@ -2,7 +2,7 @@
   <div id="userLoginPage">
     <h2 class="title">{{ t('auth.login.title') }}</h2>
     <div class="desc">{{ t('auth.login.subtitle') }}</div>
-    <a-form :model="formState" name="basic" autocomplete="off" @finish="handleSubmit">
+    <a-form ref="formRef" :model="formState" name="basic" autocomplete="off" @finish="handleSubmit">
       <a-form-item name="userAccount" :rules="[{ required: true, message: t('auth.login.accountRequired') }]">
         <a-input v-model:value="formState.userAccount" :placeholder="t('auth.login.accountPh')" />
       </a-form-item>
@@ -28,12 +28,12 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { userLogin } from '@/api/userController.ts'
 import { useLoginUserStore } from '@/stores/loginUser.ts'
 import { useRoute, useRouter } from 'vue-router'
-import { message } from 'ant-design-vue'
+import { message, type FormInstance } from 'ant-design-vue'
 
 const formState = reactive<API.UserLoginRequest>({
   userAccount: '',
@@ -43,7 +43,11 @@ const formState = reactive<API.UserLoginRequest>({
 const route = useRoute()
 const router = useRouter()
 const loginUserStore = useLoginUserStore()
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
+const formRef = ref<FormInstance>()
+
+// 切换语言时清除旧语言的校验提示，下次校验按新语言展示
+watch(locale, () => formRef.value?.clearValidate())
 
 /**
  * 提交表单

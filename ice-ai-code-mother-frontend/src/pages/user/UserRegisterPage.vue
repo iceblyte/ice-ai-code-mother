@@ -2,7 +2,7 @@
   <div id="userRegisterPage">
     <h2 class="title">{{ t('auth.register.title') }}</h2>
     <div class="desc">{{ t('auth.register.subtitle') }}</div>
-    <a-form :model="formState" name="basic" autocomplete="off" @finish="handleSubmit">
+    <a-form ref="formRef" :model="formState" name="basic" autocomplete="off" @finish="handleSubmit">
       <a-form-item name="userAccount" :rules="[{ required: true, message: t('auth.register.accountRequired') }]">
         <a-input v-model:value="formState.userAccount" :placeholder="t('auth.register.accountPh')" />
       </a-form-item>
@@ -42,11 +42,15 @@
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { userRegister } from '@/api/userController.ts'
-import { message } from 'ant-design-vue'
-import { reactive } from 'vue'
+import { message, type FormInstance } from 'ant-design-vue'
+import { reactive, ref, watch } from 'vue'
 
 const router = useRouter()
-const { t } = useI18n({ useScope: 'global' })
+const { t, locale } = useI18n({ useScope: 'global' })
+const formRef = ref<FormInstance>()
+
+// 切换语言时清除旧语言的校验提示，下次校验按新语言展示
+watch(locale, () => formRef.value?.clearValidate())
 
 const formState = reactive<API.UserRegisterRequest>({
   userAccount: '',

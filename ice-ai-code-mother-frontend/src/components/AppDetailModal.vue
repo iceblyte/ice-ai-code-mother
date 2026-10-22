@@ -1,22 +1,22 @@
 <template>
-  <a-modal v-model:open="visible" title="应用详情" :footer="null" width="500px">
+  <a-modal v-model:open="visible" :title="t('detail.title')" :footer="null" width="500px">
     <div class="app-detail-content">
       <!-- 应用基础信息 -->
       <div class="app-basic-info">
         <div class="info-item">
-          <span class="info-label">创建者：</span>
+          <span class="info-label">{{ t('detail.creator') }}</span>
           <UserInfo :user="app?.user" size="small" />
         </div>
         <div class="info-item">
-          <span class="info-label">创建时间：</span>
+          <span class="info-label">{{ t('detail.createTime') }}</span>
           <span>{{ formatTime(app?.createTime) }}</span>
         </div>
         <div class="info-item">
-          <span class="info-label">生成类型：</span>
-          <a-tag v-if="app?.codeGenType" color="blue">
+          <span class="info-label">{{ t('detail.genTypeLabel') }}</span>
+          <a-tag v-if="app?.codeGenType" class="gen-type-tag">
             {{ formatCodeGenType(app.codeGenType) }}
           </a-tag>
-          <span v-else>未知类型</span>
+          <span v-else>{{ t('genType.unknown') }}</span>
         </div>
       </div>
 
@@ -27,25 +27,25 @@
             <template #icon>
               <EditOutlined />
             </template>
-            修改
+            {{ t('detail.edit') }}
           </a-button>
           <a-button @click="showVersionCompare = true">
             <template #icon>
               <BranchesOutlined />
             </template>
-            版本对比
+            {{ t('detail.compare') }}
           </a-button>
           <a-popconfirm
-            title="确定要删除这个应用吗？"
+            :title="t('detail.deleteConfirm')"
             @confirm="handleDelete"
-            ok-text="确定"
-            cancel-text="取消"
+            :ok-text="t('common.confirm')"
+            :cancel-text="t('common.cancel')"
           >
             <a-button danger>
               <template #icon>
                 <DeleteOutlined />
               </template>
-              删除
+              {{ t('detail.delete') }}
             </a-button>
           </a-popconfirm>
         </a-space>
@@ -58,6 +58,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { EditOutlined, DeleteOutlined, BranchesOutlined } from '@ant-design/icons-vue'
 import UserInfo from './UserInfo.vue'
 import AppVersionCompareModal from './AppVersionCompareModal.vue'
@@ -81,6 +82,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<Emits>()
+const { t } = useI18n({ useScope: 'global' })
 const showVersionCompare = ref(false)
 
 const visible = computed({
@@ -114,13 +116,19 @@ const handleDelete = () => {
 
 .info-label {
   width: 80px;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 14px;
   flex-shrink: 0;
 }
 
+.gen-type-tag {
+  color: var(--brand-text);
+  background: var(--brand-soft);
+  border-color: var(--brand-soft);
+}
+
 .app-actions {
   padding-top: 16px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--border);
 }
 </style>

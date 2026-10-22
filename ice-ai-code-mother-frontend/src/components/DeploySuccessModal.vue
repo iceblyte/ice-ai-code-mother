@@ -1,11 +1,11 @@
 <template>
-  <a-modal v-model:open="visible" title="部署成功" :footer="null" width="600px">
+  <a-modal v-model:open="visible" :title="t('deploy.title')" :footer="null" width="600px">
     <div class="deploy-success">
       <div class="success-icon">
-        <CheckCircleOutlined style="color: #52c41a; font-size: 48px" />
+        <CheckCircleOutlined class="success-icon-mark" />
       </div>
-      <h3>网站部署成功！</h3>
-      <p>你的网站已经成功部署，可以通过以下链接访问：</p>
+      <h3>{{ t('deploy.successTitle') }}</h3>
+      <p>{{ t('deploy.successDesc') }}</p>
       <div class="deploy-url">
         <a-input :value="deployUrl" readonly>
           <template #suffix>
@@ -16,8 +16,8 @@
         </a-input>
       </div>
       <div class="deploy-actions">
-        <a-button type="primary" @click="handleOpenSite">访问网站</a-button>
-        <a-button @click="handleClose">关闭</a-button>
+        <a-button type="primary" @click="handleOpenSite">{{ t('deploy.visit') }}</a-button>
+        <a-button @click="handleClose">{{ t('common.close') }}</a-button>
       </div>
     </div>
   </a-modal>
@@ -25,6 +25,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { CheckCircleOutlined, CopyOutlined } from '@ant-design/icons-vue'
 
@@ -40,6 +41,7 @@ interface Emits {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
+const { t } = useI18n({ useScope: 'global' })
 
 const visible = computed({
   get: () => props.open,
@@ -49,10 +51,10 @@ const visible = computed({
 const handleCopyUrl = async () => {
   try {
     await navigator.clipboard.writeText(props.deployUrl)
-    message.success('链接已复制到剪贴板')
+    message.success(t('deploy.copied'))
   } catch (error) {
     console.error('复制失败：', error)
-    message.error('复制失败')
+    message.error(t('deploy.copyFailed'))
   }
 }
 
@@ -75,6 +77,11 @@ const handleClose = () => {
   margin-bottom: 16px;
 }
 
+.success-icon-mark {
+  color: var(--success);
+  font-size: 48px;
+}
+
 .deploy-success h3 {
   margin: 0 0 16px;
   font-size: 20px;
@@ -83,7 +90,7 @@ const handleClose = () => {
 
 .deploy-success p {
   margin: 0 0 24px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .deploy-url {

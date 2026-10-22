@@ -7,8 +7,10 @@
       </div>
       <div class="app-overlay">
         <a-space>
-          <a-button type="primary" @click="handleViewChat">查看对话</a-button>
-          <a-button v-if="app.deployKey" type="default" @click="handleViewWork">查看作品</a-button>
+          <a-button type="primary" @click="handleViewChat">{{ t('appCard.viewChat') }}</a-button>
+          <a-button v-if="app.deployKey" type="default" @click="handleViewWork">
+            {{ t('appCard.viewWork') }}
+          </a-button>
         </a-space>
       </div>
     </div>
@@ -19,9 +21,9 @@
         </a-avatar>
       </div>
       <div class="app-info-right">
-        <h3 class="app-title">{{ app.appName || '未命名应用' }}</h3>
+        <h3 class="app-title">{{ app.appName || t('appCard.untitled') }}</h3>
         <p class="app-author">
-          {{ app.user?.userName || (featured ? '官方' : '未知用户') }}
+          {{ app.user?.userName || (featured ? t('appCard.official') : t('common.unknownUser')) }}
         </p>
       </div>
     </div>
@@ -29,6 +31,8 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
 interface Props {
   app: API.AppVO
   featured?: boolean
@@ -44,6 +48,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<Emits>()
+const { t } = useI18n({ useScope: 'global' })
 
 const handleViewChat = () => {
   emit('view-chat', props.app.id)
@@ -56,12 +61,12 @@ const handleViewWork = () => {
 
 <style scoped>
 .app-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--bg-surface);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--border);
   transition:
     transform 0.3s,
     box-shadow 0.3s;
@@ -70,12 +75,12 @@ const handleViewWork = () => {
 
 .app-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-lg);
 }
 
 .app-preview {
   height: 180px;
-  background: #f5f5f5;
+  background: var(--bg-surface-muted);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,7 +96,7 @@ const handleViewWork = () => {
 
 .app-placeholder {
   font-size: 48px;
-  color: #d9d9d9;
+  color: var(--text-muted);
 }
 
 .app-overlay {
@@ -100,7 +105,7 @@ const handleViewWork = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,7 +137,7 @@ const handleViewWork = () => {
   font-size: 16px;
   font-weight: 600;
   margin: 0 0 4px;
-  color: #1a1a1a;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -140,7 +145,7 @@ const handleViewWork = () => {
 
 .app-author {
   font-size: 14px;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;

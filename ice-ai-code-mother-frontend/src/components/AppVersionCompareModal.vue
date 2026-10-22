@@ -1,7 +1,7 @@
 <template>
   <a-modal
     v-model:open="visible"
-    title="版本对比"
+    :title="t('version.title')"
     :footer="null"
     width="92vw"
     class="version-compare-modal"
@@ -11,7 +11,7 @@
         <a-select
           v-model:value="oldVersionKey"
           class="version-select"
-          placeholder="选择旧版本"
+          :placeholder="t('version.selectOld')"
           :options="versionOptions"
           @change="loadCompare"
         />
@@ -19,32 +19,32 @@
         <a-select
           v-model:value="newVersionKey"
           class="version-select"
-          placeholder="选择新版本"
+          :placeholder="t('version.selectNew')"
           :options="versionOptions"
           @change="loadCompare"
         />
         <a-select
           v-model:value="selectedFile"
           class="file-select"
-          placeholder="选择文件"
+          :placeholder="t('version.selectFile')"
           :options="fileOptions"
           @change="loadCompare"
         />
       </a-space>
       <a-space class="diff-summary">
-        <span class="removal-count">{{ compareResult?.removals || 0 }} removals</span>
-        <span class="addition-count">{{ compareResult?.additions || 0 }} additions</span>
+        <span class="removal-count">{{ t('version.removals', { count: compareResult?.removals || 0 }) }}</span>
+        <span class="addition-count">{{ t('version.additions', { count: compareResult?.additions || 0 }) }}</span>
       </a-space>
     </div>
 
-    <a-empty v-if="!versions.length && !loading" description="暂无历史版本，请至少重新生成一次应用" />
+    <a-empty v-if="!versions.length && !loading" :description="t('version.empty')" />
 
     <a-spin v-else :spinning="loading">
       <div class="diff-board">
         <div class="diff-pane">
           <div class="pane-header">
-            <span>{{ oldLines.length }} lines</span>
-            <a-button type="link" size="small" @click="copyContent(oldContent)">Copy</a-button>
+            <span>{{ t('version.lines', { count: oldLines.length }) }}</span>
+            <a-button type="link" size="small" @click="copyContent(oldContent)">{{ t('common.copy') }}</a-button>
           </div>
           <div class="code-list">
             <div
@@ -61,8 +61,8 @@
 
         <div class="diff-pane">
           <div class="pane-header">
-            <span>{{ newLines.length }} lines</span>
-            <a-button type="link" size="small" @click="copyContent(newContent)">Copy</a-button>
+            <span>{{ t('version.lines', { count: newLines.length }) }}</span>
+            <a-button type="link" size="small" @click="copyContent(newContent)">{{ t('common.copy') }}</a-button>
           </div>
           <div class="code-list">
             <div
@@ -83,6 +83,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { SwapOutlined } from '@ant-design/icons-vue'
 import { compareAppVersion, listAppVersions } from '@/api/appController'
@@ -106,6 +107,7 @@ interface DiffLine {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
+const { t } = useI18n({ useScope: 'global' })
 
 const visible = computed({
   get: () => props.open,
@@ -152,14 +154,14 @@ watch(
 
 const loadVersions = async () => {
   if (!props.appId) {
-    message.error('应用 ID 不存在')
+    message.error(t('version.noAppId'))
     return
   }
   loading.value = true
   try {
     const res = await listAppVersions({ appId: props.appId })
     if (res.data.code !== 0 || !res.data.data) {
-      message.error('加载版本列表失败：' + res.data.message)
+      message.error(t('version.loadVersionsFailedWithReason', { msg: res.data.message }))
       return
     }
     versions.value = res.data.data
@@ -172,7 +174,7 @@ const loadVersions = async () => {
     }
   } catch (error) {
     console.error('加载版本列表失败：', error)
-    message.error('加载版本列表失败')
+    message.error(t('version.loadVersionsFailed'))
   } finally {
     loading.value = false
   }
@@ -191,14 +193,14 @@ const loadCompare = async () => {
       filePath: selectedFile.value,
     })
     if (res.data.code !== 0 || !res.data.data) {
-      message.error('加载版本对比失败：' + res.data.message)
+      message.error(t('version.loadCompareFailedWithReason', { msg: res.data.message }))
       return
     }
     compareResult.value = res.data.data
     selectedFile.value = res.data.data.filePath
   } catch (error) {
     console.error('加载版本对比失败：', error)
-    message.error('加载版本对比失败')
+    message.error(t('version.loadCompareFailed'))
   } finally {
     loading.value = false
   }
@@ -247,7 +249,7 @@ const buildDiffRows = (oldLineList: string[], newLineList: string[]) => {
 
 const copyContent = async (content: string) => {
   await navigator.clipboard.writeText(content)
-  message.success('已复制')
+  message.success(t('common.copied'))
 }
 </script>
 
@@ -268,7 +270,7 @@ const copyContent = async (content: string) => {
 }
 
 .swap-icon {
-  color: #8c8c8c;
+  color: var(--text-muted);
 }
 
 .diff-summary {
@@ -276,11 +278,11 @@ const copyContent = async (content: string) => {
 }
 
 .removal-count {
-  color: #a8071a;
+  color: var(--danger);
 }
 
 .addition-count {
-  color: #237804;
+  color: var(--success);
 }
 
 .diff-board {
@@ -291,10 +293,10 @@ const copyContent = async (content: string) => {
 }
 
 .diff-pane {
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
-  background: #fff;
+  background: var(--bg-surface);
 }
 
 .pane-header {
@@ -303,15 +305,15 @@ const copyContent = async (content: string) => {
   justify-content: space-between;
   height: 44px;
   padding: 0 16px;
-  border-bottom: 1px solid #f0f0f0;
-  color: #5f6b7a;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
 .code-list {
   height: 520px;
   overflow: auto;
-  font-family: Consolas, 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
 }
 
@@ -325,7 +327,7 @@ const copyContent = async (content: string) => {
 .line-no {
   padding-right: 12px;
   text-align: right;
-  color: #8c8c8c;
+  color: var(--text-muted);
   user-select: none;
 }
 
@@ -336,15 +338,15 @@ pre {
 }
 
 .removed {
-  background: #fff1f0;
+  background: var(--danger-soft);
 }
 
 .added {
-  background: #f6ffed;
+  background: var(--success-soft);
 }
 
 .empty {
-  background: #fafafa;
+  background: var(--bg-surface-muted);
 }
 
 @media (max-width: 900px) {

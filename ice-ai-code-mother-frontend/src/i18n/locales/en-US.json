@@ -3,9 +3,19 @@
     "title": "CodeNow · One-sentence App Builder"
   },
   "common": {
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "confirm": "OK",
+    "cancel": "Cancel",
+    "close": "Close",
+    "copy": "Copy",
+    "copied": "Copied",
+    "unknownUser": "Unknown user"
   },
   "header": {
+    "siteTitle": "AI App Builder",
+    "guestName": "Guest",
+    "logoutSuccess": "Logged out",
+    "logoutFailed": "Logout failed: {msg}",
     "theme": {
       "toLight": "Switch to light mode",
       "toDark": "Switch to dark mode"
@@ -21,6 +31,60 @@
         "cohere": "Warmstone",
         "dell": "Retro"
       }
+    },
+    "nav": {
+      "home": "Home",
+      "profile": "Profile",
+      "userManage": "Users",
+      "appManage": "Apps"
     }
+  },
+  "footer": {
+    "openSourceBy": "Open source by iceblyte"
+  },
+  "genType": {
+    "html": "Single HTML Mode",
+    "multiFile": "Multi-file Mode",
+    "vueProject": "Vue Project Mode",
+    "unknown": "Unknown type"
+  },
+  "appCard": {
+    "viewChat": "View Chat",
+    "viewWork": "View Site",
+    "untitled": "Untitled App",
+    "official": "Official"
+  },
+  "detail": {
+    "title": "App Details",
+    "creator": "Creator: ",
+    "createTime": "Created: ",
+    "genTypeLabel": "Type: ",
+    "edit": "Edit",
+    "compare": "Compare",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this app?"
+  },
+  "deploy": {
+    "title": "Deployed",
+    "successTitle": "Site deployed successfully!",
+    "successDesc": "Your site is live. Access it via the link below:",
+    "visit": "Visit Site",
+    "copied": "Link copied to clipboard",
+    "copyFailed": "Copy failed"
+  },
+  "version": {
+    "title": "Version Compare",
+    "selectOld": "Old version",
+    "selectNew": "New version",
+    "selectFile": "Select file",
+    "empty": "No history versions yet. Regenerate the app at least once.",
+    "removals": "{count} removals",
+    "additions": "{count} additions",
+    "lines": "{count} lines",
+    "noAppId": "App ID is missing",
+    "loadVersionsFailed": "Failed to load versions",
+    "loadVersionsFailedWithReason": "Failed to load versions: {msg}",
+    "loadCompareFailed": "Failed to load comparison",
+    "loadCompareFailedWithReason": "Failed to load comparison: {msg}"
   }
 }

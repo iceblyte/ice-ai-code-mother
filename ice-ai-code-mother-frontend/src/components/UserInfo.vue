@@ -3,11 +3,13 @@
     <a-avatar :src="user?.userAvatar" :size="size">
       {{ user?.userName?.charAt(0) || 'U' }}
     </a-avatar>
-    <span v-if="showName" class="user-name">{{ user?.userName || '未知用户' }}</span>
+    <span v-if="showName" class="user-name">{{ user?.userName || t('common.unknownUser') }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
 interface Props {
   user?: API.UserVO
   size?: number | 'small' | 'default' | 'large'
@@ -18,6 +20,8 @@ withDefaults(defineProps<Props>(), {
   size: 'default',
   showName: true,
 })
+
+const { t } = useI18n({ useScope: 'global' })
 </script>
 
 <style scoped>
@@ -29,6 +33,6 @@ withDefaults(defineProps<Props>(), {
 
 .user-name {
   font-size: 14px;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 </style>

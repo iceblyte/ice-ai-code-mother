@@ -1,5 +1,8 @@
+import i18n from '@/i18n'
+
 /**
  * 代码生成类型枚举
+ * 展示文案统一由前端 i18n 层管理（genType.*），后端仅返回稳定 value
  */
 export enum CodeGenTypeEnum {
   HTML = 'html',
@@ -7,31 +10,25 @@ export enum CodeGenTypeEnum {
   VUE_PROJECT = 'vue_project',
 }
 
-/**
- * 代码生成类型配置
- */
-export const CODE_GEN_TYPE_CONFIG = {
-  [CodeGenTypeEnum.HTML]: {
-    label: '原生 HTML 模式',
-    value: CodeGenTypeEnum.HTML,
-  },
-  [CodeGenTypeEnum.MULTI_FILE]: {
-    label: '原生多文件模式',
-    value: CodeGenTypeEnum.MULTI_FILE,
-  },
-  [CodeGenTypeEnum.VUE_PROJECT]: {
-    label: 'Vue 项目模式',
-    value: CodeGenTypeEnum.VUE_PROJECT,
-  },
-} as const
+const GEN_TYPE_KEYS: Record<CodeGenTypeEnum, string> = {
+  [CodeGenTypeEnum.HTML]: 'genType.html',
+  [CodeGenTypeEnum.MULTI_FILE]: 'genType.multiFile',
+  [CodeGenTypeEnum.VUE_PROJECT]: 'genType.vueProject',
+}
 
 /**
- * 代码生成类型选项（用于下拉选择）
+ * 代码生成类型选项（用于下拉选择，随语言响应；请在 computed 中调用）
  */
-export const CODE_GEN_TYPE_OPTIONS = Object.values(CODE_GEN_TYPE_CONFIG).map((config) => ({
-  label: config.label,
-  value: config.value,
-}))
+export const getCodeGenTypeOptions = () =>
+  Object.values(CodeGenTypeEnum).map((value) => ({
+    label: i18n.global.t(GEN_TYPE_KEYS[value]),
+    value,
+  }))
+
+/**
+ * 代码生成类型选项（模块加载时求值，兼容既有调用点；新代码请用 getCodeGenTypeOptions）
+ */
+export const CODE_GEN_TYPE_OPTIONS = getCodeGenTypeOptions()
 
 /**
  * 格式化代码生成类型
@@ -39,10 +36,10 @@ export const CODE_GEN_TYPE_OPTIONS = Object.values(CODE_GEN_TYPE_CONFIG).map((co
  * @returns 格式化后的类型描述
  */
 export const formatCodeGenType = (type: string | undefined): string => {
-  if (!type) return '未知类型'
+  if (!type) return i18n.global.t('genType.unknown')
 
-  const config = CODE_GEN_TYPE_CONFIG[type as CodeGenTypeEnum]
-  return config ? config.label : type
+  const key = GEN_TYPE_KEYS[type as CodeGenTypeEnum]
+  return key ? i18n.global.t(key) : type
 }
 
 /**

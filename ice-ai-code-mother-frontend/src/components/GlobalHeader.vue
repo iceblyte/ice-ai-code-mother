@@ -5,8 +5,8 @@
       <a-col flex="200px">
         <RouterLink to="/">
           <div class="header-left">
-            <img class="logo" src="@/assets/logo.png" alt="Logo" />
-            <h1 class="site-title">AI 应用生成</h1>
+            <BrandLogo class="logo" :size="32" alt="CodeNow" />
+            <h1 class="site-title">{{ t('header.siteTitle') }}</h1>
           </div>
         </RouterLink>
       </a-col>
@@ -28,7 +28,7 @@
               <a-dropdown>
                 <a-space>
                   <a-avatar :src="loginUserStore.loginUser.userAvatar" />
-                  {{ loginUserStore.loginUser.userName ?? '无名' }}
+                  {{ loginUserStore.loginUser.userName ?? t('header.guestName') }}
                 </a-space>
                 <template #overlay>
                   <a-menu>
@@ -56,10 +56,12 @@
 
 <script setup lang="ts">
 import { computed, h, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { type MenuProps, message } from 'ant-design-vue'
 import { LogoutOutlined, UserOutlined, HomeOutlined } from '@ant-design/icons-vue'
 import HeaderPreferences from '@/components/HeaderPreferences.vue'
+import BrandLogo from '@/components/BrandLogo.vue'
 import { useLoginUserStore } from '@/stores/loginUser'
 import { userLogout } from '@/api/userController'
 import checkAccess from '@/access/checkAccess'
@@ -69,36 +71,37 @@ import appRouter from '@/router'
 const route = useRoute()
 const loginUserStore = useLoginUserStore()
 const router = useRouter()
+const { t } = useI18n({ useScope: 'global' })
 const selectedKeys = ref<string[]>([route.path])
 
-const originItems: MenuProps['items'] = [
+const originItems = computed<MenuProps['items']>(() => [
   {
     key: '/',
     icon: () => h(HomeOutlined),
-    label: '主页',
-    title: '主页',
+    label: t('header.nav.home'),
+    title: t('header.nav.home'),
   },
   {
     key: '/user/profile',
-    label: '个人中心',
-    title: '个人中心',
+    label: t('header.nav.profile'),
+    title: t('header.nav.profile'),
   },
   {
     key: '/admin/userManage',
-    label: '用户管理',
-    title: '用户管理',
+    label: t('header.nav.userManage'),
+    title: t('header.nav.userManage'),
   },
   {
     key: '/admin/appManage',
-    label: '应用管理',
-    title: '应用管理',
+    label: t('header.nav.appManage'),
+    title: t('header.nav.appManage'),
   },
   {
     key: 'others',
     label: h('a', { href: 'https://github.com/iceblyte', target: '_blank' }, 'GitHub'),
     title: 'GitHub',
   },
-]
+])
 
 watch(
   () => route.path,
@@ -116,7 +119,7 @@ const routeMap = computed(() => {
 })
 
 const menuItems = computed<MenuProps['items']>(() => {
-  return originItems?.filter((menu) => {
+  return originItems.value?.filter((menu) => {
     const menuKey = menu?.key as string
     if (!menuKey || !menuKey.startsWith('/')) {
       return true
@@ -151,17 +154,19 @@ const doLogout = async () => {
       userName: '未登录',
       userRole: ACCESS_ENUM.NOT_LOGIN,
     })
-    message.success('退出登录成功')
+    message.success(t('header.logoutSuccess'))
     await router.push('/user/login')
   } else {
-    message.error('退出登录失败，' + res.data.message)
+    message.error(t('header.logoutFailed', { msg: res.data.message }))
   }
 }
 </script>
 
 <style scoped>
 .header {
-  background: #fff;
+  background: var(--bg-surface);
+  background: color-mix(in srgb, var(--bg-surface) 82%, transparent);
+  backdrop-filter: saturate(180%) blur(20px);
   padding: 0 24px;
 }
 
@@ -172,14 +177,14 @@ const doLogout = async () => {
 }
 
 .logo {
-  height: 48px;
-  width: 48px;
+  height: 32px;
+  width: auto;
 }
 
 .site-title {
   margin: 0;
   font-size: 18px;
-  color: #1890ff;
+  color: var(--brand-text);
 }
 
 .header-actions {

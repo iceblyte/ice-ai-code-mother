@@ -3,9 +3,19 @@
     "title": "CodeNow · 一句话生成应用"
   },
   "common": {
-    "comingSoon": "即将上线"
+    "comingSoon": "即将上线",
+    "confirm": "确定",
+    "cancel": "取消",
+    "close": "关闭",
+    "copy": "复制",
+    "copied": "已复制",
+    "unknownUser": "未知用户"
   },
   "header": {
+    "siteTitle": "AI 应用生成",
+    "guestName": "无名",
+    "logoutSuccess": "退出登录成功",
+    "logoutFailed": "退出登录失败，{msg}",
     "theme": {
       "toLight": "切换为亮色模式",
       "toDark": "切换为暗色模式"
@@ -21,6 +31,60 @@
         "cohere": "暖石",
         "dell": "复古"
       }
+    },
+    "nav": {
+      "home": "主页",
+      "profile": "个人中心",
+      "userManage": "用户管理",
+      "appManage": "应用管理"
     }
+  },
+  "footer": {
+    "openSourceBy": "开源项目 by 程序员iceblyte"
+  },
+  "genType": {
+    "html": "原生 HTML 模式",
+    "multiFile": "原生多文件模式",
+    "vueProject": "Vue 项目模式",
+    "unknown": "未知类型"
+  },
+  "appCard": {
+    "viewChat": "查看对话",
+    "viewWork": "查看作品",
+    "untitled": "未命名应用",
+    "official": "官方"
+  },
+  "detail": {
+    "title": "应用详情",
+    "creator": "创建者：",
+    "createTime": "创建时间：",
+    "genTypeLabel": "生成类型：",
+    "edit": "修改",
+    "compare": "版本对比",
+    "delete": "删除",
+    "deleteConfirm": "确定要删除这个应用吗？"
+  },
+  "deploy": {
+    "title": "部署成功",
+    "successTitle": "网站部署成功！",
+    "successDesc": "你的网站已经成功部署，可以通过以下链接访问：",
+    "visit": "访问网站",
+    "copied": "链接已复制到剪贴板",
+    "copyFailed": "复制失败"
+  },
+  "version": {
+    "title": "版本对比",
+    "selectOld": "选择旧版本",
+    "selectNew": "选择新版本",
+    "selectFile": "选择文件",
+    "empty": "暂无历史版本，请至少重新生成一次应用",
+    "removals": "{count} 行删除",
+    "additions": "{count} 行新增",
+    "lines": "{count} 行",
+    "noAppId": "应用 ID 不存在",
+    "loadVersionsFailed": "加载版本列表失败",
+    "loadVersionsFailedWithReason": "加载版本列表失败：{msg}",
+    "loadCompareFailed": "加载版本对比失败",
+    "loadCompareFailedWithReason": "加载版本对比失败：{msg}"
   }
 }

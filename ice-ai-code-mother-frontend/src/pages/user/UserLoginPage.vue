@@ -1,32 +1,35 @@
 <template>
   <div id="userLoginPage">
-    <h2 class="title">AI 应用生成 - 用户登录</h2>
-    <div class="desc">不写一行代码，生成完整应用</div>
+    <h2 class="title">{{ t('auth.login.title') }}</h2>
+    <div class="desc">{{ t('auth.login.subtitle') }}</div>
     <a-form :model="formState" name="basic" autocomplete="off" @finish="handleSubmit">
-      <a-form-item name="userAccount" :rules="[{ required: true, message: '请输入账号' }]">
-        <a-input v-model:value="formState.userAccount" placeholder="请输入账号" />
+      <a-form-item name="userAccount" :rules="[{ required: true, message: t('auth.login.accountRequired') }]">
+        <a-input v-model:value="formState.userAccount" :placeholder="t('auth.login.accountPh')" />
       </a-form-item>
       <a-form-item
         name="userPassword"
         :rules="[
-          { required: true, message: '请输入密码' },
-          { min: 8, message: '密码长度不能小于 8 位' },
+          { required: true, message: t('auth.login.passwordRequired') },
+          { min: 8, message: t('auth.login.passwordMin') },
         ]"
       >
-        <a-input-password v-model:value="formState.userPassword" placeholder="请输入密码" />
+        <a-input-password v-model:value="formState.userPassword" :placeholder="t('auth.login.passwordPh')" />
       </a-form-item>
       <div class="tips">
-        没有账号
-        <RouterLink to="/user/register">去注册</RouterLink>
+        {{ t('auth.login.noAccount') }}
+        <RouterLink to="/user/register">{{ t('auth.login.toRegister') }}</RouterLink>
       </div>
       <a-form-item>
-        <a-button type="primary" html-type="submit" style="width: 100%">登录</a-button>
+        <a-button type="primary" html-type="submit" style="width: 100%">
+          {{ t('auth.login.submit') }}
+        </a-button>
       </a-form-item>
     </a-form>
   </div>
 </template>
 <script lang="ts" setup>
 import { reactive } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { userLogin } from '@/api/userController.ts'
 import { useLoginUserStore } from '@/stores/loginUser.ts'
 import { useRoute, useRouter } from 'vue-router'
@@ -40,6 +43,7 @@ const formState = reactive<API.UserLoginRequest>({
 const route = useRoute()
 const router = useRouter()
 const loginUserStore = useLoginUserStore()
+const { t } = useI18n({ useScope: 'global' })
 
 /**
  * 提交表单
@@ -50,21 +54,23 @@ const handleSubmit = async (values: any) => {
   // 登录成功，把登录态保存到全局状态中
   if (res.data.code === 0 && res.data.data) {
     await loginUserStore.fetchLoginUser()
-    message.success('登录成功')
+    message.success(t('auth.login.success'))
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
     router.push({
       path: redirect,
       replace: true,
     })
   } else {
-    message.error('登录失败，' + res.data.message)
+    message.error(t('auth.login.failedWithReason', { msg: res.data.message }))
   }
 }
 </script>
 
 <style scoped>
 #userLoginPage {
-  background: white;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   max-width: 720px;
   padding: 24px;
   margin: 24px auto;
@@ -77,13 +83,13 @@ const handleSubmit = async (values: any) => {
 
 .desc {
   text-align: center;
-  color: #bbb;
+  color: var(--text-muted);
   margin-bottom: 16px;
 }
 
 .tips {
   text-align: right;
-  color: #bbb;
+  color: var(--text-muted);
   font-size: 13px;
   margin-bottom: 16px;
 }

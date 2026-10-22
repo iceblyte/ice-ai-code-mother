@@ -74,6 +74,56 @@
       }
     }
   },
+  "auth": {
+    "login": {
+      "title": "AI 应用生成 - 用户登录",
+      "subtitle": "不写一行代码，生成完整应用",
+      "accountPh": "请输入账号",
+      "accountRequired": "请输入账号",
+      "passwordPh": "请输入密码",
+      "passwordRequired": "请输入密码",
+      "passwordMin": "密码长度不能小于 8 位",
+      "noAccount": "没有账号",
+      "toRegister": "去注册",
+      "submit": "登录",
+      "success": "登录成功",
+      "failedWithReason": "登录失败，{msg}"
+    },
+    "register": {
+      "title": "AI 应用生成 - 用户注册",
+      "subtitle": "不写一行代码，生成完整应用",
+      "accountPh": "请输入账号",
+      "accountRequired": "请输入账号",
+      "passwordPh": "请输入密码",
+      "passwordRequired": "请输入密码",
+      "passwordMin": "密码不能小于 8 位",
+      "confirmPh": "请确认密码",
+      "confirmRequired": "请确认密码",
+      "passwordMismatch": "两次输入密码不一致",
+      "hasAccount": "已有账号？",
+      "toLogin": "去登录",
+      "submit": "注册",
+      "success": "注册成功",
+      "failedWithReason": "注册失败，{msg}"
+    }
+  },
+  "profile": {
+    "title": "个人中心",
+    "account": "账号",
+    "userName": "用户名",
+    "userNamePh": "请输入用户名",
+    "avatar": "头像地址",
+    "avatarPh": "请输入头像地址",
+    "bio": "个人简介",
+    "bioPh": "介绍一下自己",
+    "submit": "保存资料",
+    "success": "保存成功",
+    "failedWithReason": "保存失败，{msg}"
+  },
+  "noauth": {
+    "subTitle": "你没有权限访问当前页面",
+    "backHome": "返回首页"
+  },
   "genType": {
     "html": "原生 HTML 模式",
     "multiFile": "原生多文件模式",

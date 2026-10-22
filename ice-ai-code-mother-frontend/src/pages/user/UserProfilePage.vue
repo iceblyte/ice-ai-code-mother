@@ -1,25 +1,25 @@
 <template>
   <div id="userProfilePage">
-    <a-card title="个人中心">
+    <a-card :title="t('profile.title')">
       <a-form layout="vertical" :model="formState" @finish="handleSubmit">
-        <a-form-item label="账号">
+        <a-form-item :label="t('profile.account')">
           <a-input :value="loginUserStore.loginUser.userAccount" disabled />
         </a-form-item>
-        <a-form-item label="用户名">
-          <a-input v-model:value="formState.userName" placeholder="请输入用户名" />
+        <a-form-item :label="t('profile.userName')">
+          <a-input v-model:value="formState.userName" :placeholder="t('profile.userNamePh')" />
         </a-form-item>
-        <a-form-item label="头像地址">
-          <a-input v-model:value="formState.userAvatar" placeholder="请输入头像地址" />
+        <a-form-item :label="t('profile.avatar')">
+          <a-input v-model:value="formState.userAvatar" :placeholder="t('profile.avatarPh')" />
         </a-form-item>
-        <a-form-item label="个人简介">
+        <a-form-item :label="t('profile.bio')">
           <a-textarea
             v-model:value="formState.userProfile"
-            placeholder="介绍一下自己"
+            :placeholder="t('profile.bioPh')"
             :auto-size="{ minRows: 4, maxRows: 6 }"
           />
         </a-form-item>
         <a-form-item>
-          <a-button type="primary" html-type="submit">保存资料</a-button>
+          <a-button type="primary" html-type="submit">{{ t('profile.submit') }}</a-button>
         </a-form-item>
       </a-form>
     </a-card>
@@ -28,11 +28,13 @@
 
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { updateMyUser } from '@/api/userController'
 import { useLoginUserStore } from '@/stores/loginUser'
 
 const loginUserStore = useLoginUserStore()
+const { t } = useI18n({ useScope: 'global' })
 
 const formState = reactive<API.UserUpdateMyRequest>({
   userName: '',
@@ -59,9 +61,9 @@ const handleSubmit = async () => {
   })
   if (res.data.code === 0) {
     await loginUserStore.fetchLoginUser()
-    message.success('保存成功')
+    message.success(t('profile.success'))
   } else {
-    message.error('保存失败，' + res.data.message)
+    message.error(t('profile.failedWithReason', { msg: res.data.message }))
   }
 }
 </script>

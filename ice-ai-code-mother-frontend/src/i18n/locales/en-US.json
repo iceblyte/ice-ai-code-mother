@@ -74,6 +74,56 @@
       }
     }
   },
+  "auth": {
+    "login": {
+      "title": "AI App Builder - Log in",
+      "subtitle": "Build complete apps without writing a single line of code",
+      "accountPh": "Enter your account",
+      "accountRequired": "Please enter your account",
+      "passwordPh": "Enter your password",
+      "passwordRequired": "Please enter your password",
+      "passwordMin": "Password must be at least 8 characters",
+      "noAccount": "No account yet?",
+      "toRegister": "Register",
+      "submit": "Log in",
+      "success": "Logged in",
+      "failedWithReason": "Login failed: {msg}"
+    },
+    "register": {
+      "title": "AI App Builder - Register",
+      "subtitle": "Build complete apps without writing a single line of code",
+      "accountPh": "Enter your account",
+      "accountRequired": "Please enter your account",
+      "passwordPh": "Enter your password",
+      "passwordRequired": "Please enter your password",
+      "passwordMin": "Password must be at least 8 characters",
+      "confirmPh": "Confirm your password",
+      "confirmRequired": "Please confirm your password",
+      "passwordMismatch": "Passwords do not match",
+      "hasAccount": "Already have an account?",
+      "toLogin": "Log in",
+      "submit": "Register",
+      "success": "Registered",
+      "failedWithReason": "Registration failed: {msg}"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "account": "Account",
+    "userName": "Username",
+    "userNamePh": "Enter your username",
+    "avatar": "Avatar URL",
+    "avatarPh": "Enter avatar URL",
+    "bio": "Bio",
+    "bioPh": "Tell us about yourself",
+    "submit": "Save",
+    "success": "Saved",
+    "failedWithReason": "Save failed: {msg}"
+  },
+  "noauth": {
+    "subTitle": "You do not have access to this page",
+    "backHome": "Back to Home"
+  },
   "genType": {
     "html": "Single HTML Mode",
     "multiFile": "Multi-file Mode",

@@ -2,71 +2,56 @@
   <div class="header-preferences">
     <!-- 明暗主题切换 -->
     <a-tooltip :title="isDark ? t('header.theme.toLight') : t('header.theme.toDark')">
-      <a-button
-        type="text"
-        shape="circle"
-        size="small"
-        class="pref-btn"
+      <button
+        type="button"
+        class="pref-iconbtn"
         :aria-label="isDark ? t('header.theme.toLight') : t('header.theme.toDark')"
+        :aria-pressed="isDark"
         @click="toggleTheme"
       >
         <svg
           v-if="isDark"
-          class="pref-icon"
+          width="16"
+          height="16"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
+          stroke-width="1.8"
           stroke-linecap="round"
           stroke-linejoin="round"
           aria-hidden="true"
         >
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          <circle cx="12" cy="12" r="4.2" />
+          <path
+            d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"
+          />
         </svg>
         <svg
           v-else
-          class="pref-icon"
+          width="16"
+          height="16"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
+          stroke-width="1.8"
           stroke-linecap="round"
           stroke-linejoin="round"
           aria-hidden="true"
         >
-          <circle cx="12" cy="12" r="4" />
-          <path
-            d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
-          />
+          <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" />
         </svg>
-      </a-button>
+      </button>
     </a-tooltip>
 
-    <!-- 语言切换（下拉，支持后续扩展语言） -->
+    <!-- 语言切换（下拉，支持后续扩展语言；按钮显示 中/EN） -->
     <a-dropdown placement="bottomRight">
-      <a-button
-        type="text"
-        shape="circle"
-        size="small"
-        class="pref-btn"
+      <button
+        type="button"
+        class="pref-iconbtn"
         :aria-label="t('header.lang.label')"
       >
-        <svg
-          class="pref-icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <path
-            d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
-          />
-        </svg>
-      </a-button>
+        <span class="pref-iconbtn__text">{{ locale === 'zh-CN' ? '中' : 'EN' }}</span>
+      </button>
       <template #overlay>
         <a-menu :selected-keys="[locale]" @click="onLocaleClick">
           <a-menu-item key="zh-CN">简体中文</a-menu-item>
@@ -77,26 +62,29 @@
 
     <!-- 外观皮肤切换（仅极简可用，其余置灰待后续皮肤接入） -->
     <a-dropdown placement="bottomRight">
-      <a-button
-        type="text"
-        shape="circle"
-        size="small"
-        class="pref-btn"
+      <button
+        type="button"
+        class="pref-iconbtn"
         :aria-label="t('header.skin.label')"
       >
         <svg
-          class="pref-icon"
+          width="16"
+          height="16"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
+          stroke-width="1.7"
           stroke-linejoin="round"
           aria-hidden="true"
         >
-          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+          <path
+            d="M12 3a9 9 0 1 0 0 18c1.1 0 1.7-.7 1.7-1.6 0-.8-.5-1.3-.5-2 0-.9.7-1.6 1.7-1.6H17a4 4 0 0 0 4-4A9 9 0 0 0 12 3Z"
+          />
+          <circle cx="7.4" cy="12.2" r="1.1" fill="currentColor" stroke="none" />
+          <circle cx="9.6" cy="7.8" r="1.1" fill="currentColor" stroke="none" />
+          <circle cx="14.6" cy="7.3" r="1.1" fill="currentColor" stroke="none" />
         </svg>
-      </a-button>
+      </button>
       <template #overlay>
         <a-menu :selected-keys="[skin]" @click="onSkinClick">
           <a-menu-item v-for="item in skinItems" :key="item.key" :disabled="item.disabled">
@@ -138,24 +126,42 @@ const onSkinClick = ({ key }: { key: string }) => {
 </script>
 
 <style scoped>
+/* 对齐原型 .cn-iconbtn：34px 圆形描边图标按钮 */
 .header-preferences {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 }
 
-.pref-btn {
+.pref-iconbtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
 }
 
-.pref-icon {
-  width: 16px;
-  height: 16px;
+.pref-iconbtn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  background: var(--bg-surface-muted);
+}
+
+.pref-iconbtn__text {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+  font-family: var(--font-mono);
 }
 
 .skin-coming {
-  color: var(--text-muted, #999);
+  color: var(--text-muted);
 }
 </style>

@@ -16,6 +16,7 @@
   "header": {
     "guestName": "无名",
     "login": "登录",
+    "menu": "菜单",
     "logoutSuccess": "退出登录成功",
     "logoutFailed": "退出登录失败，{msg}",
     "userMenu": {
@@ -46,6 +47,12 @@
     }
   },
   "footer": {
+    "tagline": "一句话，编译成可运行的应用。",
+    "product": "产品",
+    "resources": "资源",
+    "home": "首页",
+    "myapps": "我的应用",
+    "rights": "保留所有权利",
     "openSourceBy": "开源项目 by 程序员iceblyte"
   },
   "home": {

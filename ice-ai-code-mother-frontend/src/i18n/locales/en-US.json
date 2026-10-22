@@ -16,6 +16,7 @@
   "header": {
     "guestName": "Guest",
     "login": "Log in",
+    "menu": "Menu",
     "logoutSuccess": "Logged out",
     "logoutFailed": "Logout failed: {msg}",
     "userMenu": {
@@ -46,6 +47,12 @@
     }
   },
   "footer": {
+    "tagline": "One sentence, compiled into a working app.",
+    "product": "Product",
+    "resources": "Resources",
+    "home": "Home",
+    "myapps": "My apps",
+    "rights": "All rights reserved",
     "openSourceBy": "Open source by iceblyte"
   },
   "home": {

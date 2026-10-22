@@ -124,6 +124,94 @@
     "subTitle": "你没有权限访问当前页面",
     "backHome": "返回首页"
   },
+  "admin": {
+    "common": {
+      "search": "搜索",
+      "total": "共 {total} 条",
+      "fetchFailed": "获取数据失败，{msg}",
+      "fetchFailedPlain": "获取数据失败",
+      "edit": "编辑",
+      "delete": "删除",
+      "deleteSuccess": "删除成功",
+      "deleteFailed": "删除失败，{msg}",
+      "deleteFailedPlain": "删除失败",
+      "action": "操作",
+      "id": "ID",
+      "createTime": "创建时间"
+    },
+    "app": {
+      "appName": "应用名称",
+      "appNamePh": "输入应用名称",
+      "creator": "创建者",
+      "userIdPh": "输入用户ID",
+      "genType": "生成类型",
+      "genTypePh": "选择生成类型",
+      "all": "全部",
+      "noCover": "无封面",
+      "featured": "精选",
+      "unfeatured": "取消精选",
+      "featuredSet": "已设为精选",
+      "featuredUnset": "已取消精选",
+      "opFailed": "操作失败，{msg}",
+      "opFailedPlain": "操作失败",
+      "deleteConfirm": "确定要删除这个应用吗？",
+      "notDeployed": "未部署",
+      "columns": {
+        "appName": "应用名称",
+        "cover": "封面",
+        "initPrompt": "初始提示词",
+        "codeGenType": "生成类型",
+        "priority": "优先级",
+        "deployedTime": "部署时间",
+        "user": "创建者"
+      }
+    },
+    "user": {
+      "account": "账号",
+      "accountPh": "输入账号",
+      "userName": "用户名",
+      "userNamePh": "输入用户名",
+      "roleAdmin": "管理员",
+      "roleUser": "普通用户",
+      "editTitle": "编辑用户",
+      "save": "保存",
+      "userNameEditPh": "请输入用户名",
+      "avatar": "头像地址",
+      "avatarPh": "请输入头像地址",
+      "bio": "个人简介",
+      "bioPh": "请输入简介",
+      "roleLabel": "用户角色",
+      "updateSuccess": "更新成功",
+      "updateFailed": "更新失败，{msg}",
+      "columns": {
+        "userAccount": "账号",
+        "userName": "用户名",
+        "userAvatar": "头像",
+        "userProfile": "简介",
+        "userRole": "用户角色"
+      }
+    },
+    "chat": {
+      "message": "消息内容",
+      "messagePh": "输入消息内容",
+      "messageType": "消息类型",
+      "messageTypePh": "选择消息类型",
+      "userMsg": "用户消息",
+      "aiMsg": "AI消息",
+      "appId": "应用ID",
+      "appIdPh": "输入应用ID",
+      "userId": "用户ID",
+      "userIdPh": "输入用户ID",
+      "deleteConfirm": "确定要删除这条消息吗？",
+      "viewChat": "查看对话",
+      "columns": {
+        "message": "消息内容",
+        "messageType": "消息类型",
+        "appId": "应用ID",
+        "userId": "用户ID"
+      }
+    }
+  },
   "genType": {
     "html": "原生 HTML 模式",
     "multiFile": "原生多文件模式",

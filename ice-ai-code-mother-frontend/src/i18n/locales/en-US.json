@@ -124,6 +124,94 @@
     "subTitle": "You do not have access to this page",
     "backHome": "Back to Home"
   },
+  "admin": {
+    "common": {
+      "search": "Search",
+      "total": "{total} items",
+      "fetchFailed": "Failed to load data: {msg}",
+      "fetchFailedPlain": "Failed to load data",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteSuccess": "Deleted",
+      "deleteFailed": "Delete failed: {msg}",
+      "deleteFailedPlain": "Delete failed",
+      "action": "Actions",
+      "id": "ID",
+      "createTime": "Created"
+    },
+    "app": {
+      "appName": "App name",
+      "appNamePh": "Enter app name",
+      "creator": "Creator",
+      "userIdPh": "Enter user ID",
+      "genType": "Type",
+      "genTypePh": "Select type",
+      "all": "All",
+      "noCover": "No cover",
+      "featured": "Featured",
+      "unfeatured": "Unfeature",
+      "featuredSet": "Marked as featured",
+      "featuredUnset": "Removed from featured",
+      "opFailed": "Operation failed: {msg}",
+      "opFailedPlain": "Operation failed",
+      "deleteConfirm": "Delete this app?",
+      "notDeployed": "Not deployed",
+      "columns": {
+        "appName": "App name",
+        "cover": "Cover",
+        "initPrompt": "Initial prompt",
+        "codeGenType": "Type",
+        "priority": "Priority",
+        "deployedTime": "Deployed",
+        "user": "Creator"
+      }
+    },
+    "user": {
+      "account": "Account",
+      "accountPh": "Enter account",
+      "userName": "Username",
+      "userNamePh": "Enter username",
+      "roleAdmin": "Admin",
+      "roleUser": "User",
+      "editTitle": "Edit User",
+      "save": "Save",
+      "userNameEditPh": "Enter username",
+      "avatar": "Avatar URL",
+      "avatarPh": "Enter avatar URL",
+      "bio": "Bio",
+      "bioPh": "Enter bio",
+      "roleLabel": "Role",
+      "updateSuccess": "Updated",
+      "updateFailed": "Update failed: {msg}",
+      "columns": {
+        "userAccount": "Account",
+        "userName": "Username",
+        "userAvatar": "Avatar",
+        "userProfile": "Bio",
+        "userRole": "Role"
+      }
+    },
+    "chat": {
+      "message": "Message",
+      "messagePh": "Enter message",
+      "messageType": "Type",
+      "messageTypePh": "Select type",
+      "userMsg": "User",
+      "aiMsg": "AI",
+      "appId": "App ID",
+      "appIdPh": "Enter app ID",
+      "userId": "User ID",
+      "userIdPh": "Enter user ID",
+      "deleteConfirm": "Delete this message?",
+      "viewChat": "View Chat",
+      "columns": {
+        "message": "Message",
+        "messageType": "Type",
+        "appId": "App ID",
+        "userId": "User ID"
+      }
+    }
+  },
   "genType": {
     "html": "Single HTML Mode",
     "multiFile": "Multi-file Mode",

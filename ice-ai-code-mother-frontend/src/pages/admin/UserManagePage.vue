@@ -2,14 +2,14 @@
   <div id="userManagePage">
     <!-- 搜索表单 -->
     <a-form layout="inline" :model="searchParams" @finish="doSearch">
-      <a-form-item label="账号">
-        <a-input v-model:value="searchParams.userAccount" placeholder="输入账号" />
+      <a-form-item :label="t('admin.user.account')">
+        <a-input v-model:value="searchParams.userAccount" :placeholder="t('admin.user.accountPh')" />
       </a-form-item>
-      <a-form-item label="用户名">
-        <a-input v-model:value="searchParams.userName" placeholder="输入用户名" />
+      <a-form-item :label="t('admin.user.userName')">
+        <a-input v-model:value="searchParams.userName" :placeholder="t('admin.user.userNamePh')" />
       </a-form-item>
       <a-form-item>
-        <a-button type="primary" html-type="submit">搜索</a-button>
+        <a-button type="primary" html-type="submit">{{ t('admin.common.search') }}</a-button>
       </a-form-item>
     </a-form>
     <a-divider />
@@ -25,20 +25,22 @@
           <a-image :src="record.userAvatar" :width="120" />
         </template>
         <template v-else-if="column.dataIndex === 'userRole'">
-          <div v-if="record.userRole === 'admin'">
-            <a-tag color="green">管理员</a-tag>
-          </div>
-          <div v-else>
-            <a-tag color="blue">普通用户</a-tag>
-          </div>
+          <a-tag v-if="record.userRole === 'admin'" class="role-tag role-tag--admin">
+            {{ t('admin.user.roleAdmin') }}
+          </a-tag>
+          <a-tag v-else class="role-tag role-tag--user">
+            {{ t('admin.user.roleUser') }}
+          </a-tag>
         </template>
         <template v-else-if="column.dataIndex === 'createTime'">
           {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
         <template v-else-if="column.key === 'action'">
           <a-space>
-            <a-button type="primary" @click="openEditModal(record)">编辑</a-button>
-            <a-button danger @click="doDelete(record.id)">删除</a-button>
+            <a-button type="primary" @click="openEditModal(record)">
+              {{ t('admin.common.edit') }}
+            </a-button>
+            <a-button danger @click="doDelete(record.id)">{{ t('admin.common.delete') }}</a-button>
           </a-space>
         </template>
       </template>
@@ -46,26 +48,26 @@
 
     <a-modal
       v-model:open="editModalOpen"
-      title="编辑用户"
-      ok-text="保存"
-      cancel-text="取消"
+      :title="t('admin.user.editTitle')"
+      :ok-text="t('admin.user.save')"
+      :cancel-text="t('common.cancel')"
       @ok="handleEditSubmit"
     >
       <a-form layout="vertical" :model="editForm">
-        <a-form-item label="用户名">
-          <a-input v-model:value="editForm.userName" placeholder="请输入用户名" />
+        <a-form-item :label="t('admin.user.userName')">
+          <a-input v-model:value="editForm.userName" :placeholder="t('admin.user.userNameEditPh')" />
         </a-form-item>
-        <a-form-item label="头像地址">
-          <a-input v-model:value="editForm.userAvatar" placeholder="请输入头像地址" />
+        <a-form-item :label="t('admin.user.avatar')">
+          <a-input v-model:value="editForm.userAvatar" :placeholder="t('admin.user.avatarPh')" />
         </a-form-item>
-        <a-form-item label="个人简介">
+        <a-form-item :label="t('admin.user.bio')">
           <a-textarea
             v-model:value="editForm.userProfile"
-            placeholder="请输入简介"
+            :placeholder="t('admin.user.bioPh')"
             :auto-size="{ minRows: 3, maxRows: 5 }"
           />
         </a-form-item>
-        <a-form-item label="用户角色">
+        <a-form-item :label="t('admin.user.roleLabel')">
           <a-select v-model:value="editForm.userRole" :options="userRoleOptions" />
         </a-form-item>
       </a-form>
@@ -74,55 +76,58 @@
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { deleteUser, listUserVoByPage, updateUser } from '@/api/userController'
 import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
 
-const columns = [
+const { t } = useI18n({ useScope: 'global' })
+
+const columns = computed(() => [
   {
-    title: 'id',
+    title: t('admin.common.id'),
     dataIndex: 'id',
   },
   {
-    title: '账号',
+    title: t('admin.user.columns.userAccount'),
     dataIndex: 'userAccount',
   },
   {
-    title: '用户名',
+    title: t('admin.user.columns.userName'),
     dataIndex: 'userName',
   },
   {
-    title: '头像',
+    title: t('admin.user.columns.userAvatar'),
     dataIndex: 'userAvatar',
   },
   {
-    title: '简介',
+    title: t('admin.user.columns.userProfile'),
     dataIndex: 'userProfile',
   },
   {
-    title: '用户角色',
+    title: t('admin.user.columns.userRole'),
     dataIndex: 'userRole',
   },
   {
-    title: '创建时间',
+    title: t('admin.common.createTime'),
     dataIndex: 'createTime',
   },
   {
-    title: '操作',
+    title: t('admin.common.action'),
     key: 'action',
   },
-]
+])
 
-const userRoleOptions = [
+const userRoleOptions = computed(() => [
   {
-    label: '普通用户',
+    label: t('admin.user.roleUser'),
     value: 'user',
   },
   {
-    label: '管理员',
+    label: t('admin.user.roleAdmin'),
     value: 'admin',
   },
-]
+])
 
 const data = ref<API.UserVO[]>([])
 const total = ref(0)
@@ -150,7 +155,7 @@ const fetchData = async () => {
     data.value = res.data.data.records ?? []
     total.value = res.data.data.totalRow ?? 0
   } else {
-    message.error('获取数据失败，' + res.data.message)
+    message.error(t('admin.common.fetchFailed', { msg: res.data.message }))
   }
 }
 
@@ -161,7 +166,7 @@ const pagination = computed(() => {
     pageSize: searchParams.pageSize ?? 10,
     total: total.value,
     showSizeChanger: true,
-    showTotal: (total: number) => `共 ${total} 条`,
+    showTotal: (total: number) => t('admin.common.total', { total }),
   }
 })
 
@@ -186,11 +191,11 @@ const doDelete = async (id?: number) => {
   }
   const res = await deleteUser({ id })
   if (res.data.code === 0) {
-    message.success('删除成功')
+    message.success(t('admin.common.deleteSuccess'))
     // 刷新数据
     await fetchData()
   } else {
-    message.error('删除失败，' + res.data.message)
+    message.error(t('admin.common.deleteFailed', { msg: res.data.message }))
   }
 }
 
@@ -210,11 +215,11 @@ const handleEditSubmit = async () => {
     ...editForm,
   })
   if (res.data.code === 0) {
-    message.success('更新成功')
+    message.success(t('admin.user.updateSuccess'))
     editModalOpen.value = false
     await fetchData()
   } else {
-    message.error('更新失败，' + res.data.message)
+    message.error(t('admin.user.updateFailed', { msg: res.data.message }))
   }
 }
 
@@ -227,7 +232,21 @@ onMounted(() => {
 <style scoped>
 #userManagePage {
   padding: 24px;
-  background: white;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   margin-top: 16px;
+}
+
+.role-tag--admin {
+  color: var(--success);
+  background: var(--success-soft);
+  border-color: var(--success-soft);
+}
+
+.role-tag--user {
+  color: var(--brand-text);
+  background: var(--brand-soft);
+  border-color: var(--brand-soft);
 }
 </style>

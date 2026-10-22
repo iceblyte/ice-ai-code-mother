@@ -2,21 +2,21 @@
   <div id="appManagePage">
     <!-- 搜索表单 -->
     <a-form layout="inline" :model="searchParams" @finish="doSearch">
-      <a-form-item label="应用名称">
-        <a-input v-model:value="searchParams.appName" placeholder="输入应用名称" />
+      <a-form-item :label="t('admin.app.appName')">
+        <a-input v-model:value="searchParams.appName" :placeholder="t('admin.app.appNamePh')" />
       </a-form-item>
-      <a-form-item label="创建者">
-        <a-input v-model:value="searchParams.userId" placeholder="输入用户ID" />
+      <a-form-item :label="t('admin.app.creator')">
+        <a-input v-model:value="searchParams.userId" :placeholder="t('admin.app.userIdPh')" />
       </a-form-item>
-      <a-form-item label="生成类型">
+      <a-form-item :label="t('admin.app.genType')">
         <a-select
           v-model:value="searchParams.codeGenType"
-          placeholder="选择生成类型"
+          :placeholder="t('admin.app.genTypePh')"
           style="width: 150px"
         >
-          <a-select-option value="">全部</a-select-option>
+          <a-select-option value="">{{ t('admin.app.all') }}</a-select-option>
           <a-select-option
-            v-for="option in CODE_GEN_TYPE_OPTIONS"
+            v-for="option in genTypeOptions"
             :key="option.value"
             :value="option.value"
           >
@@ -25,7 +25,7 @@
         </a-select>
       </a-form-item>
       <a-form-item>
-        <a-button type="primary" html-type="submit">搜索</a-button>
+        <a-button type="primary" html-type="submit">{{ t('admin.common.search') }}</a-button>
       </a-form-item>
     </a-form>
     <a-divider />
@@ -41,7 +41,7 @@
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'cover'">
           <a-image v-if="record.cover" :src="record.cover" :width="80" :height="60" />
-          <div v-else class="no-cover">无封面</div>
+          <div v-else class="no-cover">{{ t('admin.app.noCover') }}</div>
         </template>
         <template v-else-if="column.dataIndex === 'initPrompt'">
           <a-tooltip :title="record.initPrompt">
@@ -52,14 +52,16 @@
           {{ formatCodeGenType(record.codeGenType) }}
         </template>
         <template v-else-if="column.dataIndex === 'priority'">
-          <a-tag v-if="record.priority === 99" color="gold">精选</a-tag>
+          <a-tag v-if="record.priority === 99" class="featured-tag">
+            {{ t('admin.app.featured') }}
+          </a-tag>
           <span v-else>{{ record.priority || 0 }}</span>
         </template>
         <template v-else-if="column.dataIndex === 'deployedTime'">
           <span v-if="record.deployedTime">
             {{ formatTime(record.deployedTime) }}
           </span>
-          <span v-else class="text-gray">未部署</span>
+          <span v-else class="text-muted">{{ t('admin.app.notDeployed') }}</span>
         </template>
         <template v-else-if="column.dataIndex === 'createTime'">
           {{ formatTime(record.createTime) }}
@@ -69,17 +71,24 @@
         </template>
         <template v-else-if="column.key === 'action'">
           <a-space>
-            <a-button type="primary" size="small" @click="editApp(record)"> 编辑 </a-button>
+            <a-button type="primary" size="small" @click="editApp(record)">
+              {{ t('admin.common.edit') }}
+            </a-button>
             <a-button
               type="default"
               size="small"
               @click="toggleFeatured(record)"
               :class="{ 'featured-btn': record.priority === 99 }"
             >
-              {{ record.priority === 99 ? '取消精选' : '精选' }}
+              {{ record.priority === 99 ? t('admin.app.unfeatured') : t('admin.app.featured') }}
             </a-button>
-            <a-popconfirm title="确定要删除这个应用吗？" @confirm="deleteApp(record.id)">
-              <a-button danger size="small">删除</a-button>
+            <a-popconfirm
+              :title="t('admin.app.deleteConfirm')"
+              :ok-text="t('common.confirm')"
+              :cancel-text="t('common.cancel')"
+              @confirm="deleteApp(record.id)"
+            >
+              <a-button danger size="small">{{ t('admin.common.delete') }}</a-button>
             </a-popconfirm>
           </a-space>
         </template>
@@ -91,68 +100,73 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { listAppVoByPageByAdmin, deleteAppByAdmin, updateAppByAdmin } from '@/api/appController'
-import { CODE_GEN_TYPE_OPTIONS, formatCodeGenType } from '@/utils/codeGenTypes'
+import { getCodeGenTypeOptions, formatCodeGenType } from '@/utils/codeGenTypes'
 import { formatTime } from '@/utils/time'
 import UserInfo from '@/components/UserInfo.vue'
 
 const router = useRouter()
+const { t } = useI18n({ useScope: 'global' })
 
-const columns = [
+const columns = computed(() => [
   {
-    title: 'ID',
+    title: t('admin.common.id'),
     dataIndex: 'id',
     width: 80,
-    fixed: 'left',
+    fixed: 'left' as const,
   },
   {
-    title: '应用名称',
+    title: t('admin.app.columns.appName'),
     dataIndex: 'appName',
     width: 150,
   },
   {
-    title: '封面',
+    title: t('admin.app.columns.cover'),
     dataIndex: 'cover',
     width: 100,
   },
   {
-    title: '初始提示词',
+    title: t('admin.app.columns.initPrompt'),
     dataIndex: 'initPrompt',
     width: 200,
   },
   {
-    title: '生成类型',
+    title: t('admin.app.columns.codeGenType'),
     dataIndex: 'codeGenType',
     width: 100,
   },
   {
-    title: '优先级',
+    title: t('admin.app.columns.priority'),
     dataIndex: 'priority',
     width: 80,
   },
   {
-    title: '部署时间',
+    title: t('admin.app.columns.deployedTime'),
     dataIndex: 'deployedTime',
     width: 160,
   },
   {
-    title: '创建者',
+    title: t('admin.app.columns.user'),
     dataIndex: 'user',
     width: 120,
   },
   {
-    title: '创建时间',
+    title: t('admin.common.createTime'),
     dataIndex: 'createTime',
     width: 160,
   },
   {
-    title: '操作',
+    title: t('admin.common.action'),
     key: 'action',
     width: 200,
-    fixed: 'right',
+    fixed: 'right' as const,
   },
-]
+])
+
+// 生成类型选项（随语言响应）
+const genTypeOptions = computed(() => getCodeGenTypeOptions())
 
 // 数据
 const data = ref<API.AppVO[]>([])
@@ -174,11 +188,11 @@ const fetchData = async () => {
       data.value = res.data.data.records ?? []
       total.value = res.data.data.totalRow ?? 0
     } else {
-      message.error('获取数据失败，' + res.data.message)
+      message.error(t('admin.common.fetchFailed', { msg: res.data.message }))
     }
   } catch (error) {
     console.error('获取数据失败：', error)
-    message.error('获取数据失败')
+    message.error(t('admin.common.fetchFailedPlain'))
   }
 }
 
@@ -194,7 +208,7 @@ const pagination = computed(() => {
     pageSize: searchParams.pageSize ?? 10,
     total: total.value,
     showSizeChanger: true,
-    showTotal: (total: number) => `共 ${total} 条`,
+    showTotal: (total: number) => t('admin.common.total', { total }),
   }
 })
 
@@ -230,15 +244,15 @@ const toggleFeatured = async (app: API.AppVO) => {
     })
 
     if (res.data.code === 0) {
-      message.success(newPriority === 99 ? '已设为精选' : '已取消精选')
+      message.success(newPriority === 99 ? t('admin.app.featuredSet') : t('admin.app.featuredUnset'))
       // 刷新数据
       fetchData()
     } else {
-      message.error('操作失败：' + res.data.message)
+      message.error(t('admin.app.opFailed', { msg: res.data.message }))
     }
   } catch (error) {
     console.error('操作失败：', error)
-    message.error('操作失败')
+    message.error(t('admin.app.opFailedPlain'))
   }
 }
 
@@ -249,15 +263,15 @@ const deleteApp = async (id: number | undefined) => {
   try {
     const res = await deleteAppByAdmin({ id })
     if (res.data.code === 0) {
-      message.success('删除成功')
+      message.success(t('admin.common.deleteSuccess'))
       // 刷新数据
       fetchData()
     } else {
-      message.error('删除失败：' + res.data.message)
+      message.error(t('admin.common.deleteFailed', { msg: res.data.message }))
     }
   } catch (error) {
     console.error('删除失败：', error)
-    message.error('删除失败')
+    message.error(t('admin.common.deleteFailedPlain'))
   }
 }
 </script>
@@ -265,18 +279,20 @@ const deleteApp = async (id: number | undefined) => {
 <style scoped>
 #appManagePage {
   padding: 24px;
-  background: white;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   margin-top: 16px;
 }
 
 .no-cover {
   width: 80px;
   height: 60px;
-  background: #f5f5f5;
+  background: var(--bg-surface-muted);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #999;
+  color: var(--text-muted);
   font-size: 12px;
   border-radius: 4px;
 }
@@ -288,19 +304,26 @@ const deleteApp = async (id: number | undefined) => {
   white-space: nowrap;
 }
 
-.text-gray {
-  color: #999;
+.text-muted {
+  color: var(--text-muted);
+}
+
+.featured-tag {
+  color: var(--warning);
+  background: var(--warning-soft);
+  border-color: var(--warning-soft);
 }
 
 .featured-btn {
-  background: #faad14;
-  border-color: #faad14;
-  color: white;
+  background: var(--warning);
+  border-color: var(--warning);
+  color: var(--text-inverse);
 }
 
 .featured-btn:hover {
-  background: #d48806;
-  border-color: #d48806;
+  background: color-mix(in srgb, var(--warning) 85%, #000);
+  border-color: color-mix(in srgb, var(--warning) 85%, #000);
+  color: var(--text-inverse);
 }
 
 :deep(.ant-table-tbody > tr > td) {

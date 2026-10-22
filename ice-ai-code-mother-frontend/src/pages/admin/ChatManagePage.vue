@@ -2,28 +2,28 @@
   <div id="chatManagePage">
     <!-- 搜索表单 -->
     <a-form layout="inline" :model="searchParams" @finish="doSearch">
-      <a-form-item label="消息内容">
-        <a-input v-model:value="searchParams.message" placeholder="输入消息内容" />
+      <a-form-item :label="t('admin.chat.message')">
+        <a-input v-model:value="searchParams.message" :placeholder="t('admin.chat.messagePh')" />
       </a-form-item>
-      <a-form-item label="消息类型">
+      <a-form-item :label="t('admin.chat.messageType')">
         <a-select
           v-model:value="searchParams.messageType"
-          placeholder="选择消息类型"
+          :placeholder="t('admin.chat.messageTypePh')"
           style="width: 120px"
         >
-          <a-select-option value="">全部</a-select-option>
-          <a-select-option value="user">用户消息</a-select-option>
-          <a-select-option value="assistant">AI消息</a-select-option>
+          <a-select-option value="">{{ t('admin.app.all') }}</a-select-option>
+          <a-select-option value="user">{{ t('admin.chat.userMsg') }}</a-select-option>
+          <a-select-option value="assistant">{{ t('admin.chat.aiMsg') }}</a-select-option>
         </a-select>
       </a-form-item>
-      <a-form-item label="应用ID">
-        <a-input v-model:value="searchParams.appId" placeholder="输入应用ID" />
+      <a-form-item :label="t('admin.chat.appId')">
+        <a-input v-model:value="searchParams.appId" :placeholder="t('admin.chat.appIdPh')" />
       </a-form-item>
-      <a-form-item label="用户ID">
-        <a-input v-model:value="searchParams.userId" placeholder="输入用户ID" />
+      <a-form-item :label="t('admin.chat.userId')">
+        <a-input v-model:value="searchParams.userId" :placeholder="t('admin.chat.userIdPh')" />
       </a-form-item>
       <a-form-item>
-        <a-button type="primary" html-type="submit">搜索</a-button>
+        <a-button type="primary" html-type="submit">{{ t('admin.common.search') }}</a-button>
       </a-form-item>
     </a-form>
     <a-divider />
@@ -43,8 +43,14 @@
           </a-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'messageType'">
-          <a-tag :color="record.messageType === 'user' ? 'blue' : 'green'">
-            {{ record.messageType === 'user' ? '用户消息' : 'AI消息' }}
+          <a-tag
+            :class="
+              record.messageType === 'user'
+                ? 'msg-type-tag msg-type-tag--user'
+                : 'msg-type-tag msg-type-tag--ai'
+            "
+          >
+            {{ record.messageType === 'user' ? t('admin.chat.userMsg') : t('admin.chat.aiMsg') }}
           </a-tag>
         </template>
         <template v-else-if="column.dataIndex === 'createTime'">
@@ -53,10 +59,15 @@
         <template v-else-if="column.key === 'action'">
           <a-space>
             <a-button type="primary" size="small" @click="viewAppChat(record.appId)">
-              查看对话
+              {{ t('admin.chat.viewChat') }}
             </a-button>
-            <a-popconfirm title="确定要删除这条消息吗？" @confirm="deleteMessage(record.id)">
-              <a-button danger size="small">删除</a-button>
+            <a-popconfirm
+              :title="t('admin.chat.deleteConfirm')"
+              :ok-text="t('common.confirm')"
+              :cancel-text="t('common.cancel')"
+              @confirm="deleteMessage(record.id)"
+            >
+              <a-button danger size="small">{{ t('admin.common.delete') }}</a-button>
             </a-popconfirm>
           </a-space>
         </template>
@@ -68,51 +79,53 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { listAllChatHistoryByPageForAdmin } from '@/api/chatHistoryController'
 import { formatTime } from '@/utils/time'
 
 const router = useRouter()
+const { t } = useI18n({ useScope: 'global' })
 
-const columns = [
+const columns = computed(() => [
   {
-    title: 'ID',
+    title: t('admin.common.id'),
     dataIndex: 'id',
     width: 80,
-    fixed: 'left',
+    fixed: 'left' as const,
   },
   {
-    title: '消息内容',
+    title: t('admin.chat.columns.message'),
     dataIndex: 'message',
     width: 300,
   },
   {
-    title: '消息类型',
+    title: t('admin.chat.columns.messageType'),
     dataIndex: 'messageType',
     width: 100,
   },
   {
-    title: '应用ID',
+    title: t('admin.chat.columns.appId'),
     dataIndex: 'appId',
     width: 80,
   },
   {
-    title: '用户ID',
+    title: t('admin.chat.columns.userId'),
     dataIndex: 'userId',
     width: 80,
   },
   {
-    title: '创建时间',
+    title: t('admin.common.createTime'),
     dataIndex: 'createTime',
     width: 160,
   },
   {
-    title: '操作',
+    title: t('admin.common.action'),
     key: 'action',
     width: 180,
-    fixed: 'right',
+    fixed: 'right' as const,
   },
-]
+])
 
 // 数据
 const data = ref<API.ChatHistory[]>([])
@@ -134,11 +147,11 @@ const fetchData = async () => {
       data.value = res.data.data.records ?? []
       total.value = res.data.data.totalRow ?? 0
     } else {
-      message.error('获取数据失败，' + res.data.message)
+      message.error(t('admin.common.fetchFailed', { msg: res.data.message }))
     }
   } catch (error) {
     console.error('获取数据失败：', error)
-    message.error('获取数据失败')
+    message.error(t('admin.common.fetchFailedPlain'))
   }
 }
 
@@ -154,7 +167,7 @@ const pagination = computed(() => {
     pageSize: searchParams.pageSize ?? 10,
     total: total.value,
     showSizeChanger: true,
-    showTotal: (total: number) => `共 ${total} 条`,
+    showTotal: (total: number) => t('admin.common.total', { total }),
   }
 })
 
@@ -186,12 +199,12 @@ const deleteMessage = async (id: number | undefined) => {
   try {
     // 注意：这里需要后端提供删除对话历史的接口
     // 目前先显示成功，实际实现需要调用删除接口
-    message.success('删除成功')
+    message.success(t('admin.common.deleteSuccess'))
     // 刷新数据
     fetchData()
   } catch (error) {
     console.error('删除失败：', error)
-    message.error('删除失败')
+    message.error(t('admin.common.deleteFailedPlain'))
   }
 }
 </script>
@@ -199,7 +212,9 @@ const deleteMessage = async (id: number | undefined) => {
 <style scoped>
 #chatManagePage {
   padding: 24px;
-  background: white;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   margin-top: 16px;
 }
 
@@ -208,6 +223,18 @@ const deleteMessage = async (id: number | undefined) => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.msg-type-tag--user {
+  color: var(--brand-text);
+  background: var(--brand-soft);
+  border-color: var(--brand-soft);
+}
+
+.msg-type-tag--ai {
+  color: var(--success);
+  background: var(--success-soft);
+  border-color: var(--success-soft);
 }
 
 :deep(.ant-table-tbody > tr > td) {

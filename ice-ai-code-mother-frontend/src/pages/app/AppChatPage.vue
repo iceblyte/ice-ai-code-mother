@@ -38,13 +38,30 @@
           </template>
           {{ t('chat.deploy') }}
         </a-button>
+        <a-button
+          v-if="isOwner && previewUrl"
+          type="default"
+          @click="toggleEditMode"
+          :class="{ 'edit-mode-active': isEditMode }"
+        >
+          <template #icon>
+            <EditOutlined />
+          </template>
+          {{ isEditMode ? t('chat.exitEditMode') : t('chat.editMode') }}
+        </a-button>
+        <a-button v-if="previewUrl" type="default" @click="openInNewTab">
+          <template #icon>
+            <ExportOutlined />
+          </template>
+          {{ t('chat.openNewTab') }}
+        </a-button>
       </div>
     </div>
 
-    <!-- 主要内容区域 -->
-    <div class="main-content">
+    <!-- 主要内容区域：左右分栏，外围固定，各自内部滚动 -->
+    <div class="main-content" ref="mainContentRef" :class="{ 'is-dragging': isDragging }">
       <!-- 左侧对话区域 -->
-      <div class="chat-section">
+      <div class="chat-section" :style="{ '--chat-w': chatWidthPct + '%' }">
         <!-- 消息区域 -->
         <div class="messages-container" ref="messagesContainer">
           <!-- 加载更多按钮 -->
@@ -62,7 +79,7 @@
             </div>
             <div v-else class="ai-message">
               <div class="message-avatar">
-                <a-avatar :src="aiAvatar" />
+                <span class="ai-avatar"><BrandLogo :mark-width="20" /></span>
               </div>
               <div class="message-content">
                 <MarkdownRenderer
@@ -154,31 +171,22 @@
           </div>
         </div>
       </div>
+      <!-- 拖拽分隔条 -->
+      <div
+        class="layout-splitter"
+        :class="{ 'layout-splitter--dragging': isDragging }"
+        @pointerdown="onSplitterDown"
+        @pointermove="onSplitterMove"
+        @pointerup="onSplitterUp"
+        @pointercancel="onSplitterUp"
+      >
+        <i></i>
+      </div>
       <!-- 右侧网页展示区域 -->
       <div class="preview-section">
         <div class="preview-header">
           <h3>{{ t('chat.previewTitle') }}</h3>
-          <div class="preview-actions">
-            <a-button
-              v-if="isOwner && previewUrl"
-              type="link"
-              :danger="isEditMode"
-              @click="toggleEditMode"
-              :class="{ 'edit-mode-active': isEditMode }"
-              style="padding: 0; height: auto; margin-right: 12px"
-            >
-              <template #icon>
-                <EditOutlined />
-              </template>
-              {{ isEditMode ? t('chat.exitEditMode') : t('chat.editMode') }}
-            </a-button>
-            <a-button v-if="previewUrl" type="link" @click="openInNewTab">
-              <template #icon>
-                <ExportOutlined />
-              </template>
-              {{ t('chat.openNewTab') }}
-            </a-button>
-          </div>
+          <span v-if="isEditMode" class="editing-tag">{{ t('chat.editMode') }}</span>
         </div>
         <div class="preview-content">
           <div v-if="isGenerating" class="preview-loading">
@@ -250,7 +258,7 @@ import request from '@/request'
 import MarkdownRenderer from '@/components/MarkdownRenderer.vue'
 import AppDetailModal from '@/components/AppDetailModal.vue'
 import DeploySuccessModal from '@/components/DeploySuccessModal.vue'
-import aiAvatar from '@/assets/aiAvatar.png'
+import BrandLogo from '@/components/BrandLogo.vue'
 import { API_BASE_URL, getStaticPreviewUrl } from '@/config/env'
 import { VisualEditor, type ElementInfo } from '@/utils/visualEditor'
 
@@ -341,6 +349,27 @@ const visualEditor = new VisualEditor({
     selectedElementInfo.value = elementInfo
   },
 })
+
+// 左右分栏拖拽调宽（百分比，限制在 26%–72%）
+const mainContentRef = ref<HTMLElement>()
+const chatWidthPct = ref(42)
+const isDragging = ref(false)
+
+const onSplitterDown = (event: PointerEvent) => {
+  isDragging.value = true
+  ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
+}
+
+const onSplitterMove = (event: PointerEvent) => {
+  if (!isDragging.value || !mainContentRef.value) return
+  const rect = mainContentRef.value.getBoundingClientRect()
+  const pct = ((event.clientX - rect.left) / rect.width) * 100
+  chatWidthPct.value = Math.min(72, Math.max(26, pct))
+}
+
+const onSplitterUp = () => {
+  isDragging.value = false
+}
 
 // 权限相关
 const isOwner = computed(() => {
@@ -1070,11 +1099,17 @@ onUnmounted(() => {
 
 <style scoped>
 #appChatPage {
-  height: 100vh;
+  height: calc(100vh - var(--header-h, 72px));
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  background: var(--bg-app);
+  padding: 12px 16px 16px;
+  background: var(--bg-inset);
+  overflow: hidden;
+}
+
+#appChatPage.is-dragging {
+  cursor: col-resize;
+  user-select: none;
 }
 
 /* 顶部栏 */
@@ -1082,7 +1117,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: 4px 4px 12px;
 }
 
 .header-left {
@@ -1110,28 +1145,73 @@ onUnmounted(() => {
   gap: 12px;
 }
 
-/* 主要内容区域 */
+/* 编辑模式激活态（顶栏按钮） */
+.edit-mode-active {
+  background-color: var(--success) !important;
+  border-color: var(--success) !important;
+  color: #fff !important;
+}
+
+.edit-mode-active:hover {
+  background-color: color-mix(in srgb, var(--success) 80%, #fff) !important;
+  border-color: color-mix(in srgb, var(--success) 80%, #fff) !important;
+}
+
+/* 主要内容区域：外围固定，两栏各自滚动 */
 .main-content {
   flex: 1;
+  min-height: 0;
   display: flex;
-  gap: 16px;
-  padding: 8px;
+  padding: 0;
   overflow: hidden;
 }
 
 /* 左侧对话区域 */
 .chat-section {
-  flex: 2;
+  width: var(--chat-w, 42%);
+  flex: none;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   background: var(--bg-surface);
-  border-radius: 8px;
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
+/* 拖拽分隔条 */
+.layout-splitter {
+  flex: none;
+  width: 10px;
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+
+.layout-splitter i {
+  width: 2px;
+  height: 36px;
+  border-radius: 2px;
+  background: var(--border-strong);
+  opacity: 0.4;
+  transition:
+    height var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease),
+    opacity var(--dur-fast) var(--ease);
+}
+
+.layout-splitter:hover i,
+.layout-splitter--dragging i {
+  background: var(--brand);
+  opacity: 1;
+  height: 56px;
+}
+
 .messages-container {
-  flex: 0.9;
+  flex: 1;
+  min-height: 0;
   padding: 16px;
   overflow-y: auto;
   scroll-behavior: smooth;
@@ -1178,6 +1258,18 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
+/* AI 头像：品牌 logo 圆形底 */
+.ai-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
 .loading-indicator {
   display: flex;
   align-items: center;
@@ -1214,21 +1306,31 @@ onUnmounted(() => {
 
 /* 右侧预览区域 */
 .preview-section {
-  flex: 3;
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   background: var(--bg-surface);
-  border-radius: 8px;
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
 .preview-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 16px;
+  gap: 10px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--border);
+}
+
+.editing-tag {
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  background: var(--brand-soft);
+  color: var(--brand-text);
+  font-size: var(--text-micro);
+  font-weight: var(--weight-medium);
 }
 
 .preview-header h3 {
@@ -1353,11 +1455,17 @@ onUnmounted(() => {
 @media (max-width: 1024px) {
   .main-content {
     flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .layout-splitter {
+    display: none;
   }
 
   .chat-section,
   .preview-section {
     flex: none;
+    width: 100%;
     height: 50vh;
   }
 }
@@ -1431,18 +1539,6 @@ onUnmounted(() => {
     font-size: 12px;
     color: var(--danger);
     border: 1px solid var(--border);
-  }
-
-  /* 编辑模式按钮样式 */
-  .edit-mode-active {
-    background-color: var(--success) !important;
-    border-color: var(--success) !important;
-    color: #fff !important;
-  }
-
-  .edit-mode-active:hover {
-    background-color: color-mix(in srgb, var(--success) 80%, #fff) !important;
-    border-color: color-mix(in srgb, var(--success) 80%, #fff) !important;
   }
 }
 </style>

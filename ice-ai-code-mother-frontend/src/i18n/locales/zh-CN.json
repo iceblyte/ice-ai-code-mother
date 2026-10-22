@@ -119,7 +119,35 @@
     }
   },
   "profile": {
-    "title": "个人中心",
+    "title": "我的应用",
+    "desc": "管理你生成的全部应用，支持卡片与列表两种视图。",
+    "editProfile": "编辑资料",
+    "filters": {
+      "all": "全部"
+    },
+    "view": {
+      "cards": "卡片",
+      "list": "列表"
+    },
+    "searchPh": "搜索应用名称或 ID",
+    "live": "在线",
+    "draft": "草稿",
+    "updated": "更新于",
+    "total": "共 {total} 个应用",
+    "columns": {
+      "id": "ID",
+      "name": "应用名称",
+      "type": "类型",
+      "status": "状态",
+      "updated": "更新时间",
+      "action": "操作"
+    },
+    "actions": {
+      "edit": "编辑",
+      "delete": "删除"
+    },
+    "empty": "暂无应用，去首页创建第一个应用吧",
+    "fetchFailed": "获取数据失败",
     "account": "账号",
     "userName": "用户名",
     "userNamePh": "请输入用户名",
@@ -127,7 +155,7 @@
     "avatarPh": "请输入头像地址",
     "bio": "个人简介",
     "bioPh": "介绍一下自己",
-    "submit": "保存资料",
+    "submit": "保存",
     "success": "保存成功",
     "failedWithReason": "保存失败，{msg}"
   },

@@ -119,7 +119,35 @@
     }
   },
   "profile": {
-    "title": "Profile",
+    "title": "My apps",
+    "desc": "Manage everything you have built, in card or list view.",
+    "editProfile": "Edit profile",
+    "filters": {
+      "all": "All"
+    },
+    "view": {
+      "cards": "Cards",
+      "list": "List"
+    },
+    "searchPh": "Search by app name or ID",
+    "live": "Live",
+    "draft": "Draft",
+    "updated": "Updated",
+    "total": "{total} apps in total",
+    "columns": {
+      "id": "ID",
+      "name": "App name",
+      "type": "Type",
+      "status": "Status",
+      "updated": "Updated",
+      "action": "Actions"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "empty": "No apps yet. Create your first one from the home page.",
+    "fetchFailed": "Failed to load data",
     "account": "Account",
     "userName": "Username",
     "userNamePh": "Enter your username",

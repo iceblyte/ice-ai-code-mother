@@ -21,29 +21,32 @@
       </a-col>
       <!-- 右侧：用户操作区域 -->
       <a-col>
-        <div class="user-login-status">
-          <div v-if="loginUserStore.loginUser.id">
-            <a-dropdown>
-              <a-space>
-                <a-avatar :src="loginUserStore.loginUser.userAvatar" />
-                {{ loginUserStore.loginUser.userName ?? '无名' }}
-              </a-space>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item @click="router.push('/user/profile')">
-                    <UserOutlined/>
-                    个人中心
-                  </a-menu-item>
-                  <a-menu-item @click="doLogout">
-                    <LogoutOutlined />
-                    退出登录
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
-          </div>
-          <div v-else>
-            <a-button type="primary" href="/user/login">登录</a-button>
+        <div class="header-actions">
+          <HeaderPreferences />
+          <div class="user-login-status">
+            <div v-if="loginUserStore.loginUser.id">
+              <a-dropdown>
+                <a-space>
+                  <a-avatar :src="loginUserStore.loginUser.userAvatar" />
+                  {{ loginUserStore.loginUser.userName ?? '无名' }}
+                </a-space>
+                <template #overlay>
+                  <a-menu>
+                    <a-menu-item @click="router.push('/user/profile')">
+                      <UserOutlined/>
+                      个人中心
+                    </a-menu-item>
+                    <a-menu-item @click="doLogout">
+                      <LogoutOutlined />
+                      退出登录
+                    </a-menu-item>
+                  </a-menu>
+                </template>
+              </a-dropdown>
+            </div>
+            <div v-else>
+              <a-button type="primary" href="/user/login">登录</a-button>
+            </div>
           </div>
         </div>
       </a-col>
@@ -56,6 +59,7 @@ import { computed, h, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { type MenuProps, message } from 'ant-design-vue'
 import { LogoutOutlined, UserOutlined, HomeOutlined } from '@ant-design/icons-vue'
+import HeaderPreferences from '@/components/HeaderPreferences.vue'
 import { useLoginUserStore } from '@/stores/loginUser'
 import { userLogout } from '@/api/userController'
 import checkAccess from '@/access/checkAccess'
@@ -176,6 +180,12 @@ const doLogout = async () => {
   margin: 0;
   font-size: 18px;
   color: #1890ff;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .user-login-status {

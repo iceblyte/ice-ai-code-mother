@@ -1,40 +1,36 @@
 <template>
-  <div id="chatManagePage">
-    <!-- 搜索表单 -->
-    <a-form layout="inline" :model="searchParams" @finish="doSearch">
-      <a-form-item :label="t('admin.chat.message')">
-        <a-input v-model:value="searchParams.message" :placeholder="t('admin.chat.messagePh')" />
-      </a-form-item>
-      <a-form-item :label="t('admin.chat.messageType')">
-        <a-select
-          v-model:value="searchParams.messageType"
-          :placeholder="t('admin.chat.messageTypePh')"
-          style="width: 120px"
-        >
-          <a-select-option value="">{{ t('admin.app.all') }}</a-select-option>
-          <a-select-option value="user">{{ t('admin.chat.userMsg') }}</a-select-option>
-          <a-select-option value="assistant">{{ t('admin.chat.aiMsg') }}</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item :label="t('admin.chat.appId')">
-        <a-input v-model:value="searchParams.appId" :placeholder="t('admin.chat.appIdPh')" />
-      </a-form-item>
-      <a-form-item :label="t('admin.chat.userId')">
-        <a-input v-model:value="searchParams.userId" :placeholder="t('admin.chat.userIdPh')" />
-      </a-form-item>
-      <a-form-item>
-        <a-button type="primary" html-type="submit">{{ t('admin.common.search') }}</a-button>
-      </a-form-item>
-    </a-form>
-    <a-divider />
+  <div id="chatManagePage" class="admin-page">
+    <h1 class="admin-title">{{ t('admin.chat.title') }}</h1>
+    <p class="admin-desc">{{ t('admin.chat.desc') }}</p>
+
+    <!-- 工具栏 -->
+    <div class="admin-toolbar">
+      <a-input-search
+        v-model:value="searchParams.message"
+        class="admin-search"
+        :placeholder="t('admin.chat.searchPh')"
+        allow-clear
+        @search="onSearch"
+      />
+      <a-select
+        v-model:value="searchParams.messageType"
+        class="admin-select"
+        :placeholder="t('admin.chat.all')"
+        allow-clear
+        :options="messageTypeOptions"
+        @change="onSearch"
+      />
+    </div>
 
     <!-- 表格 -->
     <a-table
+      style="margin-top: 16px"
       :columns="columns"
       :data-source="data"
-      :pagination="pagination"
-      @change="doTableChange"
-      :scroll="{ x: 1400 }"
+      :loading="loading"
+      :pagination="false"
+      :scroll="{ x: 1200 }"
+      row-key="id"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'message'">
@@ -58,7 +54,7 @@
         </template>
         <template v-else-if="column.key === 'action'">
           <a-space>
-            <a-button type="primary" size="small" @click="viewAppChat(record.appId)">
+            <a-button type="link" size="small" @click="viewAppChat(record.appId)">
               {{ t('admin.chat.viewChat') }}
             </a-button>
             <a-popconfirm
@@ -67,12 +63,24 @@
               :cancel-text="t('common.cancel')"
               @confirm="deleteMessage(record.id)"
             >
-              <a-button danger size="small">{{ t('admin.common.delete') }}</a-button>
+              <a-button type="link" danger size="small">{{ t('admin.common.delete') }}</a-button>
             </a-popconfirm>
           </a-space>
         </template>
       </template>
     </a-table>
+
+    <!-- 分页 -->
+    <div class="admin-pagination">
+      <a-pagination
+        v-model:current="searchParams.pageNum"
+        v-model:page-size="searchParams.pageSize"
+        :total="total"
+        :show-size-changer="false"
+        :show-total="(total: number) => t('admin.chat.total', { total })"
+        @change="fetchData"
+      />
+    </div>
   </div>
 </template>
 
@@ -91,45 +99,49 @@ const columns = computed(() => [
   {
     title: t('admin.common.id'),
     dataIndex: 'id',
-    width: 80,
-    fixed: 'left' as const,
+    width: 90,
   },
   {
     title: t('admin.chat.columns.message'),
     dataIndex: 'message',
-    width: 300,
+    ellipsis: true,
   },
   {
     title: t('admin.chat.columns.messageType'),
     dataIndex: 'messageType',
-    width: 100,
+    width: 110,
   },
   {
     title: t('admin.chat.columns.appId'),
     dataIndex: 'appId',
-    width: 80,
+    width: 90,
   },
   {
     title: t('admin.chat.columns.userId'),
     dataIndex: 'userId',
-    width: 80,
+    width: 90,
   },
   {
     title: t('admin.common.createTime'),
     dataIndex: 'createTime',
-    width: 160,
+    width: 170,
   },
   {
     title: t('admin.common.action'),
     key: 'action',
-    width: 180,
-    fixed: 'right' as const,
+    width: 150,
   },
+])
+
+const messageTypeOptions = computed(() => [
+  { label: t('admin.chat.userMsg'), value: 'user' },
+  { label: t('admin.chat.aiMsg'), value: 'assistant' },
 ])
 
 // 数据
 const data = ref<API.ChatHistory[]>([])
 const total = ref(0)
+const loading = ref(false)
 
 // 搜索条件
 const searchParams = reactive<API.ChatHistoryQueryRequest>({
@@ -139,6 +151,7 @@ const searchParams = reactive<API.ChatHistoryQueryRequest>({
 
 // 获取数据
 const fetchData = async () => {
+  loading.value = true
   try {
     const res = await listAllChatHistoryByPageForAdmin({
       ...searchParams,
@@ -152,34 +165,13 @@ const fetchData = async () => {
   } catch (error) {
     console.error('获取数据失败：', error)
     message.error(t('admin.common.fetchFailedPlain'))
+  } finally {
+    loading.value = false
   }
-}
-
-// 页面加载时请求一次
-onMounted(() => {
-  fetchData()
-})
-
-// 分页参数
-const pagination = computed(() => {
-  return {
-    current: searchParams.pageNum ?? 1,
-    pageSize: searchParams.pageSize ?? 10,
-    total: total.value,
-    showSizeChanger: true,
-    showTotal: (total: number) => t('admin.common.total', { total }),
-  }
-})
-
-// 表格变化处理
-const doTableChange = (page: { current: number; pageSize: number }) => {
-  searchParams.pageNum = page.current
-  searchParams.pageSize = page.pageSize
-  fetchData()
 }
 
 // 搜索
-const doSearch = () => {
+const onSearch = () => {
   // 重置页码
   searchParams.pageNum = 1
   fetchData()
@@ -207,17 +199,14 @@ const deleteMessage = async (id: number | undefined) => {
     message.error(t('admin.common.deleteFailedPlain'))
   }
 }
+
+// 页面加载时请求一次
+onMounted(() => {
+  fetchData()
+})
 </script>
 
 <style scoped>
-#chatManagePage {
-  padding: 24px;
-  background: var(--bg-surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  margin-top: 16px;
-}
-
 .message-text {
   max-width: 300px;
   overflow: hidden;

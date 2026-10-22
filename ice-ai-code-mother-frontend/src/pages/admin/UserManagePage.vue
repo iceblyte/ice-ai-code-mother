@@ -1,24 +1,32 @@
 <template>
-  <div id="userManagePage">
-    <!-- 搜索表单 -->
-    <a-form layout="inline" :model="searchParams" @finish="doSearch">
-      <a-form-item :label="t('admin.user.account')">
-        <a-input v-model:value="searchParams.userAccount" :placeholder="t('admin.user.accountPh')" />
-      </a-form-item>
-      <a-form-item :label="t('admin.user.userName')">
-        <a-input v-model:value="searchParams.userName" :placeholder="t('admin.user.userNamePh')" />
-      </a-form-item>
-      <a-form-item>
-        <a-button type="primary" html-type="submit">{{ t('admin.common.search') }}</a-button>
-      </a-form-item>
-    </a-form>
-    <a-divider />
+  <div id="userManagePage" class="admin-page">
+    <h1 class="admin-title">{{ t('admin.user.title') }}</h1>
+    <p class="admin-desc">{{ t('admin.user.desc') }}</p>
+
+    <!-- 工具栏 -->
+    <div class="admin-toolbar">
+      <a-input-search
+        v-model:value="searchKey"
+        class="admin-search"
+        :placeholder="t('admin.user.searchPh')"
+        allow-clear
+        @search="onSearch"
+      />
+      <a-select
+        v-model:value="roleFilter"
+        class="admin-select"
+        :options="roleFilterOptions"
+      />
+    </div>
+
     <!-- 表格 -->
     <a-table
+      style="margin-top: 16px"
       :columns="columns"
-      :data-source="data"
-      :pagination="pagination"
-      @change="doTableChange"
+      :data-source="filteredData"
+      :loading="loading"
+      :pagination="false"
+      row-key="id"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'userAvatar'">
@@ -33,18 +41,37 @@
           </a-tag>
         </template>
         <template v-else-if="column.dataIndex === 'createTime'">
-          {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}
+          <span class="pf-mono admin-mono">{{ dayjs(record.createTime).format('YYYY-MM-DD') }}</span>
         </template>
         <template v-else-if="column.key === 'action'">
           <a-space>
-            <a-button type="primary" @click="openEditModal(record)">
+            <a-button type="link" size="small" @click="openEditModal(record)">
               {{ t('admin.common.edit') }}
             </a-button>
-            <a-button danger @click="doDelete(record.id)">{{ t('admin.common.delete') }}</a-button>
+            <a-popconfirm
+              :title="t('admin.user.deleteConfirm')"
+              :ok-text="t('common.confirm')"
+              :cancel-text="t('common.cancel')"
+              @confirm="doDelete(record.id)"
+            >
+              <a-button type="link" danger size="small">{{ t('admin.common.delete') }}</a-button>
+            </a-popconfirm>
           </a-space>
         </template>
       </template>
     </a-table>
+
+    <!-- 分页 -->
+    <div class="admin-pagination">
+      <a-pagination
+        v-model:current="searchParams.pageNum"
+        v-model:page-size="searchParams.pageSize"
+        :total="total"
+        :show-size-changer="false"
+        :show-total="(total: number) => t('admin.user.total', { total })"
+        @change="fetchData"
+      />
+    </div>
 
     <a-modal
       v-model:open="editModalOpen"
@@ -87,35 +114,39 @@ const columns = computed(() => [
   {
     title: t('admin.common.id'),
     dataIndex: 'id',
-  },
-  {
-    title: t('admin.user.columns.userAccount'),
-    dataIndex: 'userAccount',
+    width: 90,
   },
   {
     title: t('admin.user.columns.userName'),
     dataIndex: 'userName',
+    ellipsis: true,
   },
   {
-    title: t('admin.user.columns.userAvatar'),
-    dataIndex: 'userAvatar',
-  },
-  {
-    title: t('admin.user.columns.userProfile'),
-    dataIndex: 'userProfile',
+    title: t('admin.user.columns.userAccount'),
+    dataIndex: 'userAccount',
+    width: 140,
   },
   {
     title: t('admin.user.columns.userRole'),
     dataIndex: 'userRole',
+    width: 100,
   },
   {
     title: t('admin.common.createTime'),
     dataIndex: 'createTime',
+    width: 130,
   },
   {
     title: t('admin.common.action'),
     key: 'action',
+    width: 140,
   },
+])
+
+const roleFilterOptions = computed(() => [
+  { label: t('admin.user.roleAll'), value: '' },
+  { label: t('admin.user.roleAdmin'), value: 'admin' },
+  { label: t('admin.user.roleUser'), value: 'user' },
 ])
 
 const userRoleOptions = computed(() => [
@@ -131,6 +162,7 @@ const userRoleOptions = computed(() => [
 
 const data = ref<API.UserVO[]>([])
 const total = ref(0)
+const loading = ref(false)
 const editModalOpen = ref(false)
 const editForm = reactive<API.UserUpdateRequest>({
   id: undefined,
@@ -145,40 +177,36 @@ const searchParams = reactive<API.UserQueryRequest>({
   pageNum: 1,
   pageSize: 10,
 })
+const searchKey = ref('')
+const roleFilter = ref('')
+
+// 角色为前端字段过滤（后端暂不支持 userRole 查询参数，仅作用于当前页）
+const filteredData = computed(() => {
+  if (!roleFilter.value) return data.value
+  return data.value.filter((user) => user.userRole === roleFilter.value)
+})
 
 // 获取数据
 const fetchData = async () => {
-  const res = await listUserVoByPage({
-    ...searchParams,
-  })
-  if (res.data.data) {
-    data.value = res.data.data.records ?? []
-    total.value = res.data.data.totalRow ?? 0
-  } else {
-    message.error(t('admin.common.fetchFailed', { msg: res.data.message }))
+  loading.value = true
+  try {
+    const res = await listUserVoByPage({
+      ...searchParams,
+      userName: searchKey.value.trim() || undefined,
+    })
+    if (res.data.data) {
+      data.value = res.data.data.records ?? []
+      total.value = res.data.data.totalRow ?? 0
+    } else {
+      message.error(t('admin.common.fetchFailed', { msg: res.data.message }))
+    }
+  } finally {
+    loading.value = false
   }
-}
-
-// 分页参数
-const pagination = computed(() => {
-  return {
-    current: searchParams.pageNum ?? 1,
-    pageSize: searchParams.pageSize ?? 10,
-    total: total.value,
-    showSizeChanger: true,
-    showTotal: (total: number) => t('admin.common.total', { total }),
-  }
-})
-
-// 表格分页变化时的操作
-const doTableChange = (page: { current: number; pageSize: number }) => {
-  searchParams.pageNum = page.current
-  searchParams.pageSize = page.pageSize
-  fetchData()
 }
 
 // 搜索数据
-const doSearch = () => {
+const onSearch = () => {
   // 重置页码
   searchParams.pageNum = 1
   fetchData()
@@ -230,14 +258,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-#userManagePage {
-  padding: 24px;
-  background: var(--bg-surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  margin-top: 16px;
-}
-
 .role-tag--admin {
   color: var(--success);
   background: var(--success-soft);
@@ -248,5 +268,9 @@ onMounted(() => {
   color: var(--brand-text);
   background: var(--brand-soft);
   border-color: var(--brand-soft);
+}
+
+.admin-mono {
+  font-family: var(--font-mono);
 }
 </style>

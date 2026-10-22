@@ -179,6 +179,10 @@
       "createTime": "Created"
     },
     "app": {
+      "title": "App management",
+      "desc": "Review and maintain every app on the platform — edit, feature or delete.",
+      "searchPh": "Search by app name or ID",
+      "total": "{total} apps in total",
       "appName": "App name",
       "appNamePh": "Enter app name",
       "creator": "Creator",
@@ -206,6 +210,12 @@
       }
     },
     "user": {
+      "title": "User management",
+      "desc": "Browse every account and manage roles.",
+      "searchPh": "Search nickname or account",
+      "roleAll": "All roles",
+      "total": "{total} users in total",
+      "deleteConfirm": "Delete this user?",
       "account": "Account",
       "accountPh": "Enter account",
       "userName": "Username",
@@ -231,6 +241,11 @@
       }
     },
     "chat": {
+      "title": "Chat management",
+      "desc": "Browse every generated conversation and trace each build and its context.",
+      "searchPh": "Search message content",
+      "all": "All",
+      "total": "{total} conversations in total",
       "message": "Message",
       "messagePh": "Enter message",
       "messageType": "Type",

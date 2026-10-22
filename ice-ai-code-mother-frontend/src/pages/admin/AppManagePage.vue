@@ -1,42 +1,36 @@
 <template>
-  <div id="appManagePage">
-    <!-- 搜索表单 -->
-    <a-form layout="inline" :model="searchParams" @finish="doSearch">
-      <a-form-item :label="t('admin.app.appName')">
-        <a-input v-model:value="searchParams.appName" :placeholder="t('admin.app.appNamePh')" />
-      </a-form-item>
-      <a-form-item :label="t('admin.app.creator')">
-        <a-input v-model:value="searchParams.userId" :placeholder="t('admin.app.userIdPh')" />
-      </a-form-item>
-      <a-form-item :label="t('admin.app.genType')">
-        <a-select
-          v-model:value="searchParams.codeGenType"
-          :placeholder="t('admin.app.genTypePh')"
-          style="width: 150px"
-        >
-          <a-select-option value="">{{ t('admin.app.all') }}</a-select-option>
-          <a-select-option
-            v-for="option in genTypeOptions"
-            :key="option.value"
-            :value="option.value"
-          >
-            {{ option.label }}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item>
-        <a-button type="primary" html-type="submit">{{ t('admin.common.search') }}</a-button>
-      </a-form-item>
-    </a-form>
-    <a-divider />
+  <div id="appManagePage" class="admin-page">
+    <h1 class="admin-title">{{ t('admin.app.title') }}</h1>
+    <p class="admin-desc">{{ t('admin.app.desc') }}</p>
+
+    <!-- 工具栏 -->
+    <div class="admin-toolbar">
+      <a-input-search
+        v-model:value="searchKey"
+        class="admin-search"
+        :placeholder="t('admin.app.searchPh')"
+        allow-clear
+        @search="onSearch"
+      />
+      <a-select
+        v-model:value="searchParams.codeGenType"
+        class="admin-select"
+        :placeholder="t('admin.app.all')"
+        allow-clear
+        :options="genTypeSelectOptions"
+        @change="onSearch"
+      />
+    </div>
 
     <!-- 表格 -->
     <a-table
+      style="margin-top: 16px"
       :columns="columns"
       :data-source="data"
-      :pagination="pagination"
-      @change="doTableChange"
+      :loading="loading"
+      :pagination="false"
       :scroll="{ x: 1200 }"
+      row-key="id"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'cover'">
@@ -71,11 +65,11 @@
         </template>
         <template v-else-if="column.key === 'action'">
           <a-space>
-            <a-button type="primary" size="small" @click="editApp(record)">
+            <a-button type="link" size="small" @click="editApp(record)">
               {{ t('admin.common.edit') }}
             </a-button>
             <a-button
-              type="default"
+              type="link"
               size="small"
               @click="toggleFeatured(record)"
               :class="{ 'featured-btn': record.priority === 99 }"
@@ -88,12 +82,24 @@
               :cancel-text="t('common.cancel')"
               @confirm="deleteApp(record.id)"
             >
-              <a-button danger size="small">{{ t('admin.common.delete') }}</a-button>
+              <a-button type="link" danger size="small">{{ t('admin.common.delete') }}</a-button>
             </a-popconfirm>
           </a-space>
         </template>
       </template>
     </a-table>
+
+    <!-- 分页 -->
+    <div class="admin-pagination">
+      <a-pagination
+        v-model:current="searchParams.pageNum"
+        v-model:page-size="searchParams.pageSize"
+        :total="total"
+        :show-size-changer="false"
+        :show-total="(total: number) => t('admin.app.total', { total })"
+        @change="fetchData"
+      />
+    </div>
   </div>
 </template>
 
@@ -121,6 +127,7 @@ const columns = computed(() => [
     title: t('admin.app.columns.appName'),
     dataIndex: 'appName',
     width: 150,
+    ellipsis: true,
   },
   {
     title: t('admin.app.columns.cover'),
@@ -135,12 +142,12 @@ const columns = computed(() => [
   {
     title: t('admin.app.columns.codeGenType'),
     dataIndex: 'codeGenType',
-    width: 100,
+    width: 130,
   },
   {
     title: t('admin.app.columns.priority'),
     dataIndex: 'priority',
-    width: 80,
+    width: 90,
   },
   {
     title: t('admin.app.columns.deployedTime'),
@@ -160,7 +167,7 @@ const columns = computed(() => [
   {
     title: t('admin.common.action'),
     key: 'action',
-    width: 200,
+    width: 190,
     fixed: 'right' as const,
   },
 ])
@@ -168,21 +175,30 @@ const columns = computed(() => [
 // 生成类型选项（随语言响应）
 const genTypeOptions = computed(() => getCodeGenTypeOptions())
 
+const genTypeSelectOptions = computed(() => [
+  { label: t('admin.app.all'), value: '' },
+  ...genTypeOptions.value,
+])
+
 // 数据
 const data = ref<API.AppVO[]>([])
 const total = ref(0)
+const loading = ref(false)
 
 // 搜索条件
 const searchParams = reactive<API.AppQueryRequest>({
   pageNum: 1,
   pageSize: 10,
 })
+const searchKey = ref('')
 
 // 获取数据
 const fetchData = async () => {
+  loading.value = true
   try {
     const res = await listAppVoByPageByAdmin({
       ...searchParams,
+      appName: searchKey.value.trim() || undefined,
     })
     if (res.data.data) {
       data.value = res.data.data.records ?? []
@@ -193,6 +209,8 @@ const fetchData = async () => {
   } catch (error) {
     console.error('获取数据失败：', error)
     message.error(t('admin.common.fetchFailedPlain'))
+  } finally {
+    loading.value = false
   }
 }
 
@@ -201,26 +219,8 @@ onMounted(() => {
   fetchData()
 })
 
-// 分页参数
-const pagination = computed(() => {
-  return {
-    current: searchParams.pageNum ?? 1,
-    pageSize: searchParams.pageSize ?? 10,
-    total: total.value,
-    showSizeChanger: true,
-    showTotal: (total: number) => t('admin.common.total', { total }),
-  }
-})
-
-// 表格变化处理
-const doTableChange = (page: { current: number; pageSize: number }) => {
-  searchParams.pageNum = page.current
-  searchParams.pageSize = page.pageSize
-  fetchData()
-}
-
 // 搜索
-const doSearch = () => {
+const onSearch = () => {
   // 重置页码
   searchParams.pageNum = 1
   fetchData()
@@ -277,14 +277,6 @@ const deleteApp = async (id: number | undefined) => {
 </script>
 
 <style scoped>
-#appManagePage {
-  padding: 24px;
-  background: var(--bg-surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  margin-top: 16px;
-}
-
 .no-cover {
   width: 80px;
   height: 60px;
@@ -315,15 +307,11 @@ const deleteApp = async (id: number | undefined) => {
 }
 
 .featured-btn {
-  background: var(--warning);
-  border-color: var(--warning);
-  color: var(--text-inverse);
+  color: var(--warning);
 }
 
 .featured-btn:hover {
-  background: color-mix(in srgb, var(--warning) 85%, #000);
-  border-color: color-mix(in srgb, var(--warning) 85%, #000);
-  color: var(--text-inverse);
+  color: color-mix(in srgb, var(--warning) 85%, #000);
 }
 
 :deep(.ant-table-tbody > tr > td) {

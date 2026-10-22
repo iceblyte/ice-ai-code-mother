@@ -8,6 +8,7 @@ import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/reset.css'
 
 import '@/styles/tokens.css'
+import '@/styles/admin.css'
 import '@/styles/skins/minimal.css'
 import '@/styles/skins/codenow.css'
 import '@/styles/skins/cohere.css'

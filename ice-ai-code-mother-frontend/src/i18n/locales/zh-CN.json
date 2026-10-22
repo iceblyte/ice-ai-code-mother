@@ -179,6 +179,10 @@
       "createTime": "创建时间"
     },
     "app": {
+      "title": "应用管理",
+      "desc": "审核并维护平台上全部应用，支持编辑、精选与删除。",
+      "searchPh": "搜索应用名称或 ID",
+      "total": "共 {total} 个应用",
       "appName": "应用名称",
       "appNamePh": "输入应用名称",
       "creator": "创建者",
@@ -206,6 +210,12 @@
       }
     },
     "user": {
+      "title": "用户管理",
+      "desc": "查看平台全部用户，管理角色与账号。",
+      "searchPh": "搜索昵称或账号",
+      "roleAll": "全部角色",
+      "total": "共 {total} 个用户",
+      "deleteConfirm": "确定要删除这个用户吗？",
       "account": "账号",
       "accountPh": "输入账号",
       "userName": "用户名",
@@ -231,6 +241,11 @@
       }
     },
     "chat": {
+      "title": "对话管理",
+      "desc": "查看平台生成的对话记录，追踪每次生成的过程与上下文。",
+      "searchPh": "搜索消息内容",
+      "all": "全部",
+      "total": "共 {total} 条对话",
       "message": "消息内容",
       "messagePh": "输入消息内容",
       "messageType": "消息类型",

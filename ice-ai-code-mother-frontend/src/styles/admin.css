@@ -1,0 +1,54 @@
+/* ============================================================
+   管理端页面共享布局（对齐原型 admin-*.html：标题 + 描述 + 工具栏 + 表格）
+   ============================================================ */
+
+.admin-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 48px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-title {
+  margin: 0;
+  font-size: var(--text-h1);
+  line-height: var(--leading-h1);
+  font-weight: var(--weight-heavy);
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.admin-desc {
+  margin: 8px 0 0;
+  font-size: var(--text-caption);
+  line-height: var(--leading-caption);
+  color: var(--text-muted);
+}
+
+.admin-toolbar {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-search {
+  width: 100%;
+  max-width: 320px;
+}
+
+.admin-select {
+  min-width: 150px;
+}
+
+.admin-grow {
+  flex: 1 1 auto;
+}
+
+.admin-pagination {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}

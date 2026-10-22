@@ -42,6 +42,38 @@
   "footer": {
     "openSourceBy": "Open source by iceblyte"
   },
+  "home": {
+    "heroTitle": "AI App Builder Platform",
+    "heroSubtitle": "Build web apps from a single sentence",
+    "promptPlaceholder": "e.g. Build me a personal blog website",
+    "myWorks": "My Apps",
+    "featured": "Featured",
+    "totalApps": "{total} apps in total",
+    "totalFeatured": "{total} featured in total",
+    "warnEmpty": "Please describe your app first",
+    "warnLogin": "Please log in first",
+    "createSuccess": "App created",
+    "createFailed": "Creation failed, please retry",
+    "createFailedWithReason": "Creation failed: {msg}",
+    "quick": {
+      "blog": {
+        "label": "Personal Blog",
+        "prompt": "Create a modern personal blog website with article list, detail pages, categories and tags, search, a comment system, and an about page. Clean design, responsive layout, Markdown support, with latest posts and popular picks on the home page."
+      },
+      "corporate": {
+        "label": "Corporate Site",
+        "prompt": "Design a professional corporate website with company intro, products & services, news, and contact pages. Business style with hero carousel, product cards, team section and client cases, multi-language support and online chat."
+      },
+      "shop": {
+        "label": "Online Store",
+        "prompt": "Build a fully functional online store with product listings, cart, user sign-up/login, order management and checkout. Modern product card layout with search and filters, reviews, coupons and a loyalty points system."
+      },
+      "portfolio": {
+        "label": "Portfolio",
+        "prompt": "Create an elegant portfolio website for designers, photographers and artists. Include a gallery, project detail pages, resume and contact modules. Use a masonry or grid layout with image zoom preview and category filters."
+      }
+    }
+  },
   "genType": {
     "html": "Single HTML Mode",
     "multiFile": "Multi-file Mode",

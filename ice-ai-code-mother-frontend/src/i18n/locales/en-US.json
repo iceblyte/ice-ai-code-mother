@@ -1,0 +1,26 @@
+{
+  "site": {
+    "title": "CodeNow · One-sentence App Builder"
+  },
+  "common": {
+    "comingSoon": "Coming soon"
+  },
+  "header": {
+    "theme": {
+      "toLight": "Switch to light mode",
+      "toDark": "Switch to dark mode"
+    },
+    "lang": {
+      "label": "Switch language"
+    },
+    "skin": {
+      "label": "Switch appearance",
+      "names": {
+        "minimal": "Minimal",
+        "codenow": "Pine",
+        "cohere": "Warmstone",
+        "dell": "Retro"
+      }
+    }
+  }
+}

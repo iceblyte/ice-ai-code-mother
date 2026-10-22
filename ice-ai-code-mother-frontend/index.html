@@ -1,10 +1,40 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8">
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 零代码应用生成平台</title>
+    <script>
+      // 防 FOUC：首帧前应用主题/皮肤/语言偏好（key 与 src/constants/uiPreferences.ts 保持同步）
+      ;(function () {
+        var read = function (key, allowed) {
+          try {
+            var v = localStorage.getItem(key)
+            return v && allowed.indexOf(v) > -1 ? v : null
+          } catch (e) {
+            return null
+          }
+        }
+        var theme = read('codenow-theme', ['light', 'dark'])
+        if (!theme) {
+          theme =
+            window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light'
+        }
+        var skin = read('codenow-skin', ['minimal', 'codenow', 'cohere', 'dell']) || 'minimal'
+        var lang = read('codenow-lang', ['zh-CN', 'en-US'])
+        if (!lang) {
+          var nav = (navigator.language || '').toLowerCase()
+          lang = nav.indexOf('zh') === 0 ? 'zh-CN' : nav.indexOf('en') === 0 ? 'en-US' : 'zh-CN'
+        }
+        var el = document.documentElement
+        el.setAttribute('data-theme', theme)
+        el.setAttribute('data-skin', skin)
+        el.setAttribute('lang', lang)
+      })()
+    </script>
   </head>
   <body>
     <div id="app"></div>

@@ -1,0 +1,26 @@
+{
+  "site": {
+    "title": "CodeNow · 一句话生成应用"
+  },
+  "common": {
+    "comingSoon": "即将上线"
+  },
+  "header": {
+    "theme": {
+      "toLight": "切换为亮色模式",
+      "toDark": "切换为暗色模式"
+    },
+    "lang": {
+      "label": "切换语言"
+    },
+    "skin": {
+      "label": "切换外观",
+      "names": {
+        "minimal": "极简",
+        "codenow": "青松",
+        "cohere": "暖石",
+        "dell": "复古"
+      }
+    }
+  }
+}

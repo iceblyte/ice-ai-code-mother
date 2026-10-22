@@ -1,0 +1,118 @@
+/* ============================================================
+   minimal · 极简（移植自 docs/prototype/assets/skins.css）
+   白底 + 冷静蓝点缀 · 药丸按钮 · 大标题紧字距
+   仅保留变量与全局选中态；原型的 .cn-* 组件类不移植，
+   对应观感在阶段 3 通过 antd token + 组件样式实现。
+   ============================================================ */
+
+html[data-skin='minimal'] {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Helvetica,
+    Inter, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --text-display: 46px;
+  --leading-display: 52px;
+  --text-h1: 30px;
+  --leading-h1: 38px;
+  --weight-heavy: 600;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-card: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 26px;
+}
+
+html[data-skin='minimal']:not([data-theme='dark']) {
+  --bg-app: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-surface-muted: #f5f5f7;
+  --bg-elevated: #ffffff;
+  --bg-inset: #f5f5f7;
+  --border: #e6e6eb;
+  --border-strong: #d2d2d7;
+  --text-primary: #1d1d1f;
+  --text-secondary: #4b4b52;
+  --text-muted: #86868b;
+  --text-inverse: #ffffff;
+  --overlay: rgba(0, 0, 0, 0.48);
+  --skeleton: #ececee;
+
+  --brand-50: #e8f1fc;
+  --brand-100: #d6e7f9;
+  --brand-200: #a9cef6;
+  --brand-500: #1a83e0;
+  --brand-600: #0066cc;
+  --brand-700: #0055aa;
+  --brand-800: #004488;
+  --brand: #0066cc;
+  --brand-hover: #0055aa;
+  --brand-on: #ffffff;
+  --brand-text: #0066cc;
+  --brand-soft: #e8f1fc;
+  --brand-ring: rgba(0, 102, 204, 0.3);
+
+  --warning: #8a5300;
+  --warning-soft: #fff3d9;
+  --info: #0066cc;
+  --info-soft: #eaf2fb;
+  --skin-accent: #0066cc;
+
+  --code-bg: #1d1d1f;
+  --code-bg-soft: #2c2c2e;
+  --code-line: #3a3a3c;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 12px 34px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.12);
+}
+
+html[data-theme='dark'][data-skin='minimal'] {
+  --bg-app: #000000;
+  --bg-surface: #161618;
+  --bg-surface-muted: #1f1f22;
+  --bg-elevated: #1c1c1f;
+  --bg-inset: #101012;
+  --border: #2e2e33;
+  --border-strong: #424249;
+  --text-primary: #f5f5f7;
+  --text-secondary: #c7c7cc;
+  --text-muted: #8e8e93;
+  --text-inverse: #000000;
+  --overlay: rgba(0, 0, 0, 0.7);
+  --skeleton: #242428;
+
+  --brand-50: #0d2338;
+  --brand-100: #103049;
+  --brand-200: #164264;
+  --brand-500: #2997ff;
+  --brand-600: #2997ff;
+  --brand-700: #5ab0ff;
+  --brand-800: #8cc8ff;
+  --brand: #5ab0ff;
+  --brand-hover: #8cc8ff;
+  --brand-on: #04121f;
+  --brand-text: #5ab0ff;
+  --brand-soft: rgba(41, 151, 255, 0.14);
+  --brand-ring: rgba(41, 151, 255, 0.32);
+
+  --warning: #e0b060;
+  --warning-soft: rgba(224, 176, 96, 0.14);
+  --info: #5ab0ff;
+  --info-soft: rgba(41, 151, 255, 0.14);
+  --skin-accent: #5ab0ff;
+
+  --code-bg: #000000;
+  --code-bg-soft: #1d1d1f;
+  --code-line: #3a3a3c;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.55);
+  --shadow-md: 0 12px 36px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.66);
+}
+
+html[data-skin='minimal'] ::selection {
+  background: rgba(0, 102, 204, 0.16);
+}
+
+html[data-theme='dark'][data-skin='minimal'] ::selection {
+  background: rgba(41, 151, 255, 0.28);
+}

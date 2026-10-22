@@ -138,9 +138,9 @@ const onSkinClick = ({ key }: { key: string }) => {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 34px;
-  min-width: 34px;
-  padding: 0 10px;
+  height: 36px;
+  min-width: 36px;
+  padding: 0 12px;
   background: transparent;
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
@@ -156,7 +156,7 @@ const onSkinClick = ({ key }: { key: string }) => {
 }
 
 .pref-iconbtn__text {
-  font-size: var(--text-caption);
+  font-size: var(--text-body);
   font-weight: var(--weight-medium);
   font-family: var(--font-mono);
 }

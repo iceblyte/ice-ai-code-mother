@@ -5,7 +5,7 @@
         <!-- 品牌列 -->
         <div class="footer-brand">
           <RouterLink to="/" class="footer-logo" aria-label="CodeNow">
-            <BrandLogo :word-height="17" />
+            <BrandLogo :mark-width="30" :word-height="20" />
           </RouterLink>
           <p class="footer-tagline">{{ t('footer.tagline') }}</p>
         </div>
@@ -64,11 +64,11 @@ const { t } = useI18n({ useScope: 'global' })
   flex-wrap: wrap;
   gap: 64px;
   justify-content: space-between;
-  padding: 48px 0 32px;
+  padding: 64px 0 48px;
 }
 
 .footer-brand {
-  max-width: 280px;
+  max-width: 320px;
 }
 
 .footer-logo {
@@ -76,30 +76,30 @@ const { t } = useI18n({ useScope: 'global' })
 }
 
 .footer-tagline {
-  margin: 16px 0 0;
-  font-size: var(--text-caption);
-  line-height: var(--leading-caption);
+  margin: 20px 0 0;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
   color: var(--text-muted);
 }
 
 .footer-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 64px;
+  gap: 72px;
 }
 
 .footer-col h4 {
-  font-size: var(--text-caption);
+  font-size: var(--text-title);
   font-weight: var(--weight-strong);
   color: var(--text-primary);
-  margin: 0 0 12px;
+  margin: 0 0 16px;
 }
 
 .footer-col a {
   display: block;
-  font-size: var(--text-caption);
+  font-size: var(--text-body);
   color: var(--text-muted);
-  padding: 4px 0;
+  padding: 6px 0;
 }
 
 .footer-col a:hover {
@@ -111,9 +111,9 @@ const { t } = useI18n({ useScope: 'global' })
   flex-wrap: wrap;
   gap: 12px;
   justify-content: space-between;
-  padding: 16px 0 32px;
+  padding: 20px 0 40px;
   border-top: 1px solid var(--border);
-  font-size: var(--text-micro);
+  font-size: var(--text-caption);
   color: var(--text-muted);
 }
 </style>

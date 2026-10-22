@@ -2,7 +2,7 @@
   <a-layout-header class="header">
     <div class="header-inner">
       <RouterLink to="/" class="header-logo" aria-label="CodeNow">
-        <BrandLogo />
+        <BrandLogo :mark-width="30" :word-height="22" />
       </RouterLink>
 
       <!-- 桌面导航 -->
@@ -29,7 +29,7 @@
         <div v-if="loginUserStore.loginUser.id" class="header-user">
           <a-dropdown placement="bottomRight">
             <button class="header-user__summary" type="button">
-              <a-avatar :src="loginUserStore.loginUser.userAvatar" :size="26">
+              <a-avatar :src="loginUserStore.loginUser.userAvatar" :size="28">
                 {{ loginUserStore.loginUser.userName?.charAt(0) || 'U' }}
               </a-avatar>
               <span class="header-user__name">
@@ -248,9 +248,9 @@ const doLogout = async () => {
 }
 
 .header-nav a {
-  padding: 8px 12px;
+  padding: 10px 14px;
   border-radius: var(--radius);
-  font-size: var(--text-body);
+  font-size: var(--text-title);
   color: var(--text-secondary);
   transition:
     background var(--dur-fast) var(--ease),
@@ -284,8 +284,8 @@ const doLogout = async () => {
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 34px;
-  padding: 0 10px 0 4px;
+  height: 38px;
+  padding: 0 12px 0 5px;
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
   cursor: pointer;
@@ -300,7 +300,7 @@ const doLogout = async () => {
 }
 
 .header-user__name {
-  font-size: var(--text-caption);
+  font-size: var(--text-body);
   font-weight: var(--weight-medium);
   max-width: 120px;
   overflow: hidden;
@@ -311,13 +311,13 @@ const doLogout = async () => {
 .header-login {
   display: inline-flex;
   align-items: center;
-  height: 34px;
-  padding: 0 14px;
+  height: 38px;
+  padding: 0 18px;
   border: 1px solid transparent;
   border-radius: var(--radius-full);
   background: var(--brand);
   color: var(--brand-on);
-  font-size: var(--text-caption);
+  font-size: var(--text-body);
   font-weight: var(--weight-medium);
   transition: background var(--dur-fast) var(--ease);
 }

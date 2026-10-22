@@ -82,16 +82,18 @@
   },
   "auth": {
     "login": {
-      "title": "AI App Builder - Log in",
-      "subtitle": "Build complete apps without writing a single line of code",
+      "title": "Sign in to CodeNow",
+      "subtitle": "Welcome back — keep building your apps.",
+      "accountLabel": "Account",
       "accountPh": "Enter your account",
       "accountRequired": "Please enter your account",
+      "passwordLabel": "Password",
       "passwordPh": "Enter your password",
       "passwordRequired": "Please enter your password",
       "passwordMin": "Password must be at least 8 characters",
       "noAccount": "No account yet?",
-      "toRegister": "Register",
-      "submit": "Log in",
+      "toRegister": "Sign up",
+      "submit": "Sign in",
       "success": "Logged in",
       "failedWithReason": "Login failed: {msg}"
     },

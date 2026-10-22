@@ -82,15 +82,17 @@
   },
   "auth": {
     "login": {
-      "title": "AI 应用生成 - 用户登录",
-      "subtitle": "不写一行代码，生成完整应用",
+      "title": "登录 CodeNow",
+      "subtitle": "欢迎回来，继续构建你的应用。",
+      "accountLabel": "账号",
       "accountPh": "请输入账号",
       "accountRequired": "请输入账号",
+      "passwordLabel": "密码",
       "passwordPh": "请输入密码",
       "passwordRequired": "请输入密码",
       "passwordMin": "密码长度不能小于 8 位",
-      "noAccount": "没有账号",
-      "toRegister": "去注册",
+      "noAccount": "还没有账号？",
+      "toRegister": "注册",
       "submit": "登录",
       "success": "登录成功",
       "failedWithReason": "登录失败，{msg}"

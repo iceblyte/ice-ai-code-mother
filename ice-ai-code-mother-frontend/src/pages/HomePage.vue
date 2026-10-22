@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { useLoginUserStore } from '@/stores/loginUser'
 import { addApp, listMyAppVoByPage, listGoodAppVoByPage } from '@/api/appController'
 import { getDeployUrl } from '@/config/env'
-import AppCard from '@/components/AppCard.vue'
+import { formatCodeGenType, getCodeGenTypeOptions } from '@/utils/codeGenTypes'
+import { formatDate } from '@/utils/time'
 
 const router = useRouter()
 const loginUserStore = useLoginUserStore()
@@ -14,6 +15,7 @@ const { t } = useI18n({ useScope: 'global' })
 
 // 用户提示词
 const userPrompt = ref('')
+const composerRef = ref<HTMLTextAreaElement>()
 const creating = ref(false)
 
 // 快捷提示词（文案与预设提示词均由 i18n 管理）
@@ -21,26 +23,31 @@ const quickActionKeys = ['blog', 'corporate', 'shop', 'portfolio'] as const
 
 // 我的应用数据
 const myApps = ref<API.AppVO[]>([])
-const myAppsPage = reactive({
-  current: 1,
-  pageSize: 6,
-  total: 0,
-})
 
 // 精选应用数据
 const featuredApps = ref<API.AppVO[]>([])
-const featuredAppsPage = reactive({
-  current: 1,
-  pageSize: 6,
-  total: 0,
-})
+const featuredLoading = ref(false)
+const featuredType = ref('')
+const featuredTypeOptions = computed(() => [
+  { label: t('home.filterAll'), value: '' },
+  ...getCodeGenTypeOptions().map((option) => ({
+    label: option.label,
+    value: option.value,
+  })),
+])
 
-// 设置提示词
+// 设置提示词并聚焦输入框
 const setPrompt = (prompt: string) => {
   userPrompt.value = prompt
+  composerRef.value?.focus()
 }
 
-// 优化提示词功能已移除
+// 新建应用：聚焦输入框
+const focusComposer = () => {
+  userPrompt.value = ''
+  composerRef.value?.focus()
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 
 // 创建应用
 const createApp = async () => {
@@ -77,7 +84,7 @@ const createApp = async () => {
   }
 }
 
-// 加载我的应用
+// 加载我的应用（原型首屏展示 3 张 + 新建卡）
 const loadMyApps = async () => {
   if (!loginUserStore.loginUser.id) {
     return
@@ -85,38 +92,46 @@ const loadMyApps = async () => {
 
   try {
     const res = await listMyAppVoByPage({
-      pageNum: myAppsPage.current,
-      pageSize: myAppsPage.pageSize,
-      sortField: 'createTime',
+      pageNum: 1,
+      pageSize: 3,
+      sortField: 'updateTime',
       sortOrder: 'desc',
     })
 
     if (res.data.code === 0 && res.data.data) {
       myApps.value = res.data.data.records || []
-      myAppsPage.total = res.data.data.totalRow || 0
     }
   } catch (error) {
     console.error('加载我的应用失败：', error)
   }
 }
 
-// 加载精选应用
+// 加载精选应用（支持类型筛选）
 const loadFeaturedApps = async () => {
+  featuredLoading.value = true
   try {
     const res = await listGoodAppVoByPage({
-      pageNum: featuredAppsPage.current,
-      pageSize: featuredAppsPage.pageSize,
+      pageNum: 1,
+      pageSize: 6,
       sortField: 'createTime',
       sortOrder: 'desc',
+      codeGenType: featuredType.value || undefined,
     })
 
     if (res.data.code === 0 && res.data.data) {
       featuredApps.value = res.data.data.records || []
-      featuredAppsPage.total = res.data.data.totalRow || 0
     }
   } catch (error) {
     console.error('加载精选应用失败：', error)
+  } finally {
+    featuredLoading.value = false
   }
+}
+
+// 精选类型筛选
+const setFeaturedType = (value: string) => {
+  featuredType.value = value
+  loadFeaturedApps()
 }
 
 // 查看对话
@@ -126,7 +141,7 @@ const viewChat = (appId: string | number | undefined) => {
   }
 }
 
-// 查看作品
+// 查看部署后的作品
 const viewWork = (app: API.AppVO) => {
   if (app.deployKey) {
     const url = getDeployUrl(app.deployKey)
@@ -134,411 +149,637 @@ const viewWork = (app: API.AppVO) => {
   }
 }
 
-// 格式化时间函数已移除，不再需要显示创建时间
-
 // 页面加载时获取数据
 onMounted(() => {
-  loadMyApps()
-  loadFeaturedApps()
-
-  // 鼠标跟随光效
-  const handleMouseMove = (e: MouseEvent) => {
-    const { clientX, clientY } = e
-    const { innerWidth, innerHeight } = window
-    const x = (clientX / innerWidth) * 100
-    const y = (clientY / innerHeight) * 100
-
-    document.documentElement.style.setProperty('--mouse-x', `${x}%`)
-    document.documentElement.style.setProperty('--mouse-y', `${y}%`)
-  }
-
-  document.addEventListener('mousemove', handleMouseMove)
-
-  // 清理事件监听器
-  return () => {
-    document.removeEventListener('mousemove', handleMouseMove)
-  }
+  nextTick(() => {
+    loadMyApps()
+    loadFeaturedApps()
+  })
 })
 </script>
 
 <template>
   <div id="homePage">
-    <div class="container">
-      <!-- 网站标题和描述 -->
-      <div class="hero-section">
-        <h1 class="hero-title">{{ t('home.heroTitle') }}</h1>
-        <p class="hero-description">{{ t('home.heroSubtitle') }}</p>
-      </div>
+    <!-- Hero：网格背景 + eyebrow + 大标题 + composer + 快捷提示 -->
+    <section class="home-hero">
+      <div class="home-hero__grid" aria-hidden="true"></div>
+      <div class="home-container">
+        <span class="home-hero__eyebrow">
+          <i class="home-dot home-dot--live"></i>{{ t('home.eyebrow') }}
+        </span>
+        <h1 class="home-hero__title">{{ t('home.title') }}</h1>
+        <p class="home-hero__sub">{{ t('home.sub') }}</p>
 
-      <!-- 用户提示词输入框 -->
-      <div class="input-section">
-        <a-textarea
-          v-model:value="userPrompt"
-          :placeholder="t('home.promptPlaceholder')"
-          :rows="4"
-          :maxlength="1000"
-          class="prompt-input"
-        />
-        <div class="input-actions">
-          <a-button type="primary" size="large" @click="createApp" :loading="creating">
-            <template #icon>
-              <span>↑</span>
-            </template>
-          </a-button>
+        <div class="home-composer">
+          <textarea
+            ref="composerRef"
+            v-model="userPrompt"
+            class="home-composer__input"
+            rows="3"
+            :placeholder="t('home.ph')"
+            :maxlength="1000"
+          ></textarea>
+          <div class="home-composer__bar">
+            <div class="home-composer__tools"></div>
+            <button
+              class="home-send"
+              :disabled="creating"
+              :title="t('home.generate')"
+              :aria-label="t('home.generate')"
+              @click="createApp"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 19V5M5 12l7-7 7 7" />
+              </svg>
+            </button>
+          </div>
         </div>
-      </div>
 
-      <!-- 快捷按钮 -->
-      <div class="quick-actions">
-        <a-button
-          v-for="key in quickActionKeys"
-          :key="key"
-          type="default"
-          @click="setPrompt(t(`home.quick.${key}.prompt`))"
-          >{{ t(`home.quick.${key}.label`) }}</a-button
-        >
-      </div>
+        <div class="home-quick">
+          <p class="home-quick__label">{{ t('home.quick') }}</p>
+          <div class="home-quick__chips">
+            <button
+              v-for="key in quickActionKeys"
+              :key="key"
+              class="home-chip"
+              @click="setPrompt(t(`home.quick.${key}.prompt`))"
+            >
+              {{ t(`home.quick.${key}.label`) }}
+            </button>
+          </div>
+        </div>
 
-      <!-- 我的作品 -->
-      <div class="section">
-        <h2 class="section-title">{{ t('home.myWorks') }}</h2>
-        <div class="app-grid">
-          <AppCard
+        <p class="home-meta">{{ t('home.meta') }}</p>
+      </div>
+    </section>
+
+    <!-- 我的作品 -->
+    <section class="home-section">
+      <div class="home-container">
+        <div class="home-section-head">
+          <h2>{{ t('home.mine') }}</h2>
+          <RouterLink to="/user/profile" class="home-quiet-btn">
+            {{ t('home.all') }}
+          </RouterLink>
+        </div>
+        <div class="home-grid">
+          <article
             v-for="app in myApps"
             :key="app.id"
-            :app="app"
-            @view-chat="viewChat"
-            @view-work="viewWork"
-          />
-        </div>
-        <div class="pagination-wrapper">
-          <a-pagination
-            v-model:current="myAppsPage.current"
-            v-model:page-size="myAppsPage.pageSize"
-            :total="myAppsPage.total"
-            :show-size-changer="false"
-            :show-total="(total: number) => t('home.totalApps', { total })"
-            @change="loadMyApps"
-          />
-        </div>
-      </div>
+            class="home-appcard"
+            @click="viewChat(app.id)"
+          >
+            <div class="home-appcard__cover">
+              <img v-if="app.cover" :src="app.cover" :alt="app.appName" />
+              <div v-else class="home-appcard__fallback">#{{ app.id }}</div>
+              <span v-if="app.deployKey" class="home-badge home-badge--live">
+                <i class="home-dot home-dot--live"></i>{{ t('home.live') }}
+              </span>
+              <span v-else class="home-badge">{{ t('home.draft') }}</span>
+            </div>
+            <div class="home-appcard__body">
+              <h3 class="home-appcard__title">{{ app.appName || t('appCard.untitled') }}</h3>
+              <div class="home-appcard__meta">
+                <span class="home-tag">{{ formatCodeGenType(app.codeGenType) }}</span>
+                <span>{{ t('home.updated') }} {{ formatDate(app.updateTime || app.createTime) }}</span>
+              </div>
+            </div>
+          </article>
 
-      <!-- 精选案例 -->
-      <div class="section">
-        <h2 class="section-title">{{ t('home.featured') }}</h2>
-        <div class="featured-grid">
-          <AppCard
-            v-for="app in featuredApps"
-            :key="app.id"
-            :app="app"
-            :featured="true"
-            @view-chat="viewChat"
-            @view-work="viewWork"
-          />
-        </div>
-        <div class="pagination-wrapper">
-          <a-pagination
-            v-model:current="featuredAppsPage.current"
-            v-model:page-size="featuredAppsPage.pageSize"
-            :total="featuredAppsPage.total"
-            :show-size-changer="false"
-            :show-total="(total: number) => t('home.totalFeatured', { total })"
-            @change="loadFeaturedApps"
-          />
+          <a class="home-newcard" @click="focusComposer">
+            <span class="home-newcard__plus">+</span>
+            <span class="home-newcard__label">{{ t('home.new') }}</span>
+          </a>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- 精选案例 -->
+    <section class="home-section">
+      <div class="home-container">
+        <div class="home-section-head">
+          <h2>{{ t('home.featured') }}</h2>
+          <div class="home-filter">
+            <button
+              v-for="option in featuredTypeOptions"
+              :key="option.value"
+              class="home-chip home-chip--filter"
+              :class="{ 'home-chip--active': featuredType === option.value }"
+              @click="setFeaturedType(option.value)"
+            >
+              {{ option.label }}
+            </button>
+          </div>
+        </div>
+        <a-spin :spinning="featuredLoading">
+          <a-empty
+            v-if="!featuredLoading && featuredApps.length === 0"
+            :description="t('home.featuredEmpty')"
+          />
+          <div v-else class="home-grid">
+            <article
+              v-for="app in featuredApps"
+              :key="app.id"
+              class="home-appcard"
+              @click="viewChat(app.id)"
+            >
+              <div class="home-appcard__cover">
+                <img v-if="app.cover" :src="app.cover" :alt="app.appName" />
+                <div v-else class="home-appcard__fallback">#{{ app.id }}</div>
+              </div>
+              <div class="home-appcard__body">
+                <h3 class="home-appcard__title">{{ app.appName || t('appCard.untitled') }}</h3>
+                <div class="home-appcard__meta">
+                  <span class="home-tag">{{ formatCodeGenType(app.codeGenType) }}</span>
+                  <span class="home-appcard__author">
+                    {{ app.user?.userName || t('appCard.official') }}
+                  </span>
+                  <a-button
+                    v-if="app.deployKey"
+                    type="link"
+                    size="small"
+                    class="home-appcard__visit"
+                    @click.stop="viewWork(app)"
+                  >
+                    {{ t('appCard.viewWork') }}
+                  </a-button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </a-spin>
+      </div>
+    </section>
   </div>
 </template>
 
 <style scoped>
-#homePage {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  background:
-    linear-gradient(180deg, var(--bg-app) 0%, var(--bg-surface-muted) 8%, var(--bg-inset) 20%, var(--border) 100%),
-    radial-gradient(circle at 20% 80%, color-mix(in srgb, var(--brand) 7%, transparent) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--brand) 6%, transparent) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, color-mix(in srgb, var(--brand) 4%, transparent) 0%, transparent 50%);
-  position: relative;
-  overflow: hidden;
-}
-
-/* 网格背景（品牌色低透明度，随主题适配） */
-#homePage::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image:
-    linear-gradient(color-mix(in srgb, var(--brand) 5%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--brand) 5%, transparent) 1px, transparent 1px),
-    linear-gradient(color-mix(in srgb, var(--brand) 4%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--brand) 4%, transparent) 1px, transparent 1px);
-  background-size:
-    100px 100px,
-    100px 100px,
-    20px 20px,
-    20px 20px;
-  pointer-events: none;
-  animation: gridFloat 20s ease-in-out infinite;
-}
-
-/* 动态光效 */
-#homePage::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background:
-    radial-gradient(
-      600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-      color-mix(in srgb, var(--brand) 8%, transparent) 0%,
-      color-mix(in srgb, var(--brand) 5%, transparent) 40%,
-      transparent 80%
-    ),
-    linear-gradient(45deg, transparent 30%, color-mix(in srgb, var(--brand) 4%, transparent) 50%, transparent 70%),
-    linear-gradient(-45deg, transparent 30%, color-mix(in srgb, var(--brand) 4%, transparent) 50%, transparent 70%);
-  pointer-events: none;
-  animation: lightPulse 8s ease-in-out infinite alternate;
-}
-
-@keyframes gridFloat {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  50% {
-    transform: translate(5px, 5px);
-  }
-}
-
-@keyframes lightPulse {
-  0% {
-    opacity: 0.3;
-  }
-  100% {
-    opacity: 0.7;
-  }
-}
-
-.container {
+/* ============================================================
+   首页（对齐原型 index.html）：hero 网格 + composer + 双卡片区
+   ============================================================ */
+.home-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  box-sizing: border-box;
+  padding: 0 24px;
 }
 
-/* 英雄区域 */
-.hero-section {
-  text-align: center;
-  padding: 80px 0 60px;
-  margin-bottom: 28px;
-  color: var(--text-primary);
+/* ---------------- Hero ---------------- */
+.home-hero {
   position: relative;
+  padding: 80px 0 72px;
+  text-align: center;
   overflow: hidden;
 }
 
-.hero-section::before {
-  content: '';
+.home-hero__grid {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background:
-    radial-gradient(ellipse 800px 400px at center, color-mix(in srgb, var(--brand) 10%, transparent) 0%, transparent 70%),
-    linear-gradient(45deg, transparent 30%, color-mix(in srgb, var(--brand) 5%, transparent) 50%, transparent 70%),
-    linear-gradient(-45deg, transparent 30%, color-mix(in srgb, var(--brand) 4%, transparent) 50%, transparent 70%);
-  animation: heroGlow 10s ease-in-out infinite alternate;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--border-strong) 45%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--border-strong) 45%, transparent) 1px, transparent 1px);
+  background-size: 32px 32px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 0%, transparent 72%);
 }
 
-@keyframes heroGlow {
-  0% {
-    opacity: 0.6;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1.02);
-  }
-}
-
-.hero-title {
-  font-size: 56px;
-  font-weight: 700;
-  margin: 0 0 20px;
-  line-height: 1.2;
-  background: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-500) 50%, var(--brand-700) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -1px;
+.home-hero__eyebrow {
   position: relative;
-  z-index: 2;
-  animation: titleShimmer 3s ease-in-out infinite;
-}
-
-@keyframes titleShimmer {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-.hero-description {
-  font-size: 20px;
-  margin: 0;
-  opacity: 0.8;
-  color: var(--text-secondary);
-  position: relative;
-  z-index: 2;
-}
-
-/* 输入区域 */
-.input-section {
-  position: relative;
-  margin: 0 auto 24px;
-  max-width: 800px;
-}
-
-.prompt-input {
-  border-radius: 16px;
-  border: none;
-  font-size: 16px;
-  padding: 20px 60px 20px 20px;
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  backdrop-filter: blur(20px);
-  box-shadow: var(--shadow-lg);
-}
-
-.prompt-input:focus {
-  background: var(--bg-elevated);
-  box-shadow:
-    var(--shadow-lg),
-    0 0 0 4px var(--brand-ring);
-  transform: translateY(-2px);
-}
-
-.input-actions {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  display: flex;
-  gap: 8px;
+  display: inline-flex;
   align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 20px;
 }
 
-/* 快捷按钮 */
-.quick-actions {
+.home-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex: none;
+}
+
+.home-dot--live {
+  background: var(--brand);
+  box-shadow: 0 0 0 0 var(--brand-ring);
+  animation: home-pulse 2s var(--ease) infinite;
+}
+
+@keyframes home-pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--brand-ring);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgba(0, 0, 0, 0);
+  }
+}
+
+.home-hero__title {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto 16px;
+  font-size: var(--text-display);
+  line-height: var(--leading-display);
+  font-weight: var(--weight-heavy);
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.home-hero__sub {
+  position: relative;
+  max-width: 560px;
+  margin: 0 auto 32px;
+  color: var(--text-secondary);
+}
+
+/* ---------------- Composer ---------------- */
+.home-composer {
+  position: relative;
+  max-width: 780px;
+  margin: 0 auto;
+  text-align: left;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.home-composer:focus-within {
+  border-color: var(--brand);
+  box-shadow:
+    0 0 0 4px var(--brand-ring),
+    var(--shadow-md);
+}
+
+.home-composer__input {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  resize: none;
+  font: inherit;
+  font-size: var(--text-title);
+  line-height: 1.6;
+  color: var(--text-primary);
+  padding: 20px 20px 8px;
+}
+
+.home-composer__input:focus {
+  outline: none;
+}
+
+.home-composer__input::placeholder {
+  color: var(--text-muted);
+}
+
+.home-composer__bar {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  justify-content: center;
-  margin-bottom: 60px;
+  padding: 12px 16px 16px;
+}
+
+.home-composer__tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
-.quick-actions .ant-btn {
-  border-radius: 25px;
-  padding: 8px 20px;
-  height: auto;
-  background: color-mix(in srgb, var(--bg-surface) 80%, transparent);
-  border: 1px solid color-mix(in srgb, var(--brand) 20%, transparent);
-  color: var(--text-secondary);
-  backdrop-filter: blur(15px);
-  transition: all 0.3s;
+.home-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--brand);
+  color: var(--brand-on);
+  cursor: pointer;
+  flex: none;
+  transition:
+    background var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.home-send:hover {
+  background: var(--brand-hover);
+  transform: scale(1.04);
+}
+
+.home-send[disabled] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* ---------------- 快捷提示 ---------------- */
+.home-quick {
   position: relative;
-  overflow: hidden;
+  max-width: 780px;
+  margin: 20px auto 0;
+  text-align: left;
 }
 
-.quick-actions .ant-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--brand) 10%, transparent), transparent);
-  transition: left 0.5s;
+.home-quick__label {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  color: var(--text-muted);
+  margin-bottom: 8px;
 }
 
-.quick-actions .ant-btn:hover::before {
-  left: 100%;
+.home-quick__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.quick-actions .ant-btn:hover {
-  background: var(--bg-surface);
-  border-color: color-mix(in srgb, var(--brand) 40%, transparent);
+.home-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  background: var(--bg-surface-muted);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+}
+
+.home-chip:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.home-chip--active {
+  background: var(--brand-soft);
   color: var(--brand-text);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px color-mix(in srgb, var(--brand) 20%, transparent);
+  border-color: transparent;
 }
 
-/* 区域标题 */
-.section {
-  margin-bottom: 60px;
+.home-meta {
+  position: relative;
+  margin-top: 24px;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  color: var(--text-muted);
 }
 
-.section-title {
-  font-size: 32px;
-  font-weight: 600;
-  margin-bottom: 32px;
+/* ---------------- 区块 ---------------- */
+.home-section {
+  padding: 48px 0 0;
+}
+
+.home-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.home-section-head h2 {
+  margin: 0;
+  font-size: var(--text-h2);
+  line-height: var(--leading-h2);
+  font-weight: var(--weight-strong);
   color: var(--text-primary);
 }
 
-/* 我的作品网格 */
-.app-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px;
-  margin-bottom: 32px;
-}
-
-/* 精选案例网格 */
-.featured-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px;
-  margin-bottom: 32px;
-}
-
-/* 分页 */
-.pagination-wrapper {
+.home-filter {
   display: flex;
-  justify-content: center;
-  margin-top: 32px;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-/* 响应式设计 */
+.home-quiet-btn {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: all var(--dur-fast) var(--ease);
+}
+
+.home-quiet-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+/* ---------------- 应用卡片 ---------------- */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .home-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
-  .hero-title {
-    font-size: 32px;
+  .home-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .hero-description {
-    font-size: 16px;
+  .home-hero {
+    padding: 48px 0 56px;
   }
 
-  .app-grid,
-  .featured-grid {
-    grid-template-columns: 1fr;
+  .home-hero__title {
+    font-size: var(--text-h1);
   }
+}
 
-  .quick-actions {
-    justify-content: center;
-  }
+.home-appcard {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.home-appcard:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.home-appcard__cover {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--bg-surface-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.home-appcard__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-appcard__fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: repeating-linear-gradient(
+      45deg,
+      transparent 0 10px,
+      color-mix(in srgb, var(--text-muted) 6%, transparent) 10px 20px
+    ),
+    var(--bg-surface-muted);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+}
+
+.home-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  background: var(--bg-surface-muted);
+  color: var(--text-secondary);
+  font-size: var(--text-micro);
+  font-weight: var(--weight-medium);
+}
+
+.home-badge--live {
+  background: var(--brand-soft);
+  border-color: transparent;
+  color: var(--brand-text);
+}
+
+.home-appcard__body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.home-appcard__title {
+  margin: 0;
+  font-size: var(--text-title);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-appcard__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--text-micro);
+  color: var(--text-muted);
+}
+
+.home-appcard__author {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.home-appcard__visit {
+  margin-left: auto;
+  padding: 0;
+  height: auto;
+}
+
+.home-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  background: var(--bg-surface-muted);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+  flex: none;
+}
+
+/* ---------------- 新建应用卡 ---------------- */
+.home-newcard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 100%;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-card);
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 32px 24px;
+  transition:
+    border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+
+.home-newcard:hover {
+  border-color: var(--brand);
+  color: var(--brand-text);
+  background: var(--brand-soft);
+}
+
+.home-newcard__plus {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+}
+
+.home-newcard__label {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
 }
 </style>

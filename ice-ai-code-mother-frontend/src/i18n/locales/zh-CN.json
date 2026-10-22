@@ -16,8 +16,13 @@
   "header": {
     "siteTitle": "AI 应用生成",
     "guestName": "无名",
+    "login": "登录",
     "logoutSuccess": "退出登录成功",
     "logoutFailed": "退出登录失败，{msg}",
+    "userMenu": {
+      "profile": "个人中心",
+      "logout": "退出登录"
+    },
     "theme": {
       "toLight": "切换为亮色模式",
       "toDark": "切换为暗色模式"

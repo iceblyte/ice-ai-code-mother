@@ -34,18 +34,18 @@
                   <a-menu>
                     <a-menu-item @click="router.push('/user/profile')">
                       <UserOutlined/>
-                      个人中心
+                      {{ t('header.userMenu.profile') }}
                     </a-menu-item>
                     <a-menu-item @click="doLogout">
                       <LogoutOutlined />
-                      退出登录
+                      {{ t('header.userMenu.logout') }}
                     </a-menu-item>
                   </a-menu>
                 </template>
               </a-dropdown>
             </div>
             <div v-else>
-              <a-button type="primary" href="/user/login">登录</a-button>
+              <a-button type="primary" href="/user/login">{{ t('header.login') }}</a-button>
             </div>
           </div>
         </div>

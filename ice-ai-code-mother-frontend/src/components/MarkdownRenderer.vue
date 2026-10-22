@@ -7,9 +7,6 @@ import { computed } from 'vue'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 
-// 引入代码高亮样式
-import 'highlight.js/styles/github.css'
-
 interface Props {
   content: string
   /**
@@ -58,9 +55,11 @@ const renderedMarkdown = computed(() => {
 </script>
 
 <style scoped>
+/* 说明：配色全部走设计令牌；代码块沿用原型"代码面恒为深色"（--code-*），
+   语法高亮不再引入 highlight.js 主题 css，由下方令牌化规则承担明暗两种主题。 */
 .markdown-content {
   line-height: 1.6;
-  color: #333;
+  color: var(--text-primary);
   word-wrap: break-word;
 }
 
@@ -78,13 +77,13 @@ const renderedMarkdown = computed(() => {
 
 .markdown-content :deep(h1) {
   font-size: 1.5em;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border);
   padding-bottom: 0.3em;
 }
 
 .markdown-content :deep(h2) {
   font-size: 1.3em;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border);
   padding-bottom: 0.3em;
 }
 
@@ -109,22 +108,24 @@ const renderedMarkdown = computed(() => {
 .markdown-content :deep(blockquote) {
   margin: 1em 0;
   padding: 0.5em 1em;
-  border-left: 4px solid #ddd;
-  background-color: #f9f9f9;
-  color: #666;
+  border-left: 4px solid var(--border-strong);
+  background-color: var(--bg-surface-muted);
+  color: var(--text-secondary);
 }
 
 .markdown-content :deep(code) {
-  background-color: #f1f1f1;
+  background-color: var(--bg-inset);
+  color: var(--text-primary);
   padding: 0.2em 0.4em;
   border-radius: 3px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.9em;
 }
 
 .markdown-content :deep(pre) {
-  background-color: #f8f8f8;
-  border: 1px solid #e1e1e1;
+  background-color: var(--code-bg);
+  border: 1px solid var(--code-line);
+  color: var(--code-text);
   border-radius: 6px;
   padding: 1em;
   overflow-x: auto;
@@ -133,6 +134,7 @@ const renderedMarkdown = computed(() => {
 
 .markdown-content :deep(pre code) {
   background-color: transparent;
+  color: inherit;
   padding: 0;
   border-radius: 0;
   font-size: 0.9em;
@@ -147,22 +149,22 @@ const renderedMarkdown = computed(() => {
 
 .markdown-content :deep(table th),
 .markdown-content :deep(table td) {
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   padding: 0.5em 0.8em;
   text-align: left;
 }
 
 .markdown-content :deep(table th) {
-  background-color: #f5f5f5;
+  background-color: var(--bg-inset);
   font-weight: 600;
 }
 
 .markdown-content :deep(table tr:nth-child(even)) {
-  background-color: #f9f9f9;
+  background-color: var(--bg-surface-muted);
 }
 
 .markdown-content :deep(a) {
-  color: #1890ff;
+  color: var(--brand-text);
   text-decoration: none;
 }
 
@@ -179,52 +181,68 @@ const renderedMarkdown = computed(() => {
 
 .markdown-content :deep(hr) {
   border: none;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border);
   margin: 1.5em 0;
 }
 
-/* 代码高亮样式优化 */
+/* 代码高亮样式（基于恒深色代码面的语法配色，令牌见 tokens.css） */
 .markdown-content :deep(.hljs) {
-  background-color: #f8f8f8 !important;
+  background-color: var(--code-bg);
+  color: var(--code-text);
   border-radius: 6px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.9em;
   line-height: 1.4;
 }
 
-/* 特定语言的代码块样式 */
 .markdown-content :deep(.hljs-keyword) {
-  color: #d73a49;
+  color: var(--code-keyword);
   font-weight: 600;
 }
 
 .markdown-content :deep(.hljs-string) {
-  color: #032f62;
+  color: var(--code-string);
 }
 
 .markdown-content :deep(.hljs-comment) {
-  color: #6a737d;
+  color: var(--code-dim);
   font-style: italic;
 }
 
 .markdown-content :deep(.hljs-number) {
-  color: #005cc5;
+  color: var(--code-number);
+}
+
+.markdown-content :deep(.hljs-literal) {
+  color: var(--code-number);
 }
 
 .markdown-content :deep(.hljs-function) {
-  color: #6f42c1;
-}
-
-.markdown-content :deep(.hljs-tag) {
-  color: #22863a;
-}
-
-.markdown-content :deep(.hljs-attr) {
-  color: #6f42c1;
+  color: var(--code-function);
 }
 
 .markdown-content :deep(.hljs-title) {
-  color: #6f42c1;
+  color: var(--code-function);
   font-weight: 600;
+}
+
+.markdown-content :deep(.hljs-tag) {
+  color: var(--code-tag);
+}
+
+.markdown-content :deep(.hljs-name) {
+  color: var(--code-tag);
+}
+
+.markdown-content :deep(.hljs-attr) {
+  color: var(--code-number);
+}
+
+.markdown-content :deep(.hljs-attribute) {
+  color: var(--code-function);
+}
+
+.markdown-content :deep(.hljs-built_in) {
+  color: var(--code-function);
 }
 </style>

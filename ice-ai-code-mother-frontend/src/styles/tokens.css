@@ -10,6 +10,13 @@
     'Hiragino Sans GB', 'Microsoft YaHei', 'Source Han Sans SC', sans-serif;
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
 
+  /* ---------- 代码语法色（代码面恒为深色，明暗主题共用） ---------- */
+  --code-keyword: #ff7b72;
+  --code-string: #a5d6ff;
+  --code-number: #79c0ff;
+  --code-function: #d2a8ff;
+  --code-tag: #7ee787;
+
   /* ---------- 字号 / 行高（桌面） ---------- */
   --text-display: 40px;
   --leading-display: 48px;

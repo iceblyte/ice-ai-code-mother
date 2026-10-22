@@ -1,0 +1,19 @@
+/* ============================================================
+   codenow · 青松（品牌基准，移植自 docs/prototype/assets/skins.css）
+   形态与色彩由 tokens.css 基准提供，这里仅覆盖 logo 配色：
+   标准三色 → 墨黑 + 松绿 + 青，暗色对应提亮。
+   说明：原型的 .cn-* 组件类规则不移植，对应观感在启用该皮肤时
+   通过 antd token + 组件样式实现（见 styles/themeConfig.ts）。
+   ============================================================ */
+
+html[data-skin='codenow']:not([data-theme='dark']) {
+  --logo-ink: #111114;
+  --logo-accent: #0b8a66;
+  --logo-cyan: #0ec4b8;
+}
+
+html[data-theme='dark'][data-skin='codenow'] {
+  --logo-ink: #ededf2;
+  --logo-accent: #2bd3a3;
+  --logo-cyan: #2be3d6;
+}

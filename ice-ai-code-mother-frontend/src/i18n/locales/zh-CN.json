@@ -14,7 +14,6 @@
     "pleaseLogin": "请先登录"
   },
   "header": {
-    "siteTitle": "AI 应用生成",
     "guestName": "无名",
     "login": "登录",
     "logoutSuccess": "退出登录成功",

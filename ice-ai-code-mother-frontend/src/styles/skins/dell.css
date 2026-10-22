@@ -1,0 +1,118 @@
+/* ============================================================
+   dell · 复古 96（移植自 docs/prototype/assets/skins.css）
+   黑顶栏 + 目录红 + 经典蓝链 · 直角 · Times 正文
+   说明：原型的 .cn-* 组件类规则（斜面按钮/黑顶栏/反白 logo 衬底等）
+   不移植，对应观感在启用该皮肤时通过 antd token + 组件样式实现
+   （见 styles/themeConfig.ts）。
+   ============================================================ */
+
+html[data-skin='dell'] {
+  --font-sans: 'Times New Roman', Times, 'Songti SC', SimSun, serif;
+  --text-display: 42px;
+  --leading-display: 46px;
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius: 0;
+  --radius-card: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-full: 0;
+}
+
+html[data-skin='dell']:not([data-theme='dark']) {
+  --bg-app: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-surface-muted: #ececec;
+  --bg-elevated: #ffffff;
+  --bg-inset: #f4f4f4;
+  --border: #8a8a8a;
+  --border-strong: #000000;
+  --text-primary: #000000;
+  --text-secondary: #333333;
+  --text-muted: #555555;
+  --text-inverse: #ffffff;
+  --overlay: rgba(0, 0, 0, 0.5);
+  --skeleton: #e4e4e4;
+
+  --brand-50: #ffe6e8;
+  --brand-100: #ffcdd1;
+  --brand-200: #ff9aa1;
+  --brand-500: #e3232d;
+  --brand-600: #d81e28;
+  --brand-700: #b3141d;
+  --brand-800: #8a0f16;
+  --brand: #d81e28;
+  --brand-hover: #b3141d;
+  --brand-on: #ffffff;
+  --brand-text: #c4121f;
+  --brand-soft: #ffe6e8;
+  --brand-ring: rgba(216, 30, 40, 0.3);
+
+  --warning: #7a4a00;
+  --warning-soft: #fff1cc;
+  --info: #0000ee;
+  --info-soft: #e6e6ff;
+  --skin-accent: #0000ee;
+  --logo-ink: #ffffff;
+  --logo-accent: #ffd400;
+  --logo-cyan: #0ec4b8;
+
+  --code-bg: #000080;
+  --code-bg-soft: #00006a;
+  --code-line: #1a1aa0;
+  --code-text: #ffffff;
+  --code-dim: #c8c8ff;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+}
+
+html[data-theme='dark'][data-skin='dell'] {
+  --bg-app: #000000;
+  --bg-surface: #141414;
+  --bg-surface-muted: #1f1f1f;
+  --bg-elevated: #1a1a1a;
+  --bg-inset: #0a0a0a;
+  --border: #555555;
+  --border-strong: #ffffff;
+  --text-primary: #ffffff;
+  --text-secondary: #d0d0d0;
+  --text-muted: #a0a0a0;
+  --text-inverse: #000000;
+  --overlay: rgba(0, 0, 0, 0.75);
+  --skeleton: #262626;
+
+  --brand-50: #2a0b0d;
+  --brand-100: #3d1013;
+  --brand-200: #5c171c;
+  --brand-500: #ff3b30;
+  --brand-600: #ff3b30;
+  --brand-700: #ff6b62;
+  --brand-800: #ff9a93;
+  --brand: #ff3b30;
+  --brand-hover: #ff6b62;
+  --brand-on: #000000;
+  --brand-text: #ff6b62;
+  --brand-soft: rgba(255, 59, 48, 0.14);
+  --brand-ring: rgba(255, 59, 48, 0.32);
+
+  --warning: #ffd400;
+  --warning-soft: rgba(255, 212, 0, 0.14);
+  --info: #6b6bff;
+  --info-soft: rgba(107, 107, 255, 0.14);
+  --skin-accent: #ffd400;
+  --logo-ink: #ffffff;
+  --logo-accent: #ffd400;
+  --logo-cyan: #0ec4b8;
+
+  --code-bg: #000000;
+  --code-bg-soft: #0a0a1a;
+  --code-line: #222266;
+  --code-text: #ffffff;
+  --code-dim: #a0a0d0;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+}

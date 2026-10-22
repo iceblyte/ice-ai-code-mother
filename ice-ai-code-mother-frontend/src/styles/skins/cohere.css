@@ -1,0 +1,121 @@
+/* ============================================================
+   cohere · 暖石（移植自 docs/prototype/assets/skins.css）
+   暖石米色 + 珊瑚点缀 · 大圆角 · 编辑感排版
+   说明：原型的 .cn-* 组件类规则不移植，对应观感在启用该皮肤时
+   通过 antd token + 组件样式实现（见 styles/themeConfig.ts）。
+   ============================================================ */
+
+html[data-skin='cohere'] {
+  --font-sans: 'Segoe UI', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
+  --text-display: 46px;
+  --leading-display: 54px;
+  --text-h1: 30px;
+  --leading-h1: 38px;
+  --weight-heavy: 500;
+  --weight-strong: 600;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-card: 22px;
+  --radius-lg: 26px;
+  --radius-xl: 32px;
+}
+
+html[data-skin='cohere']:not([data-theme='dark']) {
+  --bg-app: #eeece7;
+  --bg-surface: #faf9f6;
+  --bg-surface-muted: #e7e4dc;
+  --bg-elevated: #fdfcf9;
+  --bg-inset: #e9e6df;
+  --border: #d9d5cb;
+  --border-strong: #c4beae;
+  --text-primary: #17171c;
+  --text-secondary: #4a4740;
+  --text-muted: #7d786d;
+  --text-inverse: #ffffff;
+  --overlay: rgba(23, 23, 28, 0.45);
+  --skeleton: #e2ded4;
+
+  --brand-50: #fdeae3;
+  --brand-100: #fbd9cd;
+  --brand-200: #f9bcab;
+  --brand-500: #ff8b70;
+  --brand-600: #ff7759;
+  --brand-700: #e0563a;
+  --brand-800: #c94a2f;
+  --brand: #ff7759;
+  --brand-hover: #ff8b70;
+  --brand-on: #1c1c22;
+  --brand-text: #c94a2f;
+  --brand-soft: #fdeae3;
+  --brand-ring: rgba(255, 119, 89, 0.32);
+
+  --warning: #b35a1f;
+  --warning-soft: #fbeadd;
+  --info: #2f5d50;
+  --info-soft: #e4ece8;
+  --skin-accent: #ff7759;
+  --logo-ink: #1c1c22;
+  --logo-accent: #ff7759;
+  --logo-cyan: #2f5d50;
+
+  --code-bg: #003c33;
+  --code-bg-soft: #00473c;
+  --code-line: #0d5346;
+  --code-text: #e8f2ee;
+  --code-dim: #8fbfae;
+  --shadow-xs: 0 1px 2px rgba(60, 50, 30, 0.05);
+  --shadow-sm: 0 2px 10px rgba(60, 50, 30, 0.07);
+  --shadow-md: 0 14px 34px rgba(60, 50, 30, 0.1);
+  --shadow-lg: 0 24px 60px rgba(60, 50, 30, 0.14);
+}
+
+html[data-theme='dark'][data-skin='cohere'] {
+  --bg-app: #101312;
+  --bg-surface: #171a18;
+  --bg-surface-muted: #1e2220;
+  --bg-elevated: #1b1f1d;
+  --bg-inset: #0c0f0e;
+  --border: #2a302c;
+  --border-strong: #3a423c;
+  --text-primary: #f1efe9;
+  --text-secondary: #bdb9ae;
+  --text-muted: #8a867b;
+  --text-inverse: #101312;
+  --overlay: rgba(0, 0, 0, 0.65);
+  --skeleton: #22271f;
+
+  --brand-50: #2a1613;
+  --brand-100: #3a1d18;
+  --brand-200: #5a2c22;
+  --brand-500: #ffa48e;
+  --brand-600: #ff8b70;
+  --brand-700: #ff7759;
+  --brand-800: #ffb3a2;
+  --brand: #ff8b70;
+  --brand-hover: #ffa48e;
+  --brand-on: #1c1310;
+  --brand-text: #ff8b70;
+  --brand-soft: rgba(255, 139, 112, 0.14);
+  --brand-ring: rgba(255, 139, 112, 0.34);
+
+  --warning: #e0a46a;
+  --warning-soft: rgba(224, 164, 106, 0.14);
+  --info: #8fc7b2;
+  --info-soft: rgba(143, 199, 178, 0.14);
+  --skin-accent: #ff8b70;
+  --logo-ink: #f1efe9;
+  --logo-accent: #ff8b70;
+  --logo-cyan: #8fc7b2;
+
+  --code-bg: #00241f;
+  --code-bg-soft: #002e28;
+  --code-line: #0a453b;
+  --code-text: #e8f2ee;
+  --code-dim: #8fbfae;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 14px 36px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 24px 62px rgba(0, 0, 0, 0.58);
+}

@@ -9,6 +9,9 @@ import 'ant-design-vue/dist/reset.css'
 
 import '@/styles/tokens.css'
 import '@/styles/skins/minimal.css'
+import '@/styles/skins/codenow.css'
+import '@/styles/skins/cohere.css'
+import '@/styles/skins/dell.css'
 
 import i18n from '@/i18n'
 

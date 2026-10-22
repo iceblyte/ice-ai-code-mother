@@ -3,11 +3,8 @@
     <a-row :wrap="false">
       <!-- 左侧：Logo和标题 -->
       <a-col flex="200px">
-        <RouterLink to="/">
-          <div class="header-left">
-            <BrandLogo class="logo" :size="32" alt="CodeNow" />
-            <h1 class="site-title">{{ t('header.siteTitle') }}</h1>
-          </div>
+        <RouterLink to="/" aria-label="CodeNow">
+          <BrandLogo />
         </RouterLink>
       </a-col>
       <!-- 中间：导航菜单 -->
@@ -168,23 +165,6 @@ const doLogout = async () => {
   background: color-mix(in srgb, var(--bg-surface) 82%, transparent);
   backdrop-filter: saturate(180%) blur(20px);
   padding: 0 24px;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo {
-  height: 32px;
-  width: auto;
-}
-
-.site-title {
-  margin: 0;
-  font-size: 18px;
-  color: var(--brand-text);
 }
 
 .header-actions {

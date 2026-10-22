@@ -14,7 +14,6 @@
     "pleaseLogin": "Please log in first"
   },
   "header": {
-    "siteTitle": "AI App Builder",
     "guestName": "Guest",
     "login": "Log in",
     "logoutSuccess": "Logged out",

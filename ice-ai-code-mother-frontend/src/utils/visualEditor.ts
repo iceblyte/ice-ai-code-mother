@@ -191,40 +191,18 @@ export class VisualEditor {
           const style = document.createElement('style');
           style.id = 'edit-mode-styles';
           style.textContent = \`
+            /* 选中/悬浮框用负 offset 内描边：不受父级 overflow:hidden 裁剪，
+               对 img/video 等替换元素同样可靠（::before 在替换元素上不渲染，故不使用） */
             .edit-hover {
               outline: 2px dashed #1890ff !important;
-              outline-offset: 2px !important;
+              outline-offset: -2px !important;
               cursor: crosshair !important;
               transition: outline 0.2s ease !important;
-              position: relative !important;
-            }
-            .edit-hover::before {
-              content: '' !important;
-              position: absolute !important;
-              top: -4px !important;
-              left: -4px !important;
-              right: -4px !important;
-              bottom: -4px !important;
-              background: rgba(24, 144, 255, 0.02) !important;
-              pointer-events: none !important;
-              z-index: -1 !important;
             }
             .edit-selected {
               outline: 3px solid #52c41a !important;
-              outline-offset: 2px !important;
+              outline-offset: -3px !important;
               cursor: default !important;
-              position: relative !important;
-            }
-            .edit-selected::before {
-              content: '' !important;
-              position: absolute !important;
-              top: -4px !important;
-              left: -4px !important;
-              right: -4px !important;
-              bottom: -4px !important;
-              background: rgba(82, 196, 26, 0.03) !important;
-              pointer-events: none !important;
-              z-index: -1 !important;
             }
           \`;
           document.head.appendChild(style);

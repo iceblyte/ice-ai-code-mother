@@ -72,8 +72,8 @@ const renderedMarkdown = computed(() => {
 </script>
 
 <style scoped>
-/* 说明：配色全部走设计令牌；代码块沿用原型"代码面恒为深色"（--code-*），
-   语法高亮不再引入 highlight.js 主题 css，由下方令牌化规则承担明暗两种主题。 */
+/* 说明：配色全部走设计令牌；代码面跟随主题（亮色=飞书风浅灰卡片，暗色=深色），
+   语法高亮不引入 highlight.js 主题 css，由下方令牌化规则承担明暗两种主题。 */
 .markdown-content {
   line-height: 1.6;
   color: var(--text-primary);

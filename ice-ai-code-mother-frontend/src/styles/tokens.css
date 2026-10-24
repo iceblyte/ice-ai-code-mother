@@ -10,12 +10,7 @@
     'Hiragino Sans GB', 'Microsoft YaHei', 'Source Han Sans SC', sans-serif;
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
 
-  /* ---------- 代码语法色（代码面恒为深色，明暗主题共用） ---------- */
-  --code-keyword: #ff7b72;
-  --code-string: #a5d6ff;
-  --code-number: #79c0ff;
-  --code-function: #d2a8ff;
-  --code-tag: #7ee787;
+  /* ---------- 代码语法色：随主题切换，定义见下方亮/暗主题块 ---------- */
 
   /* ---------- 字号 / 行高（桌面） ---------- */
   --text-display: 40px;
@@ -120,12 +115,17 @@
   --info: #2563eb;
   --info-soft: #eaf1fd;
 
-  /* 代码 / 终端面（明暗主题下都偏深，保持"代码感"） */
-  --code-bg: #14141a;
-  --code-bg-soft: #1e1e26;
-  --code-text: #d9d9e3;
-  --code-dim: #8b8b98;
-  --code-line: #2b2b34;
+  /* 代码面：跟随主题（亮色为飞书风浅灰卡片），语法配色为 GitHub Light 系 */
+  --code-bg: #f4f5f7;
+  --code-bg-soft: #eef0f3;
+  --code-text: #1f2328;
+  --code-dim: #656d76;
+  --code-line: #dfe3ea;
+  --code-keyword: #cf222e;
+  --code-string: #0a3069;
+  --code-number: #0550ae;
+  --code-function: #8250df;
+  --code-tag: #116329;
 
   /* 阴影（克制，靠描边承担层级） */
   --shadow-xs: 0 1px 2px rgba(17, 17, 20, 0.05);
@@ -187,6 +187,11 @@
   --code-text: #d9d9e3;
   --code-dim: #8b8b98;
   --code-line: #26262e;
+  --code-keyword: #ff7b72;
+  --code-string: #a5d6ff;
+  --code-number: #79c0ff;
+  --code-function: #d2a8ff;
+  --code-tag: #7ee787;
 
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45);

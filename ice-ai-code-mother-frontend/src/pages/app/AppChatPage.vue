@@ -1213,6 +1213,7 @@ onUnmounted(() => {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
@@ -1250,6 +1251,7 @@ onUnmounted(() => {
   flex: 1;
   min-height: 0;
   padding: 16px;
+  background: var(--bg-surface-muted);
   overflow-y: auto;
   scroll-behavior: smooth;
 }
@@ -1285,8 +1287,11 @@ onUnmounted(() => {
   color: var(--brand-on);
 }
 
+/* AI 回复：白卡 + 描边，与灰色消息区形成层次 */
 .ai-message .message-content {
-  background: var(--bg-surface-muted);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
   color: var(--text-primary);
   padding: 8px 12px;
 }
@@ -1321,10 +1326,11 @@ onUnmounted(() => {
   margin-bottom: 16px;
 }
 
-/* 输入区域 */
+/* 输入区域（灰底上浮白色输入卡） */
 .input-container {
   padding: 16px;
-  background: var(--bg-surface);
+  background: var(--bg-surface-muted);
+  border-top: 1px solid var(--border);
 }
 
 .input-wrapper {
@@ -1333,6 +1339,7 @@ onUnmounted(() => {
 
 .input-wrapper .ant-input {
   padding-right: 50px;
+  background: var(--bg-surface);
 }
 
 .input-actions {
@@ -1350,6 +1357,7 @@ onUnmounted(() => {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
@@ -1359,6 +1367,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 10px;
   padding: 10px 16px;
+  background: var(--bg-surface-muted);
   border-bottom: 1px solid var(--border);
 }
 

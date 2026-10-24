@@ -1,23 +1,23 @@
 <template>
-  <div id="appChatPage">
-    <!-- 顶部栏 -->
-    <div class="header-bar">
-      <div class="header-left">
-        <h1 class="app-name">{{ appInfo?.appName || t('chat.defaultAppName') }}</h1>
-        <a-tag v-if="appInfo?.codeGenType" class="code-gen-type-tag">
+  <div id="appChatPage" :class="{ 'is-dragging': isDragging }">
+    <!-- 工具栏内容注入工作台紧凑顶栏（GlobalHeader #workspace-header-slot） -->
+    <Teleport to="#workspace-header-slot">
+      <div class="ws-left">
+        <h1 class="ws-appname">{{ appInfo?.appName || t('chat.defaultAppName') }}</h1>
+        <a-tag v-if="appInfo?.codeGenType" class="ws-tag">
           {{ formatCodeGenType(appInfo.codeGenType) }}
         </a-tag>
       </div>
-      <div class="header-right">
-        <a-button type="default" @click="showAppDetail">
-          <template #icon>
-            <InfoCircleOutlined />
-          </template>
-          {{ t('chat.detail') }}
-        </a-button>
+      <div class="ws-actions">
+        <a-tooltip :title="t('chat.detail')">
+          <a-button size="small" @click="showAppDetail" :aria-label="t('chat.detail')">
+            <template #icon>
+              <InfoCircleOutlined />
+            </template>
+          </a-button>
+        </a-tooltip>
         <a-button
-          type="primary"
-          ghost
+          size="small"
           @click="downloadCode"
           :loading="downloading"
           :disabled="(!isOwner && !isAdmin) || isBuilding"
@@ -29,6 +29,7 @@
         </a-button>
         <a-button
           type="primary"
+          size="small"
           @click="deployApp"
           :loading="deploying"
           :disabled="isBuilding"
@@ -39,10 +40,10 @@
           {{ t('chat.deploy') }}
         </a-button>
       </div>
-    </div>
+    </Teleport>
 
     <!-- 主要内容区域：左右分栏，外围固定，各自内部滚动 -->
-    <div class="main-content" ref="mainContentRef" :class="{ 'is-dragging': isDragging }">
+    <div class="main-content" ref="mainContentRef">
       <!-- 左侧对话区域 -->
       <div class="chat-section" :style="{ '--chat-w': chatWidthPct + '%' }">
         <!-- 消息区域 -->
@@ -1101,7 +1102,7 @@ onUnmounted(() => {
 
 <style scoped>
 #appChatPage {
-  height: calc(100vh - var(--header-h, 72px));
+  height: calc(100vh - var(--header-h-ws, 64px));
   display: flex;
   flex-direction: column;
   padding: 12px 16px 16px;
@@ -1114,37 +1115,37 @@ onUnmounted(() => {
   user-select: none;
 }
 
-/* 顶部栏 */
-.header-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 4px 12px;
-}
-
-.header-left {
+/* 工作台顶栏注入区：应用信息（左）+ 操作按钮（右） */
+.ws-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  min-width: 0;
 }
 
-.code-gen-type-tag {
-  font-size: 12px;
+.ws-appname {
+  margin: 0;
+  font-size: var(--text-title);
+  font-weight: var(--weight-strong);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+}
+
+.ws-tag {
+  margin: 0;
+  font-size: var(--text-micro);
   color: var(--brand-text);
   background: var(--brand-soft);
   border-color: var(--brand-soft);
 }
 
-.app-name {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.header-right {
+.ws-actions {
+  margin-left: auto;
   display: flex;
-  gap: 12px;
+  gap: 8px;
 }
 
 /* 编辑模式激活态（顶栏按钮） */
@@ -1479,12 +1480,9 @@ onUnmounted(() => {
 }
 
 @media (max-width: 768px) {
-  .header-bar {
-    padding: 12px 16px;
-  }
-
-  .app-name {
-    font-size: 16px;
+  .ws-appname {
+    font-size: var(--text-body);
+    max-width: 140px;
   }
 
   .main-content {

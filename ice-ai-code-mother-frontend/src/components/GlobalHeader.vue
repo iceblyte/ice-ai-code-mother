@@ -1,12 +1,16 @@
 <template>
-  <a-layout-header class="header">
+  <a-layout-header class="header" :class="{ 'header--compact': isWorkspace }">
     <div class="header-inner">
       <RouterLink to="/" class="header-logo" aria-label="CodeNow">
-        <BrandLogo :mark-width="30" :word-height="22" />
+        <BrandLogo
+          :mark-width="isWorkspace ? 26 : 30"
+          :word-height="22"
+          :wordmark="!isWorkspace"
+        />
       </RouterLink>
 
-      <!-- 桌面导航 -->
-      <nav class="header-nav">
+      <!-- 桌面导航（工作台隐藏） -->
+      <nav v-if="!isWorkspace" class="header-nav">
         <template v-for="item in visibleItems" :key="item.key">
           <RouterLink
             v-if="item.to"
@@ -21,11 +25,14 @@
         </template>
       </nav>
 
-      <span class="header-grow"></span>
+      <span v-if="!isWorkspace" class="header-grow"></span>
+
+      <!-- 工作台注入槽：页面通过 Teleport 填入应用信息与操作按钮 -->
+      <div v-show="isWorkspace" id="workspace-header-slot" class="header-ws-slot"></div>
 
       <!-- 偏好控件 + 用户区 -->
       <div class="header-controls">
-        <HeaderPreferences />
+        <HeaderPreferences v-if="!isWorkspace" />
         <div v-if="loginUserStore.loginUser.id" class="header-user">
           <a-dropdown placement="bottomRight">
             <button class="header-user__summary" type="button">
@@ -44,12 +51,13 @@
             </template>
           </a-dropdown>
         </div>
-        <RouterLink v-else to="/user/login" class="header-login">
+        <RouterLink v-else-if="!isWorkspace" to="/user/login" class="header-login">
           {{ t('header.login') }}
         </RouterLink>
 
-        <!-- 移动端汉堡 -->
+        <!-- 移动端汉堡（工作台无导航，不显示） -->
         <button
+          v-if="!isWorkspace"
           class="header-burger"
           type="button"
           :aria-label="t('header.menu')"
@@ -119,6 +127,9 @@ const router = useRouter()
 const { t } = useI18n({ useScope: 'global' })
 const selectedKeys = ref<string[]>([route.path])
 const mobileOpen = ref(false)
+
+// 工作台路由（对话/编辑）：顶栏切换紧凑形态，页面内容经 Teleport 注入
+const isWorkspace = computed(() => route.path.startsWith('/app/'))
 
 interface NavItem {
   key: string
@@ -230,10 +241,28 @@ const doLogout = async () => {
 .header-inner {
   max-width: 1200px;
   margin: 0 auto;
-  height: var(--header-h, 64px);
+  height: var(--header-h, 72px);
   display: flex;
   align-items: center;
   gap: 24px;
+}
+
+/* 工作台紧凑形态：单层顶栏承载应用信息与操作 */
+.header--compact {
+  height: var(--header-h-ws, 64px);
+}
+
+.header--compact .header-inner {
+  height: var(--header-h-ws, 64px);
+  gap: 16px;
+}
+
+.header-ws-slot {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .header-logo {

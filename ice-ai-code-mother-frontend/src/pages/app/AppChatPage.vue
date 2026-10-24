@@ -172,18 +172,17 @@
           <div class="preview-actions">
             <a-button
               v-if="isOwner && previewUrl"
-              type="link"
+              size="small"
               :danger="isEditMode"
               @click="toggleEditMode"
               :class="{ 'edit-mode-active': isEditMode }"
-              style="padding: 0; height: auto; margin-right: 12px"
             >
               <template #icon>
                 <EditOutlined />
               </template>
               {{ isEditMode ? t('chat.exitEditMode') : t('chat.editMode') }}
             </a-button>
-            <a-button v-if="previewUrl" type="link" @click="openInNewTab">
+            <a-button v-if="previewUrl" size="small" @click="openInNewTab">
               <template #icon>
                 <ExportOutlined />
               </template>
@@ -1321,10 +1320,16 @@ onUnmounted(() => {
 
 .preview-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 10px;
-  padding: 12px 16px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--border);
+}
+
+.preview-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .editing-tag {

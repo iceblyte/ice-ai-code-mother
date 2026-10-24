@@ -292,7 +292,7 @@
     "notOwnerTip": "无法在别人的作品下对话哦~",
     "placeholder": "请描述你想生成的网站，越详细效果越好哦",
     "placeholderEditing": "正在编辑 {tag} 元素，描述您想要的修改...",
-    "previewTitle": "生成后的网页展示",
+    "previewTitle": "预览",
     "editMode": "编辑模式",
     "exitEditMode": "退出编辑",
     "openNewTab": "新窗口打开",

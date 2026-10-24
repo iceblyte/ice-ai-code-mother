@@ -292,7 +292,7 @@
     "notOwnerTip": "You can only chat on your own apps~",
     "placeholder": "Describe the website you want to build — the more detail, the better",
     "placeholderEditing": "Editing <{tag}> element. Describe the change you want...",
-    "previewTitle": "Generated Site",
+    "previewTitle": "Preview",
     "editMode": "Edit mode",
     "exitEditMode": "Exit editing",
     "openNewTab": "Open in new tab",

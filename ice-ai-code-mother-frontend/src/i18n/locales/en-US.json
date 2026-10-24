@@ -17,6 +17,7 @@
     "guestName": "Guest",
     "login": "Log in",
     "menu": "Menu",
+    "revealNav": "Hover to open navigation, click to go home",
     "logoutSuccess": "Logged out",
     "logoutFailed": "Logout failed: {msg}",
     "userMenu": {

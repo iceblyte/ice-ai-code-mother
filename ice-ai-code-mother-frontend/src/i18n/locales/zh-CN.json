@@ -17,6 +17,7 @@
     "guestName": "无名",
     "login": "登录",
     "menu": "菜单",
+    "revealNav": "悬停展开导航，点击返回首页",
     "logoutSuccess": "退出登录成功",
     "logoutFailed": "退出登录失败，{msg}",
     "userMenu": {

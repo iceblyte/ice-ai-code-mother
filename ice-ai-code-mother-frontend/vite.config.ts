@@ -1,12 +1,15 @@
-import { fileURLToPath, URL } from 'node:url'
+import {fileURLToPath, URL} from 'node:url'
 
-import { defineConfig } from 'vite'
+import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(), vueDevTools()],
+  plugins: [
+    vue(),
+    //vueDevTools()
+  ],
   define: {
     // vue-i18n esm-bundler 特性开关（仅 Composition 模式），消除开发环境 console 警告
     __VUE_I18N_FULL_INSTALL__: true,

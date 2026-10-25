@@ -43,11 +43,7 @@ export function useTypewriter(
   }
 
   const canAnimate = (): boolean =>
-    !disposed &&
-    !reducedMotion &&
-    active() &&
-    typeof document !== 'undefined' &&
-    !document.hidden
+    !disposed && !reducedMotion && active() && typeof document !== 'undefined' && !document.hidden
 
   const clearTimer = () => {
     if (timer) {

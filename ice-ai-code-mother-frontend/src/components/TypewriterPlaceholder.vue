@@ -26,11 +26,15 @@ const props = withDefaults(
   },
 )
 
-const { text } = useTypewriter(() => props.lines, () => props.active, {
-  type: props.typeDelay,
-  delete: props.deleteDelay,
-  hold: props.holdDelay,
-})
+const { text } = useTypewriter(
+  () => props.lines,
+  () => props.active,
+  {
+    type: props.typeDelay,
+    delete: props.deleteDelay,
+    hold: props.holdDelay,
+  },
+)
 </script>
 
 <style scoped>

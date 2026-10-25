@@ -66,6 +66,22 @@ html[data-skin='dell']:not([data-theme='dark']) {
   --shadow-sm: none;
   --shadow-md: none;
   --shadow-lg: none;
+
+  --home-bg-gradient:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(216, 30, 40, 0.1), transparent 62%),
+    radial-gradient(ellipse 55% 50% at 15% 55%, rgba(242, 183, 5, 0.12), transparent 66%),
+    radial-gradient(ellipse 55% 50% at 85% 45%, rgba(0, 0, 238, 0.06), transparent 66%),
+    linear-gradient(180deg, #ffffff 0%, #fffdf5 52%, #f7efdc 100%);
+  --home-glow-1: rgba(216, 30, 40, 0.12);
+  --home-glow-2: rgba(242, 183, 5, 0.14);
+  --home-panel-bg: rgba(255, 255, 255, 0.92);
+  --home-panel-border: rgba(0, 0, 0, 0.55);
+  --home-panel-shadow: 6px 6px 0 rgba(0, 0, 0, 0.08);
+  --home-particle-1: #d81e28;
+  --home-particle-2: #0000ee;
+  --home-particle-3: #f2b705;
+  --home-particle-4: #555555;
+  --home-particle-opacity: 0.42;
 }
 
 html[data-theme='dark'][data-skin='dell'] {
@@ -115,4 +131,20 @@ html[data-theme='dark'][data-skin='dell'] {
   --shadow-sm: none;
   --shadow-md: none;
   --shadow-lg: none;
+
+  --home-bg-gradient:
+    radial-gradient(ellipse 70% 55% at 50% -5%, rgba(255, 59, 48, 0.14), transparent 62%),
+    radial-gradient(ellipse 55% 50% at 12% 50%, rgba(255, 212, 0, 0.08), transparent 66%),
+    radial-gradient(ellipse 55% 50% at 88% 40%, rgba(107, 107, 255, 0.08), transparent 66%),
+    linear-gradient(180deg, #000000 0%, #0b0a08 55%, #050505 100%);
+  --home-glow-1: rgba(255, 59, 48, 0.16);
+  --home-glow-2: rgba(255, 212, 0, 0.1);
+  --home-panel-bg: rgba(20, 20, 20, 0.9);
+  --home-panel-border: rgba(255, 255, 255, 0.35);
+  --home-panel-shadow: 6px 6px 0 rgba(255, 255, 255, 0.06);
+  --home-particle-1: #ff3b30;
+  --home-particle-2: #ffd400;
+  --home-particle-3: #6b6bff;
+  --home-particle-4: #a0a0a0;
+  --home-particle-opacity: 0.62;
 }

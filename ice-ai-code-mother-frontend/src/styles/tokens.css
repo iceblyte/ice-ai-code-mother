@@ -6,8 +6,9 @@
 
 /* ---------- 字体栈 ---------- */
 :root {
-  --font-sans: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', 'Source Han Sans SC', sans-serif;
+  --font-sans:
+    Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Source Han Sans SC', sans-serif;
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
 
   /* ---------- 代码语法色：随主题切换，定义见下方亮/暗主题块 ---------- */
@@ -133,6 +134,23 @@
   --shadow-md: 0 8px 24px rgba(17, 17, 20, 0.08);
   --shadow-lg: 0 16px 48px rgba(17, 17, 20, 0.12);
 
+  /* 首页氛围层：渐变、光晕、面板与粒子；各皮肤可覆盖 */
+  --home-bg-gradient:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(14, 196, 184, 0.16), transparent 62%),
+    radial-gradient(ellipse 60% 50% at 15% 55%, rgba(14, 159, 118, 0.12), transparent 66%),
+    radial-gradient(ellipse 60% 50% at 85% 45%, rgba(37, 99, 235, 0.08), transparent 66%),
+    linear-gradient(180deg, var(--bg-app) 0%, #f3fbf9 55%, #e8f7f4 100%);
+  --home-glow-1: rgba(14, 196, 184, 0.18);
+  --home-glow-2: rgba(14, 159, 118, 0.14);
+  --home-panel-bg: color-mix(in srgb, var(--bg-surface) 88%, transparent);
+  --home-panel-border: color-mix(in srgb, var(--border) 82%, transparent);
+  --home-panel-shadow: 0 24px 70px rgba(17, 17, 20, 0.08);
+  --home-particle-1: #0b8a66;
+  --home-particle-2: #0ec4b8;
+  --home-particle-3: #6e9bff;
+  --home-particle-4: #e0b060;
+  --home-particle-opacity: 0.55;
+
   /* 品牌图形（logo / wordmark）标准色：保持品牌识别，不随皮肤改变 */
   --logo-ink: #031036;
   --logo-accent: #1659fe;
@@ -197,6 +215,23 @@
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
+
+  /* 首页氛围层（暗色）：深色星空 + 发光粒子 */
+  --home-bg-gradient:
+    radial-gradient(ellipse 70% 55% at 50% -5%, rgba(43, 211, 163, 0.16), transparent 62%),
+    radial-gradient(ellipse 55% 50% at 12% 50%, rgba(43, 227, 214, 0.12), transparent 66%),
+    radial-gradient(ellipse 55% 50% at 88% 40%, rgba(110, 155, 255, 0.12), transparent 66%),
+    linear-gradient(180deg, #05070a 0%, #07100f 55%, #04100d 100%);
+  --home-glow-1: rgba(43, 211, 163, 0.2);
+  --home-glow-2: rgba(110, 155, 255, 0.16);
+  --home-panel-bg: color-mix(in srgb, var(--bg-surface) 82%, transparent);
+  --home-panel-border: rgba(255, 255, 255, 0.08);
+  --home-panel-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  --home-particle-1: #2bd3a3;
+  --home-particle-2: #2be3d6;
+  --home-particle-3: #8cc8ff;
+  --home-particle-4: #e0b060;
+  --home-particle-opacity: 0.7;
 
   /* 品牌图形在暗色面上提亮，保持辨识度 */
   --logo-ink: #f2f5fa;

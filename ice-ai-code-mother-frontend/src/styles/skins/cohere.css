@@ -6,8 +6,9 @@
    ============================================================ */
 
 html[data-skin='cohere'] {
-  --font-sans: 'Segoe UI', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
-    'Microsoft YaHei', sans-serif;
+  --font-sans:
+    'Segoe UI', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    sans-serif;
   --text-display: 46px;
   --leading-display: 54px;
   --text-h1: 30px;
@@ -69,6 +70,22 @@ html[data-skin='cohere']:not([data-theme='dark']) {
   --shadow-sm: 0 2px 10px rgba(60, 50, 30, 0.07);
   --shadow-md: 0 14px 34px rgba(60, 50, 30, 0.1);
   --shadow-lg: 0 24px 60px rgba(60, 50, 30, 0.14);
+
+  --home-bg-gradient:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(255, 119, 89, 0.14), transparent 62%),
+    radial-gradient(ellipse 55% 50% at 15% 55%, rgba(47, 93, 80, 0.12), transparent 66%),
+    radial-gradient(ellipse 55% 50% at 85% 45%, rgba(217, 164, 65, 0.1), transparent 66%),
+    linear-gradient(180deg, #fffaf5 0%, #fdf3ec 52%, #f9ebe3 100%);
+  --home-glow-1: rgba(255, 119, 89, 0.2);
+  --home-glow-2: rgba(47, 93, 80, 0.14);
+  --home-panel-bg: rgba(250, 249, 246, 0.9);
+  --home-panel-border: rgba(217, 213, 203, 0.9);
+  --home-panel-shadow: 0 24px 70px rgba(60, 50, 30, 0.12);
+  --home-particle-1: #ff7759;
+  --home-particle-2: #2f5d50;
+  --home-particle-3: #d9a441;
+  --home-particle-4: #6e9bff;
+  --home-particle-opacity: 0.5;
 }
 
 html[data-theme='dark'][data-skin='cohere'] {
@@ -118,4 +135,20 @@ html[data-theme='dark'][data-skin='cohere'] {
   --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.45);
   --shadow-md: 0 14px 36px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 24px 62px rgba(0, 0, 0, 0.58);
+
+  --home-bg-gradient:
+    radial-gradient(ellipse 70% 55% at 50% -5%, rgba(255, 139, 112, 0.18), transparent 62%),
+    radial-gradient(ellipse 55% 50% at 12% 50%, rgba(143, 199, 178, 0.12), transparent 66%),
+    radial-gradient(ellipse 55% 50% at 88% 40%, rgba(224, 164, 106, 0.1), transparent 66%),
+    linear-gradient(180deg, #0b0d0c 0%, #12100c 55%, #0c0f0d 100%);
+  --home-glow-1: rgba(255, 139, 112, 0.2);
+  --home-glow-2: rgba(143, 199, 178, 0.14);
+  --home-panel-bg: rgba(23, 26, 24, 0.86);
+  --home-panel-border: rgba(255, 255, 255, 0.08);
+  --home-panel-shadow: 0 30px 80px rgba(0, 0, 0, 0.58);
+  --home-particle-1: #ff8b70;
+  --home-particle-2: #8fc7b2;
+  --home-particle-3: #e0a46a;
+  --home-particle-4: #8cc8ff;
+  --home-particle-opacity: 0.7;
 }

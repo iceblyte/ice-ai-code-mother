@@ -6,8 +6,9 @@
    ============================================================ */
 
 html[data-skin='minimal'] {
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Helvetica,
-    Inter, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Helvetica, Inter,
+    'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   --text-display: 46px;
   --leading-display: 52px;
   --text-h1: 30px;
@@ -65,6 +66,22 @@ html[data-skin='minimal']:not([data-theme='dark']) {
   --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 12px 34px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.12);
+
+  --home-bg-gradient:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(14, 196, 184, 0.18), transparent 62%),
+    radial-gradient(ellipse 55% 50% at 15% 55%, rgba(0, 102, 204, 0.13), transparent 66%),
+    radial-gradient(ellipse 55% 50% at 85% 45%, rgba(255, 119, 89, 0.08), transparent 66%),
+    linear-gradient(180deg, #ffffff 0%, #f4fbff 52%, #e4f7ff 100%);
+  --home-glow-1: rgba(14, 196, 184, 0.22);
+  --home-glow-2: rgba(0, 102, 204, 0.16);
+  --home-panel-bg: rgba(255, 255, 255, 0.9);
+  --home-panel-border: rgba(230, 230, 235, 0.9);
+  --home-panel-shadow: 0 24px 70px rgba(0, 70, 140, 0.1);
+  --home-particle-1: #0066cc;
+  --home-particle-2: #0ec4b8;
+  --home-particle-3: #ff7759;
+  --home-particle-4: #f2b705;
+  --home-particle-opacity: 0.5;
 }
 
 html[data-theme='dark'][data-skin='minimal'] {
@@ -111,6 +128,22 @@ html[data-theme='dark'][data-skin='minimal'] {
   --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.55);
   --shadow-md: 0 12px 36px rgba(0, 0, 0, 0.6);
   --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.66);
+
+  --home-bg-gradient:
+    radial-gradient(ellipse 70% 55% at 50% -5%, rgba(90, 176, 255, 0.2), transparent 62%),
+    radial-gradient(ellipse 55% 50% at 12% 50%, rgba(43, 227, 214, 0.13), transparent 66%),
+    radial-gradient(ellipse 55% 50% at 88% 40%, rgba(255, 119, 89, 0.1), transparent 66%),
+    linear-gradient(180deg, #000000 0%, #05080f 55%, #03070d 100%);
+  --home-glow-1: rgba(90, 176, 255, 0.22);
+  --home-glow-2: rgba(43, 227, 214, 0.16);
+  --home-panel-bg: rgba(22, 22, 24, 0.84);
+  --home-panel-border: rgba(255, 255, 255, 0.08);
+  --home-panel-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  --home-particle-1: #5ab0ff;
+  --home-particle-2: #2be3d6;
+  --home-particle-3: #ff8b70;
+  --home-particle-4: #ffd166;
+  --home-particle-opacity: 0.72;
 }
 
 html[data-skin='minimal'] ::selection {

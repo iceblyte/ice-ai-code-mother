@@ -6,6 +6,7 @@ import { message } from 'ant-design-vue'
 import { useLoginUserStore } from '@/stores/loginUser'
 import BrandLogo from '@/components/BrandLogo.vue'
 import TypewriterPlaceholder from '@/components/TypewriterPlaceholder.vue'
+import ParticleField from '@/components/ParticleField.vue'
 import { usePromptOptimizer } from '@/composables/usePromptOptimizer'
 import { addApp, listMyAppVoByPage, listGoodAppVoByPage } from '@/api/appController'
 import { getDeployUrl } from '@/config/env'
@@ -215,7 +216,12 @@ onMounted(() => {
 
 <template>
   <div id="homePage">
-    <!-- Hero：氛围渐变 + 一句话标题 + composer + 快捷提示 -->
+    <!-- 页面级氛围层：渐变光晕 + 粒子（不拦截交互） -->
+    <div class="home-ambient" aria-hidden="true">
+      <ParticleField class="home-ambient__particles" />
+    </div>
+
+    <!-- Hero：一句话标题 + composer + 快捷提示 -->
     <section class="home-hero">
       <div class="home-container">
         <h1 class="home-hero__title">
@@ -367,69 +373,16 @@ onMounted(() => {
     <!-- 我的作品 -->
     <section class="home-section">
       <div class="home-container">
-        <div class="home-section-head">
-          <h2>{{ t('home.mine') }}</h2>
-          <RouterLink to="/user/profile" class="home-quiet-btn">
-            {{ t('home.all') }}
-          </RouterLink>
-        </div>
-        <div class="home-grid">
-          <article
-            v-for="app in myApps"
-            :key="app.id"
-            class="home-appcard"
-            @click="viewChat(app.id)"
-          >
-            <div class="home-appcard__cover">
-              <img v-if="app.cover" :src="app.cover" :alt="app.appName" />
-              <div v-else class="home-appcard__fallback">#{{ app.id }}</div>
-              <span v-if="app.deployKey" class="home-badge home-badge--live">
-                <i class="home-dot home-dot--live"></i>{{ t('home.live') }}
-              </span>
-              <span v-else class="home-badge">{{ t('home.draft') }}</span>
-            </div>
-            <div class="home-appcard__body">
-              <h3 class="home-appcard__title">{{ app.appName || t('appCard.untitled') }}</h3>
-              <div class="home-appcard__meta">
-                <span class="home-tag">{{ formatCodeGenType(app.codeGenType) }}</span>
-                <span>{{ t('home.updated') }} {{ formatDate(app.updateTime || app.createTime) }}</span>
-              </div>
-            </div>
-          </article>
-
-          <a class="home-newcard" @click="focusComposer">
-            <span class="home-newcard__plus">+</span>
-            <span class="home-newcard__label">{{ t('home.new') }}</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 精选案例 -->
-    <section class="home-section">
-      <div class="home-container">
-        <div class="home-section-head">
-          <h2>{{ t('home.featured') }}</h2>
-          <div class="home-filter">
-            <button
-              v-for="option in featuredTypeOptions"
-              :key="option.value"
-              class="home-chip home-chip--filter"
-              :class="{ 'home-chip--active': featuredType === option.value }"
-              @click="setFeaturedType(option.value)"
-            >
-              {{ option.label }}
-            </button>
+        <div class="home-panel">
+          <div class="home-panel__head">
+            <h2>{{ t('home.mine') }}</h2>
+            <RouterLink to="/user/profile" class="home-quiet-btn">
+              {{ t('home.all') }}
+            </RouterLink>
           </div>
-        </div>
-        <a-spin :spinning="featuredLoading">
-          <a-empty
-            v-if="!featuredLoading && featuredApps.length === 0"
-            :description="t('home.featuredEmpty')"
-          />
-          <div v-else class="home-grid">
+          <div class="home-grid">
             <article
-              v-for="app in featuredApps"
+              v-for="app in myApps"
               :key="app.id"
               class="home-appcard"
               @click="viewChat(app.id)"
@@ -437,28 +390,88 @@ onMounted(() => {
               <div class="home-appcard__cover">
                 <img v-if="app.cover" :src="app.cover" :alt="app.appName" />
                 <div v-else class="home-appcard__fallback">#{{ app.id }}</div>
+                <span v-if="app.deployKey" class="home-badge home-badge--live">
+                  <i class="home-dot home-dot--live"></i>{{ t('home.live') }}
+                </span>
+                <span v-else class="home-badge">{{ t('home.draft') }}</span>
               </div>
               <div class="home-appcard__body">
                 <h3 class="home-appcard__title">{{ app.appName || t('appCard.untitled') }}</h3>
                 <div class="home-appcard__meta">
                   <span class="home-tag">{{ formatCodeGenType(app.codeGenType) }}</span>
-                  <span class="home-appcard__author">
-                    {{ app.user?.userName || t('appCard.official') }}
-                  </span>
-                  <a-button
-                    v-if="app.deployKey"
-                    type="link"
-                    size="small"
-                    class="home-appcard__visit"
-                    @click.stop="viewWork(app)"
+                  <span
+                    >{{ t('home.updated') }}
+                    {{ formatDate(app.updateTime || app.createTime) }}</span
                   >
-                    {{ t('appCard.viewWork') }}
-                  </a-button>
                 </div>
               </div>
             </article>
+
+            <a class="home-newcard" @click="focusComposer">
+              <span class="home-newcard__plus">+</span>
+              <span class="home-newcard__label">{{ t('home.new') }}</span>
+            </a>
           </div>
-        </a-spin>
+        </div>
+      </div>
+    </section>
+
+    <!-- 精选案例 -->
+    <section class="home-section home-section--last">
+      <div class="home-container">
+        <div class="home-panel">
+          <div class="home-panel__head">
+            <h2>{{ t('home.featured') }}</h2>
+            <div class="home-filter">
+              <button
+                v-for="option in featuredTypeOptions"
+                :key="option.value"
+                class="home-chip home-chip--filter"
+                :class="{ 'home-chip--active': featuredType === option.value }"
+                @click="setFeaturedType(option.value)"
+              >
+                {{ option.label }}
+              </button>
+            </div>
+          </div>
+          <a-spin :spinning="featuredLoading">
+            <a-empty
+              v-if="!featuredLoading && featuredApps.length === 0"
+              :description="t('home.featuredEmpty')"
+            />
+            <div v-else class="home-grid">
+              <article
+                v-for="app in featuredApps"
+                :key="app.id"
+                class="home-appcard"
+                @click="viewChat(app.id)"
+              >
+                <div class="home-appcard__cover">
+                  <img v-if="app.cover" :src="app.cover" :alt="app.appName" />
+                  <div v-else class="home-appcard__fallback">#{{ app.id }}</div>
+                </div>
+                <div class="home-appcard__body">
+                  <h3 class="home-appcard__title">{{ app.appName || t('appCard.untitled') }}</h3>
+                  <div class="home-appcard__meta">
+                    <span class="home-tag">{{ formatCodeGenType(app.codeGenType) }}</span>
+                    <span class="home-appcard__author">
+                      {{ app.user?.userName || t('appCard.official') }}
+                    </span>
+                    <a-button
+                      v-if="app.deployKey"
+                      type="link"
+                      size="small"
+                      class="home-appcard__visit"
+                      @click.stop="viewWork(app)"
+                    >
+                      {{ t('appCard.viewWork') }}
+                    </a-button>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </a-spin>
+        </div>
       </div>
     </section>
   </div>
@@ -466,18 +479,64 @@ onMounted(() => {
 
 <style scoped>
 /* ============================================================
-   首页（对齐原型 index.html）：hero 网格 + composer + 双卡片区
+   首页：氛围渐变 + 粒子 + 一句话标题 + 双面板
    ============================================================ */
+#homePage {
+  position: relative;
+  isolation: isolate;
+}
+
 .home-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
+/* ---------------- 氛围层 ---------------- */
+.home-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--home-bg-gradient);
+}
+
+.home-ambient::before,
+.home-ambient::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.85;
+}
+
+.home-ambient::before {
+  top: 8%;
+  left: -12%;
+  width: min(60vw, 760px);
+  height: min(60vw, 760px);
+  background: var(--home-glow-1);
+}
+
+.home-ambient::after {
+  top: 34%;
+  right: -10%;
+  width: min(52vw, 640px);
+  height: min(52vw, 640px);
+  background: var(--home-glow-2);
+}
+
+.home-ambient__particles {
+  position: absolute;
+  inset: 0;
+}
+
 /* ---------------- Hero ---------------- */
 .home-hero {
   position: relative;
-  padding: 80px 0 72px;
+  z-index: 1;
+  padding: 88px 0 64px;
   text-align: center;
   overflow: hidden;
 }
@@ -744,20 +803,37 @@ onMounted(() => {
   border-color: transparent;
 }
 
-/* ---------------- 区块 ---------------- */
+/* ---------------- 区块面板 ---------------- */
 .home-section {
-  padding: 48px 0 0;
+  position: relative;
+  z-index: 1;
+  padding: 40px 0 0;
 }
 
-.home-section-head {
+.home-section--last {
+  padding-bottom: 80px;
+}
+
+.home-panel {
+  position: relative;
+  padding: 28px;
+  background: var(--home-panel-bg);
+  border: 1px solid var(--home-panel-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--home-panel-shadow);
+  backdrop-filter: blur(14px) saturate(130%);
+}
+
+.home-panel__head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 20px;
 }
 
-.home-section-head h2 {
+.home-panel__head h2 {
   margin: 0;
   font-size: var(--text-h2);
   line-height: var(--leading-h2);
@@ -851,7 +927,8 @@ onMounted(() => {
   inset: 0;
   display: grid;
   place-items: center;
-  background: repeating-linear-gradient(
+  background:
+    repeating-linear-gradient(
       45deg,
       transparent 0 10px,
       color-mix(in srgb, var(--text-muted) 6%, transparent) 10px 20px

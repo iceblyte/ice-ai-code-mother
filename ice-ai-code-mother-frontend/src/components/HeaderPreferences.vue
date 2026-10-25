@@ -45,11 +45,7 @@
 
     <!-- 语言切换（下拉，支持后续扩展语言；按钮显示 中/EN） -->
     <a-dropdown placement="bottomRight">
-      <button
-        type="button"
-        class="pref-iconbtn"
-        :aria-label="t('header.lang.label')"
-      >
+      <button type="button" class="pref-iconbtn" :aria-label="t('header.lang.label')">
         <span class="pref-iconbtn__text">{{ locale === 'zh-CN' ? '中' : 'EN' }}</span>
       </button>
       <template #overlay>
@@ -62,11 +58,7 @@
 
     <!-- 外观皮肤切换（仅极简可用，其余置灰待后续皮肤接入） -->
     <a-dropdown placement="bottomRight">
-      <button
-        type="button"
-        class="pref-iconbtn"
-        :aria-label="t('header.skin.label')"
-      >
+      <button type="button" class="pref-iconbtn" :aria-label="t('header.skin.label')">
         <svg
           width="16"
           height="16"
@@ -163,5 +155,17 @@ const onSkinClick = ({ key }: { key: string }) => {
 
 .skin-coming {
   color: var(--text-muted);
+}
+
+@media (max-width: 560px) {
+  .header-preferences {
+    gap: 6px;
+  }
+
+  .pref-iconbtn {
+    height: 34px;
+    min-width: 34px;
+    padding: 0 8px;
+  }
 }
 </style>

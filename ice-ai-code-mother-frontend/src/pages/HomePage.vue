@@ -603,14 +603,14 @@ onMounted(() => {
 
 .home-hero__title {
   position: relative;
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto 16px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  font-size: var(--text-display);
+  font-size: clamp(28px, 3.4vw + 14px, var(--text-display));
   line-height: var(--leading-display);
   font-weight: var(--weight-heavy);
   letter-spacing: -0.02em;
@@ -623,6 +623,12 @@ onMounted(() => {
 
 .home-hero__logo {
   flex: none;
+}
+
+/* 复古皮肤亮色下品牌 mark 为反白，给标题内联 logo 加深色衬底 */
+html[data-skin='dell']:not([data-theme='dark']) .home-hero__logo {
+  padding: 3px;
+  background: #000;
 }
 
 .home-hero__logo :deep(svg) {
@@ -913,17 +919,70 @@ onMounted(() => {
   }
 }
 
+@media (max-width: 860px) {
+  .home-composer__input {
+    padding: 16px 16px 8px;
+  }
+
+  .home-composer__bar {
+    padding: 10px 12px 12px;
+  }
+}
+
 @media (max-width: 768px) {
   .home-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .home-hero {
-    padding: 48px 0 56px;
+    padding: 56px 0 40px;
+  }
+
+  .home-section {
+    padding-top: 28px;
+  }
+
+  .home-section--last {
+    padding-bottom: 56px;
+  }
+
+  .home-panel {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .home-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-hero {
+    padding: 40px 0 32px;
   }
 
   .home-hero__title {
-    font-size: var(--text-h1);
+    gap: 8px;
+  }
+
+  .home-hero__sub {
+    margin-bottom: 28px;
+  }
+
+  .home-section {
+    padding-top: 24px;
+  }
+
+  .home-section--last {
+    padding-bottom: 40px;
+  }
+
+  .home-panel {
+    padding: 16px;
+    backdrop-filter: none;
+  }
+
+  .home-quick__chips {
+    gap: 8px;
   }
 }
 

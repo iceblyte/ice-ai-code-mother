@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useTheme } from '@/composables/useTheme'
 
 interface Particle {
@@ -224,7 +224,9 @@ onMounted(() => {
   }
 })
 
-watch([theme, skin], () => {
+watch([theme, skin], async () => {
+  // 等待 useTheme 把 data-theme / data-skin 写入 <html>，再读取对应皮肤令牌
+  await nextTick()
   rebuild()
   if (reducedMotion) draw(performance.now())
 })

@@ -394,4 +394,45 @@ const doLogout = async () => {
     display: inline-flex;
   }
 }
+
+/* 小屏：收紧品牌区与偏好控件，登录入口收进汉堡菜单 */
+@media (max-width: 560px) {
+  .header {
+    padding: 0 16px;
+  }
+
+  .header-inner {
+    gap: 16px;
+  }
+
+  .header-login {
+    display: none;
+  }
+
+  .header-logo :deep(.brand-logo__mark) {
+    width: 24px;
+  }
+
+  .header-logo :deep(.brand-logo__wordmark) {
+    height: 18px;
+  }
+}
+
+@media (max-width: 380px) {
+  .header {
+    padding: 0 12px;
+  }
+
+  .header-inner {
+    gap: 12px;
+  }
+
+  .header-logo :deep(.brand-logo__mark) {
+    width: 22px;
+  }
+
+  .header-logo :deep(.brand-logo__wordmark) {
+    height: 16px;
+  }
+}
 </style>

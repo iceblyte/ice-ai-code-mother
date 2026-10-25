@@ -1,10 +1,16 @@
 <template>
-  <div class="content-state" role="status" aria-live="polite">
-    <div v-if="loading" class="content-state__state" :style="{ minHeight }">
+  <div class="content-state">
+    <div
+      v-if="loading"
+      class="content-state__state"
+      role="status"
+      aria-live="polite"
+      :style="{ minHeight }"
+    >
       <a-spin />
     </div>
 
-    <div v-else-if="error" class="content-state__state" :style="{ minHeight }">
+    <div v-else-if="error" class="content-state__state" role="alert" :style="{ minHeight }">
       <span class="content-state__icon" aria-hidden="true">
         <svg
           width="22"

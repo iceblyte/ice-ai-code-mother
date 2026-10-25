@@ -75,7 +75,7 @@ html[data-skin='cohere']:not([data-theme='dark']) {
     radial-gradient(ellipse 80% 60% at 50% -10%, rgba(255, 119, 89, 0.14), transparent 62%),
     radial-gradient(ellipse 55% 50% at 15% 55%, rgba(47, 93, 80, 0.12), transparent 66%),
     radial-gradient(ellipse 55% 50% at 85% 45%, rgba(217, 164, 65, 0.1), transparent 66%),
-    linear-gradient(180deg, #fffaf5 0%, #fdf3ec 52%, #f9ebe3 100%);
+    linear-gradient(180deg, #fffaf5 0%, #fdf3ec 52%, #f9ebe3 82%, var(--bg-app) 100%);
   --home-glow-1: rgba(255, 119, 89, 0.2);
   --home-glow-2: rgba(47, 93, 80, 0.14);
   --home-panel-bg: rgba(250, 249, 246, 0.9);
@@ -140,7 +140,7 @@ html[data-theme='dark'][data-skin='cohere'] {
     radial-gradient(ellipse 70% 55% at 50% -5%, rgba(255, 139, 112, 0.18), transparent 62%),
     radial-gradient(ellipse 55% 50% at 12% 50%, rgba(143, 199, 178, 0.12), transparent 66%),
     radial-gradient(ellipse 55% 50% at 88% 40%, rgba(224, 164, 106, 0.1), transparent 66%),
-    linear-gradient(180deg, #0b0d0c 0%, #12100c 55%, #0c0f0d 100%);
+    linear-gradient(180deg, #0b0d0c 0%, #12100c 55%, #0c0f0d 85%, var(--bg-app) 100%);
   --home-glow-1: rgba(255, 139, 112, 0.2);
   --home-glow-2: rgba(143, 199, 178, 0.14);
   --home-panel-bg: rgba(23, 26, 24, 0.86);

@@ -6,6 +6,7 @@ import { message } from 'ant-design-vue'
 import { useLoginUserStore } from '@/stores/loginUser'
 import BrandLogo from '@/components/BrandLogo.vue'
 import TypewriterPlaceholder from '@/components/TypewriterPlaceholder.vue'
+import { usePromptOptimizer } from '@/composables/usePromptOptimizer'
 import { addApp, listMyAppVoByPage, listGoodAppVoByPage } from '@/api/appController'
 import { getDeployUrl } from '@/config/env'
 import { formatCodeGenType, getCodeGenTypeOptions } from '@/utils/codeGenTypes'
@@ -30,6 +31,50 @@ const typewriterLines = computed(() => {
 
 // 快捷提示词（文案与预设提示词均由 i18n 管理）
 const quickActionKeys = ['blog', 'corporate', 'shop', 'portfolio'] as const
+
+// 提示词优化（前端模拟，后续接入后端时替换 optimize 实现即可）
+const {
+  state: optimizerState,
+  optimize,
+  undo: undoOptimize,
+  reset: resetOptimizer,
+} = usePromptOptimizer({
+  enhance: (prompt) => `${prompt.trim()}\n\n${t('home.optimize.enhanceSuffix')}`,
+})
+
+const optimizerTip = computed(() => {
+  if (optimizerState.value === 'optimizing') return t('home.optimize.optimizing')
+  if (optimizerState.value === 'optimized') return t('home.optimize.undoTip')
+  return t('home.optimize.tip')
+})
+
+const onOptimize = async () => {
+  if (optimizerState.value === 'optimizing') return
+
+  if (optimizerState.value === 'optimized') {
+    userPrompt.value = undoOptimize()
+    composerRef.value?.focus()
+    return
+  }
+
+  if (!userPrompt.value.trim()) {
+    message.info(t('home.optimize.empty'))
+    return
+  }
+
+  const source = userPrompt.value
+  const optimized = await optimize(source)
+  // 优化期间用户改动了文案，则丢弃本次结果
+  if (optimized === null || userPrompt.value !== source) return
+
+  userPrompt.value = optimized
+  composerRef.value?.focus()
+}
+
+// 手动编辑后退出「撤回优化」态，避免撤回覆盖用户的新内容
+const onPromptInput = () => {
+  if (optimizerState.value !== 'idle') resetOptimizer()
+}
 
 // 我的应用数据
 const myApps = ref<API.AppVO[]>([])
@@ -190,9 +235,96 @@ onMounted(() => {
             rows="3"
             :aria-label="t('home.composerLabel')"
             :maxlength="1000"
+            @input="onPromptInput"
           ></textarea>
           <div class="home-composer__bar">
-            <div class="home-composer__tools"></div>
+            <div class="home-composer__tools">
+              <a-tooltip :title="optimizerTip">
+                <button
+                  type="button"
+                  class="home-optimize"
+                  :class="{
+                    'home-optimize--done': optimizerState === 'optimized',
+                    'home-optimize--busy': optimizerState === 'optimizing',
+                  }"
+                  :aria-label="optimizerTip"
+                  :aria-busy="optimizerState === 'optimizing'"
+                  @click="onOptimize"
+                >
+                  <svg
+                    v-if="optimizerState === 'optimizing'"
+                    class="home-optimize__spinner"
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="12" r="9" stroke-dasharray="42 57" />
+                  </svg>
+                  <svg
+                    v-else-if="optimizerState === 'optimized'"
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M9 14 4 9l5-5" />
+                    <path d="M4 9h10a6 6 0 0 1 0 12h-3" />
+                  </svg>
+                  <svg
+                    v-else
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M4 20l9-9" />
+                    <path d="M15 3.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2z" />
+                    <path d="M20 12v2M18 13h4M19.5 5.5l1.5-1.5" />
+                  </svg>
+                  <span>
+                    {{
+                      optimizerState === 'optimized'
+                        ? t('home.optimize.undo')
+                        : t('home.optimize.action')
+                    }}
+                  </span>
+                </button>
+              </a-tooltip>
+              <a-tooltip :title="t('home.optimize.help')" :overlay-style="{ maxWidth: '280px' }">
+                <button type="button" class="home-help" :aria-label="t('home.optimize.help')">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M9.6 9.2a2.4 2.4 0 1 1 3.5 2.2c-.7.4-1.1 1-1.1 1.8v.4" />
+                    <path d="M12 17h.01" />
+                  </svg>
+                </button>
+              </a-tooltip>
+            </div>
             <button
               class="home-send"
               :disabled="creating"
@@ -468,6 +600,72 @@ onMounted(() => {
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+.home-optimize {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-muted);
+  color: var(--text-secondary);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+}
+
+.home-optimize:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.home-optimize--done {
+  background: var(--brand-soft);
+  color: var(--brand-text);
+}
+
+.home-optimize--busy {
+  cursor: progress;
+}
+
+.home-optimize__spinner {
+  animation: home-optimize-spin 0.9s linear infinite;
+}
+
+@keyframes home-optimize-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.home-help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+}
+
+.home-help:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-optimize__spinner {
+    animation: none;
+  }
 }
 
 .home-send {

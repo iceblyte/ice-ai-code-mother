@@ -7,7 +7,9 @@ import { useLoginUserStore } from '@/stores/loginUser'
 import BrandLogo from '@/components/BrandLogo.vue'
 import TypewriterPlaceholder from '@/components/TypewriterPlaceholder.vue'
 import ParticleField from '@/components/ParticleField.vue'
+import ContentState from '@/components/ContentState.vue'
 import { usePromptOptimizer } from '@/composables/usePromptOptimizer'
+import { useAsyncSection } from '@/composables/useAsyncSection'
 import { addApp, listMyAppVoByPage, listGoodAppVoByPage } from '@/api/appController'
 import { getDeployUrl } from '@/config/env'
 import { formatCodeGenType, getCodeGenTypeOptions } from '@/utils/codeGenTypes'
@@ -77,13 +79,64 @@ const onPromptInput = () => {
   if (optimizerState.value !== 'idle') resetOptimizer()
 }
 
-// 我的应用数据
-const myApps = ref<API.AppVO[]>([])
+// 登录态
+const isLoggedIn = computed(() => Boolean(loginUserStore.loginUser.id))
 
-// 精选应用数据
-const featuredApps = ref<API.AppVO[]>([])
-const featuredLoading = ref(false)
+// 我的应用数据（独立区块状态：loading / empty / error / retry）
+const {
+  data: myAppsData,
+  loading: myAppsLoading,
+  error: myAppsError,
+  run: loadMyApps,
+} = useAsyncSection<API.AppVO[]>(
+  async () => {
+    const res = await listMyAppVoByPage({
+      pageNum: 1,
+      pageSize: 3,
+      sortField: 'updateTime',
+      sortOrder: 'desc',
+    })
+
+    if (res.data.code !== 0) {
+      throw new Error(res.data.message || 'load my apps failed')
+    }
+    return res.data.data?.records ?? []
+  },
+  { errorMessage: () => t('home.loadFailed') },
+)
+
+const myApps = computed(() => myAppsData.value ?? [])
+const myAppsEmpty = computed(() => !isLoggedIn.value || myApps.value.length === 0)
+
+// 精选应用数据（独立区块状态：loading / empty / error / retry）
 const featuredType = ref('')
+const {
+  data: featuredData,
+  loading: featuredLoading,
+  error: featuredError,
+  run: loadFeaturedApps,
+} = useAsyncSection<API.AppVO[]>(
+  async () => {
+    const res = await listGoodAppVoByPage({
+      pageNum: 1,
+      pageSize: 6,
+      sortField: 'createTime',
+      sortOrder: 'desc',
+      codeGenType: featuredType.value || undefined,
+    })
+
+    if (res.data.code !== 0) {
+      throw new Error(res.data.message || 'load featured apps failed')
+    }
+    return res.data.data?.records ?? []
+  },
+  { errorMessage: () => t('home.loadFailed') },
+)
+
+const featuredApps = computed(() => featuredData.value ?? [])
+const featuredEmpty = computed(
+  () => !featuredLoading.value && !featuredError.value && featuredApps.value.length === 0,
+)
 const featuredTypeOptions = computed(() => [
   { label: t('home.filterAll'), value: '' },
   ...getCodeGenTypeOptions().map((option) => ({
@@ -140,54 +193,15 @@ const createApp = async () => {
   }
 }
 
-// 加载我的应用（原型首屏展示 3 张 + 新建卡）
-const loadMyApps = async () => {
-  if (!loginUserStore.loginUser.id) {
-    return
-  }
-
-  try {
-    const res = await listMyAppVoByPage({
-      pageNum: 1,
-      pageSize: 3,
-      sortField: 'updateTime',
-      sortOrder: 'desc',
-    })
-
-    if (res.data.code === 0 && res.data.data) {
-      myApps.value = res.data.data.records || []
-    }
-  } catch (error) {
-    console.error('加载我的应用失败：', error)
-  }
-}
-
-// 加载精选应用（支持类型筛选）
-const loadFeaturedApps = async () => {
-  featuredLoading.value = true
-  try {
-    const res = await listGoodAppVoByPage({
-      pageNum: 1,
-      pageSize: 6,
-      sortField: 'createTime',
-      sortOrder: 'desc',
-      codeGenType: featuredType.value || undefined,
-    })
-
-    if (res.data.code === 0 && res.data.data) {
-      featuredApps.value = res.data.data.records || []
-    }
-  } catch (error) {
-    console.error('加载精选应用失败：', error)
-  } finally {
-    featuredLoading.value = false
-  }
-}
-
 // 精选类型筛选
 const setFeaturedType = (value: string) => {
   featuredType.value = value
   loadFeaturedApps()
+}
+
+// 游客态：去登录
+const goLogin = () => {
+  router.push('/user/login')
 }
 
 // 查看对话
@@ -208,7 +222,7 @@ const viewWork = (app: API.AppVO) => {
 // 页面加载时获取数据
 onMounted(() => {
   nextTick(() => {
-    loadMyApps()
+    if (isLoggedIn.value) loadMyApps()
     loadFeaturedApps()
   })
 })
@@ -380,38 +394,58 @@ onMounted(() => {
               {{ t('home.all') }}
             </RouterLink>
           </div>
-          <div class="home-grid">
-            <article
-              v-for="app in myApps"
-              :key="app.id"
-              class="home-appcard"
-              @click="viewChat(app.id)"
-            >
-              <div class="home-appcard__cover">
-                <img v-if="app.cover" :src="app.cover" :alt="app.appName" />
-                <div v-else class="home-appcard__fallback">#{{ app.id }}</div>
-                <span v-if="app.deployKey" class="home-badge home-badge--live">
-                  <i class="home-dot home-dot--live"></i>{{ t('home.live') }}
-                </span>
-                <span v-else class="home-badge">{{ t('home.draft') }}</span>
+          <ContentState
+            :loading="myAppsLoading"
+            :error="myAppsError"
+            :empty="myAppsEmpty"
+            :retry-text="t('home.retry')"
+            @retry="loadMyApps"
+          >
+            <template #empty>
+              <div class="home-empty">
+                <p>{{ isLoggedIn ? t('home.myEmpty') : t('home.guestEmpty') }}</p>
+                <button
+                  type="button"
+                  class="home-empty__action"
+                  @click="isLoggedIn ? focusComposer() : goLogin()"
+                >
+                  {{ isLoggedIn ? t('home.myEmptyAction') : t('home.guestAction') }}
+                </button>
               </div>
-              <div class="home-appcard__body">
-                <h3 class="home-appcard__title">{{ app.appName || t('appCard.untitled') }}</h3>
-                <div class="home-appcard__meta">
-                  <span class="home-tag">{{ formatCodeGenType(app.codeGenType) }}</span>
-                  <span
-                    >{{ t('home.updated') }}
-                    {{ formatDate(app.updateTime || app.createTime) }}</span
-                  >
+            </template>
+            <div class="home-grid">
+              <article
+                v-for="app in myApps"
+                :key="app.id"
+                class="home-appcard"
+                @click="viewChat(app.id)"
+              >
+                <div class="home-appcard__cover">
+                  <img v-if="app.cover" :src="app.cover" :alt="app.appName" />
+                  <div v-else class="home-appcard__fallback">#{{ app.id }}</div>
+                  <span v-if="app.deployKey" class="home-badge home-badge--live">
+                    <i class="home-dot home-dot--live"></i>{{ t('home.live') }}
+                  </span>
+                  <span v-else class="home-badge">{{ t('home.draft') }}</span>
                 </div>
-              </div>
-            </article>
+                <div class="home-appcard__body">
+                  <h3 class="home-appcard__title">{{ app.appName || t('appCard.untitled') }}</h3>
+                  <div class="home-appcard__meta">
+                    <span class="home-tag">{{ formatCodeGenType(app.codeGenType) }}</span>
+                    <span
+                      >{{ t('home.updated') }}
+                      {{ formatDate(app.updateTime || app.createTime) }}</span
+                    >
+                  </div>
+                </div>
+              </article>
 
-            <a class="home-newcard" @click="focusComposer">
-              <span class="home-newcard__plus">+</span>
-              <span class="home-newcard__label">{{ t('home.new') }}</span>
-            </a>
-          </div>
+              <a class="home-newcard" @click="focusComposer">
+                <span class="home-newcard__plus">+</span>
+                <span class="home-newcard__label">{{ t('home.new') }}</span>
+              </a>
+            </div>
+          </ContentState>
         </div>
       </div>
     </section>
@@ -434,12 +468,15 @@ onMounted(() => {
               </button>
             </div>
           </div>
-          <a-spin :spinning="featuredLoading">
-            <a-empty
-              v-if="!featuredLoading && featuredApps.length === 0"
-              :description="t('home.featuredEmpty')"
-            />
-            <div v-else class="home-grid">
+          <ContentState
+            :loading="featuredLoading"
+            :error="featuredError"
+            :empty="featuredEmpty"
+            :empty-text="t('home.featuredEmpty')"
+            :retry-text="t('home.retry')"
+            @retry="loadFeaturedApps"
+          >
+            <div class="home-grid">
               <article
                 v-for="app in featuredApps"
                 :key="app.id"
@@ -470,7 +507,7 @@ onMounted(() => {
                 </div>
               </article>
             </div>
-          </a-spin>
+          </ContentState>
         </div>
       </div>
     </section>
@@ -1054,5 +1091,40 @@ onMounted(() => {
   font-size: var(--text-caption);
   font-weight: var(--weight-medium);
   color: var(--text-secondary);
+}
+
+/* ---------------- 空状态引导 ---------------- */
+.home-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.home-empty p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.home-empty__action {
+  height: 34px;
+  padding: 0 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+}
+
+.home-empty__action:hover {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand-text);
 }
 </style>

@@ -57,13 +57,32 @@
     "openSourceBy": "Powered by iceblyte · 欢迎 Star & Fork"
   },
   "home": {
-    "eyebrow": "AI 应用生成平台",
-    "title": "把一句话，编译成可运行的应用",
-    "sub": "描述你的想法，CodeNow 会生成页面、实时预览，并一键部署上线。",
-    "ph": "帮我做一个带预约功能的摄影工作室官网",
+    "titleBefore": "一句话",
+    "titleAfter": "构筑你的奇思妙想",
+    "sub": "与 AI 对话，轻松搭建属于你的应用和网站",
+    "composerLabel": "描述你想创建的应用或网站",
     "generate": "生成",
-    "quick": "快速开始",
-    "meta": "支持 原生 HTML / 多文件 / Vue 项目 · 生成后可实时预览、可视化编辑与部署",
+    "typewriter": [
+      "使用 CodeNow 创建一个精美的网站，来呈现…",
+      "使用 CodeNow 创建一个活动宣传页面，活动规则是…",
+      "使用 CodeNow 创建一个有趣的小游戏，游戏玩法是…",
+      "使用 CodeNow 创建一个数据分析看板，用来分析…",
+      "使用 CodeNow 创建一个产品原型，用于…",
+      "使用 CodeNow 创建一个信息管理系统，用于管理…",
+      "使用 CodeNow 创建一个高效的小工具，帮我计算…",
+      "使用 CodeNow 创建一个个人简历页，用来展示…",
+      "使用 CodeNow 创建一个数据可视化大屏，实时监控…"
+    ],
+    "optimize": {
+      "action": "优化",
+      "undo": "撤回优化",
+      "tip": "优化提示词",
+      "undoTip": "恢复原始提示词",
+      "optimizing": "正在优化提示词…",
+      "help": "描述你的想法，AI 会自动选择合适的生成方式（支持原生 HTML、多文件、Vue 项目）。生成后即可实时预览、可视化编辑并一键部署。",
+      "empty": "请先输入你的想法",
+      "enhanceSuffix": "请补充并遵循以下要求：\n1. 明确目标用户与核心使用场景；\n2. 说明核心功能、页面结构与关键交互；\n3. 采用现代、协调的视觉风格，并兼顾移动端适配；\n4. 保证内容完整可运行，包含加载、空状态与错误提示。"
+    },
     "mine": "我的作品",
     "featured": "精选案例",
     "featuredEmpty": "暂无精选案例",
@@ -78,6 +97,12 @@
     "createSuccess": "应用创建成功",
     "createFailed": "创建失败，请重试",
     "createFailedWithReason": "创建失败：{msg}",
+    "loadFailed": "加载失败，请稍后重试",
+    "retry": "重试",
+    "myEmpty": "还没有作品，输入一句话开始创建",
+    "myEmptyAction": "开始创建",
+    "guestEmpty": "登录后查看你的作品",
+    "guestAction": "去登录",
     "quick": {
       "blog": {
         "label": "个人博客网站",

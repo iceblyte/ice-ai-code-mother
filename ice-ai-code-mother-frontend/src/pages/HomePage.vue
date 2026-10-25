@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { useLoginUserStore } from '@/stores/loginUser'
+import BrandLogo from '@/components/BrandLogo.vue'
+import TypewriterPlaceholder from '@/components/TypewriterPlaceholder.vue'
 import { addApp, listMyAppVoByPage, listGoodAppVoByPage } from '@/api/appController'
 import { getDeployUrl } from '@/config/env'
 import { formatCodeGenType, getCodeGenTypeOptions } from '@/utils/codeGenTypes'
@@ -11,12 +13,20 @@ import { formatDate } from '@/utils/time'
 
 const router = useRouter()
 const loginUserStore = useLoginUserStore()
-const { t } = useI18n({ useScope: 'global' })
+const { t, tm, rt } = useI18n({ useScope: 'global' })
 
 // 用户提示词
 const userPrompt = ref('')
 const composerRef = ref<HTMLTextAreaElement>()
 const creating = ref(false)
+
+// 动态占位符：输入框有内容时暂停并隐藏，清空后恢复
+const typewriterActive = computed(() => userPrompt.value.length === 0)
+const typewriterLines = computed(() => {
+  const messages = tm('home.typewriter') as unknown
+  if (!Array.isArray(messages)) return []
+  return messages.map((message) => rt(message as string))
+})
 
 // 快捷提示词（文案与预设提示词均由 i18n 管理）
 const quickActionKeys = ['blog', 'corporate', 'shop', 'portfolio'] as const
@@ -160,23 +170,25 @@ onMounted(() => {
 
 <template>
   <div id="homePage">
-    <!-- Hero：网格背景 + eyebrow + 大标题 + composer + 快捷提示 -->
+    <!-- Hero：氛围渐变 + 一句话标题 + composer + 快捷提示 -->
     <section class="home-hero">
-      <div class="home-hero__grid" aria-hidden="true"></div>
       <div class="home-container">
-        <span class="home-hero__eyebrow">
-          <i class="home-dot home-dot--live"></i>{{ t('home.eyebrow') }}
-        </span>
-        <h1 class="home-hero__title">{{ t('home.title') }}</h1>
+        <h1 class="home-hero__title">
+          <span>{{ t('home.titleBefore') }}</span>
+          <BrandLogo class="home-hero__logo" :mark-width="44" :wordmark="false" />
+          <span>{{ t('home.titleAfter') }}</span>
+        </h1>
         <p class="home-hero__sub">{{ t('home.sub') }}</p>
 
         <div class="home-composer">
+          <TypewriterPlaceholder :lines="typewriterLines" :active="typewriterActive" />
           <textarea
             ref="composerRef"
             v-model="userPrompt"
             class="home-composer__input"
+            :class="{ 'home-composer__input--empty': typewriterActive }"
             rows="3"
-            :placeholder="t('home.ph')"
+            :aria-label="t('home.composerLabel')"
             :maxlength="1000"
           ></textarea>
           <div class="home-composer__bar">
@@ -206,20 +218,17 @@ onMounted(() => {
         </div>
 
         <div class="home-quick">
-          <p class="home-quick__label">{{ t('home.quick') }}</p>
           <div class="home-quick__chips">
             <button
               v-for="key in quickActionKeys"
               :key="key"
-              class="home-chip"
+              class="home-chip home-chip--preset"
               @click="setPrompt(t(`home.quick.${key}.prompt`))"
             >
               {{ t(`home.quick.${key}.label`) }}
             </button>
           </div>
         </div>
-
-        <p class="home-meta">{{ t('home.meta') }}</p>
       </div>
     </section>
 
@@ -341,31 +350,6 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.home-hero__grid {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(color-mix(in srgb, var(--border-strong) 45%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--border-strong) 45%, transparent) 1px, transparent 1px);
-  background-size: 32px 32px;
-  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 0%, transparent 72%);
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 0%, transparent 72%);
-}
-
-.home-hero__eyebrow {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 20px;
-}
-
 .home-dot {
   width: 6px;
   height: 6px;
@@ -391,8 +375,13 @@ onMounted(() => {
 
 .home-hero__title {
   position: relative;
-  max-width: 760px;
+  max-width: 900px;
   margin: 0 auto 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   font-size: var(--text-display);
   line-height: var(--leading-display);
   font-weight: var(--weight-heavy);
@@ -400,10 +389,23 @@ onMounted(() => {
   color: var(--text-primary);
 }
 
+.home-hero__title > span {
+  display: inline-block;
+}
+
+.home-hero__logo {
+  flex: none;
+}
+
+.home-hero__logo :deep(svg) {
+  width: auto;
+  height: 0.9em;
+}
+
 .home-hero__sub {
   position: relative;
   max-width: 560px;
-  margin: 0 auto 32px;
+  margin: 0 auto 36px;
   color: var(--text-secondary);
 }
 
@@ -430,6 +432,8 @@ onMounted(() => {
 }
 
 .home-composer__input {
+  position: relative;
+  z-index: 0;
   display: block;
   width: 100%;
   border: 0;
@@ -446,8 +450,9 @@ onMounted(() => {
   outline: none;
 }
 
-.home-composer__input::placeholder {
-  color: var(--text-muted);
+/* 空输入时隐藏原生光标，避免与打字机光标重叠 */
+.home-composer__input--empty {
+  caret-color: transparent;
 }
 
 .home-composer__bar {
@@ -495,22 +500,17 @@ onMounted(() => {
 /* ---------------- 快捷提示 ---------------- */
 .home-quick {
   position: relative;
-  max-width: 780px;
-  margin: 20px auto 0;
-  text-align: left;
-}
-
-.home-quick__label {
-  font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  color: var(--text-muted);
-  margin-bottom: 8px;
+  max-width: 900px;
+  margin: 22px auto 0;
+  display: flex;
+  justify-content: center;
 }
 
 .home-quick__chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  justify-content: center;
+  gap: 10px;
 }
 
 .home-chip {
@@ -534,18 +534,16 @@ onMounted(() => {
   border-color: var(--border-strong);
 }
 
+.home-chip--preset {
+  height: 38px;
+  padding: 0 18px;
+  font-size: var(--text-body);
+}
+
 .home-chip--active {
   background: var(--brand-soft);
   color: var(--brand-text);
   border-color: transparent;
-}
-
-.home-meta {
-  position: relative;
-  margin-top: 24px;
-  font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  color: var(--text-muted);
 }
 
 /* ---------------- 区块 ---------------- */

@@ -57,13 +57,32 @@
     "openSourceBy": "Powered by iceblyte · Star & Fork welcome"
   },
   "home": {
-    "eyebrow": "AI APP BUILDER",
-    "title": "Turn one sentence into a running app",
-    "sub": "Describe your idea. CodeNow generates the pages, previews them live and deploys in one click.",
-    "ph": "Build a photography studio site with a booking form",
+    "titleBefore": "One sentence,",
+    "titleAfter": "build anything you imagine",
+    "sub": "Chat with AI and build your apps and websites with ease",
+    "composerLabel": "Describe the app or website you want to build",
     "generate": "Generate",
-    "quick": "Quick start",
-    "meta": "Single HTML / Multi-file / Vue project · live preview, visual editing and one-click deploy",
+    "typewriter": [
+      "Use CodeNow to build a beautiful website that showcases…",
+      "Use CodeNow to create an event promo page. The rules are…",
+      "Use CodeNow to create a fun mini game. The gameplay is…",
+      "Use CodeNow to create a data dashboard that analyzes…",
+      "Use CodeNow to create a product prototype for…",
+      "Use CodeNow to create an information management system to manage…",
+      "Use CodeNow to create a handy tool that helps me calculate…",
+      "Use CodeNow to create a personal resume page that showcases…",
+      "Use CodeNow to create a real-time data visualization wall that monitors…"
+    ],
+    "optimize": {
+      "action": "Optimize",
+      "undo": "Undo",
+      "tip": "Optimize prompt",
+      "undoTip": "Restore original prompt",
+      "optimizing": "Optimizing prompt…",
+      "help": "Describe your idea and AI will choose the right generation mode automatically (single HTML, multi-file, or Vue project). Once generated, preview it live, edit visually, and deploy in one click.",
+      "empty": "Please describe your idea first",
+      "enhanceSuffix": "Please also cover:\n1. Target users and key scenarios;\n2. Core features, page structure and key interactions;\n3. A modern, cohesive visual style with responsive behavior;\n4. A complete, runnable result with loading, empty and error states."
+    },
     "mine": "My apps",
     "featured": "Featured",
     "featuredEmpty": "No featured apps yet",
@@ -78,6 +97,12 @@
     "createSuccess": "App created",
     "createFailed": "Creation failed, please retry",
     "createFailedWithReason": "Creation failed: {msg}",
+    "loadFailed": "Failed to load. Please try again.",
+    "retry": "Retry",
+    "myEmpty": "No apps yet. Start with one sentence.",
+    "myEmptyAction": "Start building",
+    "guestEmpty": "Log in to see your apps",
+    "guestAction": "Log in",
     "quick": {
       "blog": {
         "label": "Personal Blog",

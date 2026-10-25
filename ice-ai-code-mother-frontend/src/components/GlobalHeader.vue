@@ -100,11 +100,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { type MenuProps, message } from 'ant-design-vue'
-import { LogoutOutlined, UserOutlined, HomeOutlined } from '@ant-design/icons-vue'
 import HeaderPreferences from '@/components/HeaderPreferences.vue'
 import BrandLogo from '@/components/BrandLogo.vue'
 import { useLoginUserStore } from '@/stores/loginUser'
